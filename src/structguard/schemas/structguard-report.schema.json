@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://structguard.local/schemas/structguard-report.schema.json",
+  "title": "StructGuard JSON report",
+  "type": "object",
+  "required": ["schema_version", "tool", "root", "counts", "result_semantics", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "structguard-report/v1"},
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"const": "StructGuard"},
+        "version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "root": {"type": "string"},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "result_semantics": {"type": "object", "additionalProperties": {"type": "string"}},
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level", "code", "message", "details"],
+        "properties": {
+          "level": {"enum": ["FAILED", "WARNING", "UNKNOWN", "HEURISTIC", "BOUNDED_VERIFIED", "PROVED", "INFO"]},
+          "code": {"type": "string", "minLength": 1},
+          "message": {"type": "string"},
+          "file": {"type": ["string", "null"]},
+          "line": {"type": ["integer", "null"], "minimum": 1},
+          "symbol": {"type": ["string", "null"]},
+          "details": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

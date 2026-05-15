@@ -1,0 +1,68 @@
+name: StructGuard CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar paquete con herramientas de desarrollo
+        run: python -m pip install -e '.[dev]'
+
+      - name: Verificar entorno
+        run: |
+          mkdir -p report
+          structguard doctor . --json report/doctor.json
+
+      - name: Compilar fuentes de Python
+        run: python -m compileall -q src tests
+
+      - name: Ejecutar pruebas
+        run: pytest -q
+
+      - name: Ejecutar lint crítico con Ruff
+        run: ruff check .
+
+      - name: Ejecutar verificación básica de tipos con mypy
+        run: mypy
+
+      - name: Ejecutar política de StructGuard y emitir artefactos
+        run: |
+          mkdir -p report
+          structguard ci examples/stack_ok.h \
+            --headers-only \
+            --strict-ast \
+            --deep-security \
+            --html report/structguard-ci.html \
+            --json report/structguard-ci.json \
+            --junit report/structguard-junit.xml \
+            --sarif report/structguard.sarif \
+            --summary-md report/structguard-summary.md \
+            --github-annotations
+
+      - name: Validar salidas de reportes
+        run: python scripts/validate_outputs.py && python scripts/validate_outputs.py --profile doctor
+
+      - name: Subir reportes de StructGuard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structguard-reports
+          path: report/
+
+      - name: Subir SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: report/structguard.sarif

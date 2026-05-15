@@ -1,0 +1,90 @@
+package structguard.advanced;
+
+structure FenwickTree {
+  invariant n >= 0;
+  method update {
+    requires 0 <= index && index < n;
+  }
+  method query {
+    requires 0 <= index && index < n;
+    ensures result >= 0;
+  }
+}
+
+structure SegmentTree {
+  invariant n >= 0;
+  method query {
+    requires 0 <= left && left <= right && right < n;
+  }
+}
+
+structure DisjointSetUnion {
+  invariant forall x in [0, n): 0 <= parent[x] && parent[x] < n;
+  method find {
+    requires 0 <= x && x < n;
+  }
+  method unite {
+    requires 0 <= a && a < n && 0 <= b && b < n;
+  }
+}
+
+structure BinaryHeap {
+  invariant forall i in [1, n): data[parent(i)] <= data[i];
+  method pop {
+    requires n > 0;
+    ensures n == old(n) - 1;
+  }
+}
+
+structure BTree {
+  invariant keys_sorted(root);
+  invariant all_leaves_same_depth(root);
+  method search {
+    ensures result == contains(old(root), key);
+  }
+}
+
+structure BPlusTree {
+  invariant leaves_linked_in_order(root);
+  invariant all_values_in_leaves(root);
+  method range_query {
+    requires low <= high;
+  }
+}
+
+structure WaveletTree {
+  invariant bitvectors_have_rank_support(root);
+  method rank {
+    requires 0 <= index && index <= n;
+  }
+  method select {
+    requires kth > 0;
+  }
+}
+
+structure SuffixAutomaton {
+  invariant suffix_links_form_dag();
+  invariant transitions_are_deterministic();
+  method extend {
+    ensures accepts(old(text) + c);
+  }
+}
+
+structure RMQ {
+  method query {
+    requires 0 <= left && left <= right && right < n;
+  }
+  method query {
+    ensures result >= left && result <= right;
+  }
+}
+
+structure DynamicGraph {
+  invariant vertices_valid();
+  method add_edge {
+    requires valid(u) && valid(v);
+  }
+  method connected {
+    requires valid(u) && valid(v);
+  }
+}

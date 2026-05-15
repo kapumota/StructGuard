@@ -1,0 +1,45 @@
+# Política predeterminada de StructGuard para proyectos estilo CC-232
+project: CC-232
+version: 4.5.5
+paths:
+  - Libreria_cc232
+scan:
+  headers_only: true
+verification:
+  mode: bounded
+  max_cases: 300
+  strict_ast: false
+  fail_on_failed_contract: true
+lint:
+  require_invariants_for_data_structures: true
+security:
+  deep: true
+  fail_on_warnings: false
+fuzz:
+  seeds: 20
+  steps: 50
+  fail_on_failures: true
+thresholds:
+  max_failures: 0
+  max_warnings: 250
+  max_unknown: 250
+clang:
+  std: c++17
+  max_files: 30
+  timeout: 12
+ci:
+  required_modules: [verify, lint, security, fuzz]
+  fail_on_warnings: false
+  fail_on_unknown: false
+  fail_on_security_warnings: false
+  fail_on_fuzz_failures: true
+report:
+  html: report/structguard-ci.html
+  json: report/structguard-ci.json
+  junit: report/structguard-junit.xml
+  sarif: report/structguard.sarif
+  summary_md: report/structguard-summary.md
+docs:
+  html: report/docs.html
+  markdown_dir: report/docs_md
+  json: report/docs.json
