@@ -11,7 +11,6 @@ jobs:
     permissions:
       contents: read
       actions: read
-      security-events: write
 
     steps:
       - uses: actions/checkout@v4
@@ -73,10 +72,3 @@ jobs:
         with:
           name: structguard-reports
           path: report/
-
-      - name: Subir SARIF
-        if: github.event_name == 'push' && hashFiles('report/structguard.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: report/structguard.sarif
-          category: structguard
