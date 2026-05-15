@@ -7,18 +7,29 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
+      actions: read
       security-events: write
+
     steps:
       - uses: actions/checkout@v4
 
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt update
+          sudo apt install -y clang
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+
+      - name: Actualizar pip
+        run: python -m pip install --upgrade pip
 
       - name: Instalar paquete con herramientas de desarrollo
-        run: python -m pip install -e '.[dev]'
+        run: python -m pip install -e '.[dev,z3]'
 
       - name: Verificar entorno
         run: |
@@ -52,7 +63,9 @@ jobs:
             --github-annotations
 
       - name: Validar salidas de reportes
-        run: python scripts/validate_outputs.py && python scripts/validate_outputs.py --profile doctor
+        run: |
+          python scripts/validate_outputs.py
+          python scripts/validate_outputs.py --profile doctor
 
       - name: Subir reportes de StructGuard
         if: always()
@@ -62,7 +75,8 @@ jobs:
           path: report/
 
       - name: Subir SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        if: github.event_name == 'push' && hashFiles('report/structguard.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: report/structguard.sarif
+          category: structguard
