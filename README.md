@@ -39,24 +39,234 @@ python -m pip install --upgrade pip
 python -m pip install -e .
 ```
 
-Si quieres modificar StructGuard o ejecutar sus pruebas internas:
+#### Instalación para desarrollo
 
+Si quieres modificar StructGuard o ejecutar sus pruebas internas, instala el paquete en modo editable con las dependencias de desarrollo:
+
+```bash
 python -m pip install -e '.[dev]'
 pytest -q
 ruff check .
 mypy
+```
 
+Esto instala StructGuard en modo editable y permite ejecutar las herramientas usadas durante el desarrollo:
 
-Si quieres habilitar el backend SMT/Z3:
+- `pytest` para pruebas.
+- `ruff` para lint.
+- `mypy` para verificación básica de tipos.
 
+#### Soporte opcional para SMT/Z3
+
+Si quieres habilitar el backend SMT/Z3 para análisis formal o ejecución con solver:
+
+```bash
 python -m pip install -e '.[z3]'
+```
 
-Comprueba la instalación con:
+También puedes instalar desarrollo y Z3 en un solo paso:
+
+```bash
+python -m pip install -e '.[dev,z3]'
+```
+
+Esta opción es útil para CI, validación completa o desarrollo con soporte formal habilitado.
+
+#### Comprobar la instalación
+
+Después de instalar StructGuard, verifica que el comando esté disponible:
 
 ```bash
 structguard --version
 structguard doctor .
 ```
+
+También puedes generar un reporte JSON del estado del entorno:
+
+```bash
+mkdir -p report
+structguard doctor . --json report/doctor.json
+```
+
+Una salida correcta debería mostrar `[OK]` en Python, árbol fuente y herramientas instaladas. Si aparece una advertencia sobre `clang`, instala Clang si deseas usar `--strict-ast`.
+
+En Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install -y clang
+```
+
+#### GitHub Actions y reportes SARIF
+
+StructGuard puede generar reportes SARIF para integrarse con GitHub Code Scanning. Sin embargo, GitHub solo permite subir SARIF a Code Scanning cuando esta función está habilitada en el repositorio.
+
+En repositorios públicos de GitHub.com, Code Scanning está disponible. En repositorios privados o internos, puede requerir que GitHub Code Security esté habilitado.
+
+##### Opción A: usar Code Scanning
+
+Si quieres que los resultados SARIF aparezcan en la pestaña de seguridad de GitHub, activa Code Scanning:
+
+1. Entra a tu repositorio en GitHub.
+2. Ve a **Settings**.
+3. Entra a **Code security** o **Security & analysis**.
+4. Busca **Code scanning**.
+5. Actívalo.
+
+Luego usa estos permisos en el workflow:
+
+```yaml
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+```
+
+Y agrega el paso de subida SARIF:
+
+```yaml
+- name: Subir SARIF
+  if: github.event_name == 'push' && hashFiles('report/structguard.sarif') != ''
+  uses: github/codeql-action/upload-sarif@v4
+  with:
+    sarif_file: report/structguard.sarif
+    category: structguard
+```
+
+Se recomienda ejecutar la subida SARIF solo en `push`, no en todos los `pull_request`, porque los pull requests desde forks pueden no tener permisos suficientes para publicar resultados de Code Scanning.
+
+##### Opción B: guardar SARIF como artefacto sin activar Code Scanning
+
+Si todavía no quieres activar Code Scanning, no uses `github/codeql-action/upload-sarif`. En su lugar, guarda los reportes como artefactos del workflow:
+
+```yaml
+- name: Subir reportes de StructGuard
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: structguard-reports
+    path: report/
+```
+
+Así el archivo:
+
+```text
+report/structguard.sarif
+```
+
+queda disponible para descarga dentro de los artefactos del workflow, pero GitHub no intenta importarlo a Code Scanning.
+
+##### Workflow recomendado sin Code Scanning activado
+
+Esta es la opción más simple para proyectos en fase inicial o primeras publicaciones en GitHub:
+
+```yaml
+name: StructGuard CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt update
+          sudo apt install -y clang
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Actualizar pip
+        run: python -m pip install --upgrade pip
+
+      - name: Instalar paquete con herramientas de desarrollo y Z3
+        run: python -m pip install -e '.[dev,z3]'
+
+      - name: Verificar entorno
+        run: |
+          mkdir -p report
+          structguard doctor . --json report/doctor.json
+
+      - name: Compilar fuentes de Python
+        run: python -m compileall -q src tests
+
+      - name: Ejecutar pruebas
+        run: pytest -q
+
+      - name: Ejecutar lint crítico con Ruff
+        run: ruff check .
+
+      - name: Ejecutar verificación básica de tipos con mypy
+        run: mypy
+
+      - name: Ejecutar política de StructGuard y emitir artefactos
+        run: |
+          mkdir -p report
+          structguard ci examples/stack_ok.h \
+            --headers-only \
+            --strict-ast \
+            --deep-security \
+            --html report/structguard-ci.html \
+            --json report/structguard-ci.json \
+            --junit report/structguard-junit.xml \
+            --sarif report/structguard.sarif \
+            --summary-md report/structguard-summary.md \
+            --github-annotations
+
+      - name: Validar salidas de reportes
+        run: |
+          python scripts/validate_outputs.py
+          python scripts/validate_outputs.py --profile doctor
+
+      - name: Subir reportes de StructGuard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structguard-reports
+          path: report/
+```
+
+#### Workflow con Code Scanning activado
+
+Cuando Code Scanning esté habilitado en el repositorio, cambia los permisos a:
+
+```yaml
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+```
+
+Y agrega al final:
+
+```yaml
+- name: Subir SARIF
+  if: github.event_name == 'push' && hashFiles('report/structguard.sarif') != ''
+  uses: github/codeql-action/upload-sarif@v4
+  with:
+    sarif_file: report/structguard.sarif
+    category: structguard
+```
+
+Si aparece un error como:
+
+```text
+Code scanning is not enabled for this repository.
+Please enable code scanning in the repository settings.
+```
+
+significa que el SARIF fue generado, pero GitHub no tiene Code Scanning habilitado para ese repositorio. En ese caso, activa Code Scanning o deja el SARIF únicamente como artefacto del workflow.
 
 ##### Limpieza de artefactos generados
 
