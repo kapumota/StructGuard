@@ -4,7 +4,6 @@
 
 Esta versión está diseñada especialmente para cabeceras `.h` como las de `Libreria_cc232`. Su objetivo no es reemplazar al compilador ni demostrar matemáticamente todo un programa C++; su valor está en combinar análisis acotado, lint de contratos, documentación automática, señales de seguridad, perfiles de rendimiento y artefactos para CI.
 
-
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
