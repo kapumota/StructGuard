@@ -1,6 +1,6 @@
-### StructGuard 4.6.1 ES
+### StructGuard
 
-**StructGuard** es una herramienta de línea de comandos para revisar implementaciones de estructuras de datos, principalmente en cabeceras C++17 (`.h`, `.hh`, `.hpp`, `.hxx`). Está pensada para apoyar cursos y proyectos donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
+**StructGuard** es una herramienta de línea de comandos para revisar implementaciones de estructuras de datos. Está pensada para apoyar cursos y proyectos donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
 
 Esta versión está diseñada especialmente para cabeceras `.h` como las de `Libreria_cc232`. Su objetivo no es reemplazar al compilador ni demostrar matemáticamente todo un programa C++; su valor está en combinar análisis acotado, lint de contratos, documentación automática, señales de seguridad, perfiles de rendimiento y artefactos para CI.
 
