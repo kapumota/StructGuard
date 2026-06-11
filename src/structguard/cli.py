@@ -39,6 +39,7 @@ from .binding import build_binding_ir, match_contracts_to_source
 from .frontend.cpp import build_cpp_source_ir
 from .ir.source_ir import SourceDiagnostic, SourceIR
 from .core import AnalysisContext, AnalysisEngine, available_presets
+from .reporters import write_html_report, write_json_report, write_junit_report, write_markdown_report, write_sarif_report
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -99,6 +100,16 @@ def _write_outputs(report: ProjectReport, args: argparse.Namespace, title: str) 
         write_json(report, Path(args.json))
     if getattr(args, "html", None):
         write_html(report, Path(args.html), title=title)
+    if getattr(args, "findings_json", None):
+        write_json_report(report, Path(args.findings_json))
+    if getattr(args, "findings_html", None):
+        write_html_report(report, Path(args.findings_html), title=title)
+    if getattr(args, "findings_md", None):
+        write_markdown_report(report, Path(args.findings_md), title=title)
+    if getattr(args, "findings_junit", None):
+        write_junit_report(report, Path(args.findings_junit))
+    if getattr(args, "findings_sarif", None):
+        write_sarif_report(report, Path(args.findings_sarif))
 
 
 
@@ -731,8 +742,13 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--frontend", choices=["auto", "clang", "lightweight"], default="auto", help="Frontend C++ a usar cuando se solicita --language cpp")
         sp.add_argument("--fallback-allowed", action="store_true", help="Permite degradar a frontend ligero si Clang no está disponible o falla")
         sp.add_argument("--source-ir-json", help="Escribe SourceIR JSON en esta ruta")
-        sp.add_argument("--json", help="Escribe el reporte JSON en esta ruta")
-        sp.add_argument("--html", help="Escribe el reporte HTML en esta ruta")
+        sp.add_argument("--json", help="Escribe el reporte JSON heredado en esta ruta")
+        sp.add_argument("--html", help="Escribe el reporte HTML heredado en esta ruta")
+        sp.add_argument("--findings-json", help="Escribe FindingIR en JSON")
+        sp.add_argument("--findings-html", help="Escribe FindingIR en HTML")
+        sp.add_argument("--findings-md", help="Escribe FindingIR en Markdown")
+        sp.add_argument("--findings-junit", help="Escribe FindingIR en JUnit XML")
+        sp.add_argument("--findings-sarif", help="Escribe FindingIR en SARIF")
         sp.add_argument("-v", "--verbose", action="store_true", help="Imprime detalles de diagnóstico")
 
     def strict_ast_options(sp: argparse.ArgumentParser) -> None:
