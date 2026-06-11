@@ -22,6 +22,7 @@ class AnalysisCapabilities:
     bounded: bool = False
     lint: bool = False
     security: bool = False
+    memory_safety: bool = False
     formal: bool = False
     reports: bool = True
     notes: tuple[str, ...] = field(default_factory=tuple)
@@ -34,6 +35,7 @@ class AnalysisCapabilities:
             "bounded": self.bounded,
             "lint": self.lint,
             "security": self.security,
+            "memory_safety": self.memory_safety,
             "formal": self.formal,
             "reports": self.reports,
             "notes": list(self.notes),
@@ -53,7 +55,8 @@ PRESET_CAPABILITIES: dict[str, AnalysisCapabilities] = {
     "security": AnalysisCapabilities(
         source_ir=True,
         security=True,
-        notes=("Ejecuta reglas de seguridad estructural usando el motor común.",),
+        memory_safety=True,
+        notes=("Ejecuta reglas de seguridad estructural y memoria usando el motor común.",),
     ),
     "ci": AnalysisCapabilities(
         source_ir=True,
@@ -62,6 +65,7 @@ PRESET_CAPABILITIES: dict[str, AnalysisCapabilities] = {
         bounded=True,
         lint=True,
         security=True,
+        memory_safety=True,
         notes=("Ejecuta el conjunto base para CI usando el motor común.",),
     ),
     "full": AnalysisCapabilities(
@@ -71,6 +75,7 @@ PRESET_CAPABILITIES: dict[str, AnalysisCapabilities] = {
         bounded=True,
         lint=True,
         security=True,
+        memory_safety=True,
         formal=True,
         notes=("Ejecuta todos los pasos disponibles sin prometer verificación completa.",),
     ),

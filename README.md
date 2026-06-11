@@ -191,6 +191,49 @@ Módulos nuevos:
 - `src/structguard/reporters/junit_reporter.py`
 - `src/structguard/reporters/sarif_reporter.py`
 
+
+#### Fase 8: modelo de memoria mínimo para C++
+
+La Fase 8 agrega un modelo inicial de memoria para estructuras de datos C++. No intenta verificar todo C++, pero sí distingue patrones básicos de ownership manual.
+
+El análisis reconoce:
+
+```text
+new / delete
+new[] / delete[]
+nullptr
+campos puntero
+arreglos dinámicos
+capacidad lógica vs. capacidad física
+riesgos simples de double delete y null dereference
+```
+
+El modelo se ejecuta desde presets que incluyen seguridad:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security
+```
+
+También se ejecuta en:
+
+```bash
+structguard scan . --preset ci
+structguard scan . --preset full
+```
+
+Documentación nueva de esta fase:
+
+- `docs/MEMORY_MODEL.md`
+
+Módulos nuevos:
+
+- `src/structguard/memory/model.py`
+- `src/structguard/memory/ownership.py`
+- `src/structguard/memory/aliasing.py`
+- `src/structguard/analyzers/memory_safety.py`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
@@ -551,7 +594,7 @@ La arquitectura está separada en módulos dentro de `src/structguard/`:
 | `lint.py`, `security.py`, `performance.py` | Ejecutan análisis especializados. |
 | `docs.py`, `report.py`, `ci_outputs.py` | Generan reportes legibles por humanos y por herramientas de CI. |
 | `fuzz.py`, `counterexample.py`, `trace.py` | Producen secuencias abstractas, trazas y contraejemplos candidatos. |
-| `standard_contracts.py`, `profiles/`, `policy.py` | Definen contratos, perfiles y políticas de ejecución. |
+| `standard_contracts.py`, `profiles/`, `policy/` | Definen contratos, perfiles y políticas de ejecución. |
 
 
 #### 4. Primer objetivo recomendado con perfiles

@@ -30,6 +30,7 @@ BindContracts
 RunBoundedContracts
 RunLint
 RunSecurity
+RunMemorySafety
 RunFormal
 ```
 
@@ -40,9 +41,9 @@ No todos los pasos se ejecutan siempre. El preset decide qué capacidades se act
 ```text
 source     = construye SourceIR y diagnósticos del frontend
 contracts  = valida contratos, binding, verificación acotada y lint
-security   = ejecuta seguridad estructural usando el motor común
-ci         = ejecuta contratos, lint y seguridad para integración continua
-full       = ejecuta el conjunto más amplio disponible
+security   = ejecuta seguridad estructural y memoria usando el motor común
+ci         = ejecuta contratos, lint, seguridad y memoria para integración continua
+full       = ejecuta el conjunto más amplio disponible, incluyendo memoria y formalización
 ```
 
 #### Comandos
@@ -94,7 +95,7 @@ Esta fase introduce el motor común y conecta `scan` con presets. No elimina tod
 
 #### Limitaciones
 
-El motor todavía reutiliza analizadores existentes como `verify_project`, `lint_project` y `security_project`. La separación completa de reglas, findings y reportes corresponde a las fases siguientes.
+El motor todavía reutiliza analizadores existentes como `verify_project`, `lint_project` y `security_project`, pero ya conecta el modelo de memoria mediante `RunMemorySafety`. La separación completa de reglas, findings y reportes corresponde a las fases siguientes.
 
 ### Alcance explícito de contratos
 
