@@ -1,0 +1,9 @@
+package generic.cpp;
+
+structure Queue {
+  invariant n >= 0;
+  method enqueue { ensures n == old(n) + 1; }
+  method dequeue { requires n > 0; ensures n == old(n) - 1; }
+  method front requires n > 0;
+  method peek requires n > 0;
+}

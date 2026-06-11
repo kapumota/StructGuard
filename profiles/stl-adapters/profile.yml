@@ -1,0 +1,16 @@
+# Perfil de adaptadores para estructuras comunes de STL.
+name: stl-adapters
+display_name: STL Adapters Profile
+description: Perfil para contratos de uso sobre adaptadores de STL.
+language: cpp
+status: draft
+contracts:
+  - contracts/stl_containers.sgdsl
+analysis:
+  headers_only: true
+  strict_ast: false
+  bounded: true
+outputs:
+  html: true
+  json: true
+  sarif: true

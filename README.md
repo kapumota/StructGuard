@@ -1,8 +1,36 @@
 ### StructGuard
 
-**StructGuard** es una herramienta de línea de comandos para revisar implementaciones de estructuras de datos. Está pensada para apoyar cursos y proyectos donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
+**StructGuard** es una plataforma de línea de comandos para revisar implementaciones de estructuras de datos mediante contratos, análisis acotado, evidencia reproducible y exportación formal experimental. Está pensada para apoyar cursos, proyectos académicos y librerías C++ propias donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
 
-Esta versión está diseñada especialmente para cabeceras `.h` como las de `Libreria_cc232`. Su objetivo no es reemplazar al compilador ni demostrar matemáticamente todo un programa C++; su valor está en combinar análisis acotado, lint de contratos, documentación automática, señales de seguridad, perfiles de rendimiento y artefactos para CI.
+StructGuard no está limitado a CC-232. CC-232 es el primer perfil académico. El motor puede analizar otras librerías C++, otros cursos y, progresivamente, otros lenguajes mediante perfiles, contratos, frontends y exportadores.
+
+Su objetivo no es reemplazar al compilador ni demostrar matemáticamente todo un programa C++; su valor está en combinar análisis acotado, lint de contratos, documentación automática, señales de seguridad, perfiles de rendimiento y artefactos para CI.
+
+#### Fase 0: reposicionamiento del producto
+
+La Fase 0 separa el producto en cuatro conceptos:
+
+```text
+StructGuard Core     = motor general de análisis y evidencia
+Profiles            = reglas, contratos y presets por dominio
+CC-232 Profile       = perfil educativo inicial
+Generic C++ Profile  = perfil general para librerías C++ propias
+STL Adapters         = adaptadores para librerías externas
+```
+
+Documentación nueva de esta fase:
+
+- `docs/PRODUCT_VISION.md`
+- `docs/ARCHITECTURE.md`
+- `docs/FORMAL_LIMITATIONS.md`
+- `docs/PROFILE_MODEL.md`
+
+Perfiles base agregados:
+
+- `profiles/cc232/`
+- `profiles/generic-cpp/`
+- `profiles/stl-adapters/`
+- `profiles/custom-template/`
 
 #### Clang opcional para análisis AST estricto
 
@@ -367,15 +395,15 @@ La arquitectura está separada en módulos dentro de `src/structguard/`:
 | `standard_contracts.py`, `profiles.py`, `policy.py` | Definen contratos, perfiles y políticas de ejecución. |
 
 
-#### 4. Primer objetivo recomendado con `Libreria_cc232`
+#### 4. Primer objetivo recomendado con perfiles
 
-Empieza por una ejecución simple sobre las cabeceras de la semana que quieras revisar:
+Empieza por una ejecución simple sobre el perfil que corresponda. Para CC-232 puedes usar el contrato movido al perfil dedicado:
 
 ```bash
-structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl contracts/cc232_core.sgdsl
+structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl
 ```
 
-Este comando sirve para comprobar rápidamente si StructGuard puede leer las cabeceras, aplicar contratos base y emitir diagnósticos útiles.
+Este comando sirve para comprobar rápidamente si StructGuard puede leer las cabeceras, aplicar contratos base del perfil y emitir diagnósticos útiles. Para una librería C++ propia, usa contratos bajo `profiles/generic-cpp/contracts/` o crea un perfil nuevo desde `profiles/custom-template/`.
 
 Para guardar resultados en archivos:
 
@@ -383,7 +411,7 @@ Para guardar resultados en archivos:
 mkdir -p report
 structguard analyze ../Libreria_cc232/Semana2/include \
   --headers-only \
-  --dsl contracts/cc232_core.sgdsl \
+  --dsl profiles/cc232/contracts/cc232_core.sgdsl \
   --html report/cc232_analysis.html \
   --json report/cc232_analysis.json
 ```
@@ -395,7 +423,7 @@ structguard analyze ../Libreria_cc232/Semana2/include \
   --headers-only \
   --strict-ast \
   --std c++17 \
-  --dsl contracts/cc232_core.sgdsl
+  --dsl profiles/cc232/contracts/cc232_core.sgdsl
 ```
 
 `--strict-ast` no prueba los contratos; actúa como una compuerta de confianza. Si Clang no puede parsear una cabecera, StructGuard evita presentar resultados heurísticos como si fueran confiables.
@@ -691,8 +719,10 @@ structguard ci ../Libreria_cc232/Semana2/include \
 #### 13. Contenido del paquete
 
 ```text
-StructGuard-4.6.1-es/
-├── contracts/              # Contratos DSL, incluido cc232_core.sgdsl
+StructGuard/
+├── contracts/              # Contratos DSL heredados
+├── docs/                   # Visión de producto, arquitectura y limitaciones
+├── profiles/               # Perfiles de dominio y contratos por perfil
 ├── examples/               # Ejemplos C++, Rust y Python
 ├── scripts/                # Demos, pruebas de humo y validación de release
 ├── src/structguard/        # Código fuente principal
@@ -726,8 +756,8 @@ Para un uso típico con `Libreria_cc232`, el flujo mínimo recomendado es:
 conda activate struct_guard
 mkdir -p report
 
-structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl contracts/cc232_core.sgdsl
-structguard docs ../Libreria_cc232/Semana2/include --headers-only --dsl contracts/cc232_core.sgdsl --docs-html report/cc232_docs.html --markdown-dir report/cc232_md --docs-json report/cc232_docs.json
+structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl
+structguard docs ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl --docs-html report/cc232_docs.html --markdown-dir report/cc232_md --docs-json report/cc232_docs.json
 structguard security ../Libreria_cc232/Semana2/include --headers-only --deep --html report/cc232_security.html --security-json report/cc232_security.json
 structguard perf ../Libreria_cc232/Semana2/include --headers-only --perf-html report/cc232_perf.html --perf-json report/cc232_perf.json --perf-md report/cc232_perf.md --growth-json report/cc232_growth.json --harness report/cc232_perf_harness.cpp
 ```
