@@ -44,6 +44,27 @@ structguard scan examples/generic_cpp --profile generic-cpp
 
 `scan` es un alias operativo de `analyze` orientado al flujo nuevo. Los comandos antiguos siguen disponibles para mantener compatibilidad.
 
+#### Fase 2: SGDSL estable y ContractIR
+
+La Fase 2 agrega un parser SGDSL estable, un AST explícito, ContractIR y validadores semánticos iniciales. El flujo nuevo permite validar contratos antes de conectarlos con analizadores, exportadores formales o perfiles de dominio.
+
+```bash
+structguard contract check profiles/generic-cpp/contracts/stack.sgdsl
+structguard contract dump-ir profiles/generic-cpp/contracts/stack.sgdsl --json
+```
+
+Esta fase no enlaza todavía contratos con código C++ real. Ese enlace corresponde a la Fase 3 con BindingIR.
+
+Documentación nueva de esta fase:
+
+- `docs/SGDSL_SPEC.md`
+
+Módulos nuevos:
+
+- `src/structguard/sgdsl/`
+- `src/structguard/ir/contract_ir.py`
+- `src/structguard/ir/contract_validator.py`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
