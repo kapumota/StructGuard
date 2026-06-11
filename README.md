@@ -758,6 +758,80 @@ src/structguard/testgen/contract_guided.py
 Esta fase no implementa fuzzing nativo ni ejecución real de binarios. Esa capacidad queda reservada para una fase futura.
 
 
+
+#### Fase 14: CI/CD profesional con gates medibles
+
+La Fase 14 integra benchmark, política y reportes al flujo CI.
+
+El objetivo es evitar que CI solo ejecute pruebas unitarias sin medir la calidad del análisis. A partir de esta fase, el proyecto debe fallar automáticamente si baja de los umbrales definidos para el benchmark.
+
+Workflows nuevos:
+
+```text
+.github/workflows/ci.yml
+.github/workflows/benchmark.yml
+```
+
+`ci.yml` ejecuta:
+
+```text
+compileall
+structguard policy validate structguard.yml
+pytest
+ruff
+mypy
+report.json
+structguard.lock
+report.sarif
+```
+
+`benchmark.yml` ejecuta:
+
+```bash
+python benchmarks/run_benchmark.py \
+  --output artifacts/benchmark-report.json \
+  --thresholds benchmarks/thresholds.yml \
+  --fail-on-threshold
+```
+
+Luego valida el reporte con:
+
+```bash
+python scripts/check_benchmark_thresholds.py artifacts/benchmark-report.json
+```
+
+El CI debe fallar si:
+
+```text
+pytest falla
+ruff falla
+mypy falla
+policy validate falla
+benchmark cae por debajo del umbral definido
+```
+
+Documentación nueva de esta fase:
+
+```text
+docs/CI_BENCHMARKS.md
+```
+
+Script nuevo:
+
+```text
+scripts/check_benchmark_thresholds.py
+```
+
+Artefactos de referencia:
+
+```text
+artifacts/benchmark-report.json
+artifacts/report.sarif
+```
+
+Esta fase no agrega nuevos analizadores. Su función es convertir el benchmark, la política y los reportes canónicos en compuertas automáticas de regresión.
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:

@@ -32,8 +32,8 @@
     "precision": 0.8095,
     "recall": 0.9444,
     "false_positive_rate": 0.1905,
-    "analysis_time_ms_total": 1096,
-    "analysis_time_ms_per_file": 84.31,
+    "analysis_time_ms_total": 1214,
+    "analysis_time_ms_per_file": 93.38,
     "mutation_detection_rate": 1.0,
     "rules_triggered": {
       "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY": 1,
@@ -66,7 +66,7 @@
       "passed": true
     },
     "analysis_time_ms_per_file": {
-      "actual": 84.31,
+      "actual": 93.38,
       "expected": 5000.0,
       "operator": "<=",
       "passed": true
@@ -88,7 +88,7 @@
       "true_positives": [],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 140,
+      "analysis_time_ms": 105,
       "return_code": 0,
       "generated": false,
       "mutation": null
@@ -102,7 +102,7 @@
       "true_positives": [],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 78,
+      "analysis_time_ms": 84,
       "return_code": 0,
       "generated": false,
       "mutation": null
@@ -124,7 +124,7 @@
         "SG-STACK-POP-EMPTY"
       ],
       "false_negatives": [],
-      "analysis_time_ms": 78,
+      "analysis_time_ms": 83,
       "return_code": 1,
       "generated": false,
       "mutation": null
@@ -150,7 +150,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 86,
+      "analysis_time_ms": 101,
       "return_code": 1,
       "generated": false,
       "mutation": null
@@ -176,7 +176,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 76,
+      "analysis_time_ms": 83,
       "return_code": 0,
       "generated": false,
       "mutation": null
@@ -196,7 +196,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 87,
+      "analysis_time_ms": 113,
       "return_code": 0,
       "generated": false,
       "mutation": null
@@ -222,7 +222,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 76,
+      "analysis_time_ms": 96,
       "return_code": 1,
       "generated": false,
       "mutation": null
@@ -244,7 +244,7 @@
       "false_negatives": [
         "SG-SIZE-NOT-UPDATED"
       ],
-      "analysis_time_ms": 75,
+      "analysis_time_ms": 95,
       "return_code": 0,
       "generated": false,
       "mutation": null
@@ -270,7 +270,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 77,
+      "analysis_time_ms": 84,
       "return_code": 1,
       "generated": true,
       "mutation": "remove_empty_guard_from_stack_pop"
@@ -290,7 +290,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 78,
+      "analysis_time_ms": 104,
       "return_code": 0,
       "generated": true,
       "mutation": "omit_size_increment"
@@ -310,7 +310,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 88,
+      "analysis_time_ms": 102,
       "return_code": 0,
       "generated": true,
       "mutation": "wrong_queue_end"
@@ -330,7 +330,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 77,
+      "analysis_time_ms": 82,
       "return_code": 0,
       "generated": true,
       "mutation": "remove_capacity_guard_from_stack_push"
@@ -350,7 +350,7 @@
       ],
       "false_positives": [],
       "false_negatives": [],
-      "analysis_time_ms": 80,
+      "analysis_time_ms": 82,
       "return_code": 0,
       "generated": true,
       "mutation": "omit_queue_size_decrement"
