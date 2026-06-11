@@ -44,6 +44,7 @@ from .reporters import write_html_report, write_json_report, write_junit_report,
 from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_diagnostics, guarantee_summary_lines, infer_guarantee
 from .reporters.guarantee_badge import guarantee_badge_text
 from .reporting import derive_reports_from_canonical, load_canonical_report, write_canonical_report, write_lockfile
+from .cache import run_cached_scan
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -418,7 +419,16 @@ def cmd_scan(args: argparse.Namespace) -> int:
     profile = apply_profile_defaults(args)
     preset = _default_scan_preset(args)
     context = AnalysisContext.from_namespace(args, profile, preset)
-    result = AnalysisEngine().run(context)
+    if getattr(args, "cache", False):
+        cached = run_cached_scan(
+            context,
+            cache_dir=Path(getattr(args, "cache_dir", ".structguard/cache")),
+            clear=bool(getattr(args, "cache_clear", False)),
+        )
+        result = cached.engine_result
+        print(f"Cache incremental: {cached.hits} reutilizados, {cached.misses} recalculados, {cached.files} archivos")
+    else:
+        result = AnalysisEngine().run(context)
     if result.context.source_ir is not None:
         _write_source_ir_if_requested(result.context.source_ir, args)
     _write_outputs(result.report, args, "Reporte de scan StructGuard")
@@ -838,6 +848,9 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--findings-sarif", help="Escribe FindingIR en SARIF")
         sp.add_argument("--report-json", help="Escribe report.json canónico como fuente de verdad")
         sp.add_argument("--lockfile", help="Escribe structguard.lock con hashes y entorno mínimo")
+        sp.add_argument("--cache", action="store_true", help="Activa cache incremental por archivo para scan")
+        sp.add_argument("--cache-dir", default=".structguard/cache", help="Directorio local para entradas de cache incremental")
+        sp.add_argument("--cache-clear", action="store_true", help="Limpia la cache antes de ejecutar scan")
         sp.add_argument("-v", "--verbose", action="store_true", help="Imprime detalles de diagnóstico")
 
     def strict_ast_options(sp: argparse.ArgumentParser) -> None:

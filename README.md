@@ -625,6 +625,74 @@ src/structguard/reporting/derivatives.py
 Esta fase no implementa cache incremental. La cache queda para la Fase 12.
 
 
+
+#### Fase 12: cache incremental
+
+La Fase 12 agrega una cache incremental para evitar reanalizar archivos que no han cambiado entre ejecuciones.
+
+El objetivo es reutilizar resultados cuando coinciden las huellas de:
+
+```text
+archivo fuente
+contratos usados
+perfil
+preset
+flags principales
+versión de StructGuard
+capacidades del preset
+```
+
+Uso básico:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security \
+  --cache \
+  --cache-dir .structguard/cache
+```
+
+Para limpiar la cache antes de ejecutar:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security \
+  --cache \
+  --cache-clear
+```
+
+Resultado esperado en una primera ejecución:
+
+```text
+Cache incremental: 0 reutilizados, N recalculados, N archivos
+```
+
+Resultado esperado en una segunda ejecución sin cambios:
+
+```text
+Cache incremental: N reutilizados, 0 recalculados, N archivos
+```
+
+Si cambia solo un archivo, StructGuard debe reutilizar los resultados de los archivos no modificados y recalcular únicamente el archivo afectado.
+
+Documentación nueva de esta fase:
+
+```text
+docs/CACHE_MODEL.md
+```
+
+Módulos nuevos:
+
+```text
+src/structguard/cache/fingerprint.py
+src/structguard/cache/store.py
+src/structguard/cache/file_cache.py
+```
+
+Esta fase no implementa invalidación por `#include`. La invalidación por dependencias de inclusión queda para una fase posterior.
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
