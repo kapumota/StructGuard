@@ -1203,20 +1203,3 @@ structguard scan examples/generic_cpp \
 ```
 
 El perfil sigue definiendo la configuración de dominio, pero el alcance contractual queda limitado al archivo indicado.
-
-
-### Política YAML validada
-
-StructGuard valida `structguard.yml` con un esquema estricto para evitar claves mal escritas o configuraciones ignoradas en silencio.
-
-```bash
-structguard policy validate structguard.yml
-```
-
-Ejemplo de error esperado:
-
-```text
-Clave desconocida: deep-secuirty. Quizá quiso decir deep-security.
-```
-
-La referencia completa está en `docs/POLICY_REFERENCE.md`.
