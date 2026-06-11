@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 from .model import ClassModel, Contract, MethodModel
 
-CONTRACT_RE = re.compile(r"//\s*(requires|ensures|invariant)\s*:\s*(.+)", re.I)
+CONTRACT_RE = re.compile(r"//\s*(requires|ensures|invariant)\s*:?\s*(.+)", re.I)
 HEADER_EXTS = {".h", ".hh", ".hpp", ".hxx"}
 CPP_EXTS = HEADER_EXTS | {".cpp", ".cc", ".cxx"}
 CONTROL_KEYWORDS = {"if", "for", "while", "switch", "catch", "return", "sizeof"}

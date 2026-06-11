@@ -29,6 +29,10 @@ public:
         return data[n - 1];
     }
 
+    int peek() const {
+        return top();
+    }
+
     int pop() {
         if (n <= 0) {
             throw std::out_of_range("pila vacía");

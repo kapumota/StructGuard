@@ -35,6 +35,7 @@ from .sgdsl.diagnostics import SGDSLDiagnostic, SGDSLParseError
 from .sgdsl.parser import load_sgdsl
 from .ir.contract_ir import ContractIR, build_contract_ir
 from .ir.contract_validator import validate_contract_ir
+from .binding import build_binding_ir, match_contracts_to_source
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -168,6 +169,37 @@ def cmd_contract(args: argparse.Namespace) -> int:
         for diagnostic in diagnostics:
             print(f"Contrato inválido: {diagnostic}")
         return 1
+
+    if getattr(args, "contract_action", "check") == "bind":
+        binding_ir = build_binding_ir(Path(args.path), ir, headers_only=getattr(args, "headers_only", False))
+        binding_diagnostics = match_contracts_to_source(binding_ir)
+        failed = [diagnostic for diagnostic in binding_diagnostics if getattr(diagnostic, "level", "") == "FAILED"]
+        if getattr(args, "output", None):
+            out = Path(args.output)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(binding_ir.as_dict(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(f"BindingIR escrito en: {out}")
+        if getattr(args, "json", False):
+            print(json.dumps({"binding": binding_ir.as_dict(), "diagnostics": [diagnostic.as_dict() for diagnostic in binding_diagnostics]}, indent=2, ensure_ascii=False))
+        else:
+            print("Validación de binding contrato-código")
+            print(f"Fuente: {args.path}")
+            print("Contratos:")
+            for path in paths:
+                print(f"- {path}")
+            print(f"Resultado: {'FALLÓ' if failed else 'OK'}")
+            for diagnostic in binding_diagnostics:
+                loc = ""
+                if getattr(diagnostic, "source", None):
+                    loc = str(diagnostic.source)
+                    if getattr(diagnostic, "line", None):
+                        loc = f"{loc}:{diagnostic.line}"
+                prefix = f"[{diagnostic.level}] {diagnostic.code}"
+                if loc:
+                    prefix = f"{prefix} {loc}"
+                print(prefix)
+                print(f"  {diagnostic.message}")
+        return 1 if failed else 0
 
     if getattr(args, "contract_action", "check") == "dump-ir":
         payload = json.dumps(ir.as_dict(), indent=2, ensure_ascii=False)
@@ -585,6 +617,13 @@ def build_parser() -> argparse.ArgumentParser:
     dump_sp.add_argument("--json", action="store_true", help="Imprime ContractIR como JSON en stdout")
     dump_sp.add_argument("--output", help="Escribe ContractIR JSON en una ruta")
     dump_sp.set_defaults(func=cmd_contract)
+    bind_sp = contract_sub.add_parser("bind", help="Valida que contratos .sgdsl existan en el código fuente")
+    bind_sp.add_argument("path", help="Archivo o directorio C++ a vincular con contratos externos")
+    bind_sp.add_argument("--contract", dest="contract_paths", action="append", required=True, help="Archivo o directorio .sgdsl; se puede repetir")
+    bind_sp.add_argument("--headers-only", action="store_true", help="Analiza solo cabeceras .h/.hh/.hpp/.hxx")
+    bind_sp.add_argument("--json", action="store_true", help="Imprime BindingIR y diagnósticos como JSON")
+    bind_sp.add_argument("--output", help="Escribe BindingIR JSON en una ruta")
+    bind_sp.set_defaults(func=cmd_contract)
 
     def common(sp: argparse.ArgumentParser) -> None:
         sp.add_argument("path", help="Archivo .h de C++ o directorio a analizar")
