@@ -41,22 +41,32 @@ from .frontend.cpp import build_cpp_source_ir
 from .ir.source_ir import SourceDiagnostic, SourceIR
 from .core import AnalysisContext, AnalysisEngine, available_presets
 from .reporters import write_html_report, write_json_report, write_junit_report, write_markdown_report, write_sarif_report
+from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_diagnostics, guarantee_summary_lines, infer_guarantee
+from .reporters.guarantee_badge import guarantee_badge_text
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
     counts = report.counts()
+    guarantee_counts = guarantee_counts_from_diagnostics(report.diagnostics)
     print(f"StructGuard {__version__}")
     print(f"Raíz: {report.root}")
     print("Resumen: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
+    print("Resumen por garantía:")
+    for line in guarantee_summary_lines(guarantee_counts):
+        print(f"  {line}")
     if counts.get("BOUNDED_VERIFIED") or counts.get("PROVED"):
-        print("Nota: BOUNDED_VERIFIED = evidencia acotada; PROVED = obligación descargada por backend formal/solver.")
+        print("Nota: BOUNDED_CHECK_PASSED indica evidencia acotada; FORMALLY_VERIFIED solo aplica a backends formales soportados.")
     print()
     for d in report.diagnostics:
         loc = f"{d.file}:{d.line}" if d.file and d.line else (d.file or "")
-        print(f"[{d.level}] {d.code} {d.symbol or ''}")
+        guarantee = infer_guarantee(d)
+        display_level = diagnostic_display_level(d)
+        badge = guarantee_badge_text(guarantee)
+        print(f"[{display_level}] {badge} {d.code} {d.symbol or ''}")
         if loc:
             print(f"  en {loc}")
         print(f"  {d.message}")
+        print(f"  garantía={guarantee.level.value} {guarantee.label}")
         meta = enriched_details(d)
         if d.level in {"FAILED", "WARNING", "UNKNOWN", "PROVED", "BOUNDED_VERIFIED"}:
             print(f"  confianza={meta.get('confidence')} evidencia={meta.get('evidence')}")
@@ -430,6 +440,7 @@ def cmd_trace(args: argparse.Namespace) -> int:
 
 
 def cmd_fuzz(args: argparse.Namespace) -> int:
+    print("[DEPRECATED] El comando fuzz genera secuencias abstractas y será reemplazado por testgen. No ejecuta binarios ni realiza fuzzing nativo.")
     root = Path(args.path)
     report = fuzz_project(root, headers_only=args.headers_only, seeds=args.seeds, steps=args.steps, structure_filter=args.structure)
     _write_outputs(report, args, "StructGuard Fuzz/TestGen heurístico")
@@ -819,28 +830,28 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--trace-json", help="Escribe eventos de traza abstracta en JSON")
     sp.set_defaults(func=cmd_trace)
 
-    sp = sub.add_parser("fuzz", help="Ejecuta fuzzing heurístico abstracto y generación opcional de artefactos TestGen")
+    sp = sub.add_parser("fuzz", help="Alias deprecado: genera secuencias abstractas; use testgen para generación de pruebas")
     common(sp)
     sp.add_argument("--seeds", type=int, default=20)
     sp.add_argument("--steps", type=int, default=50)
-    sp.add_argument("--structure", help="Limita el fuzzing a estructuras cuyo nombre contiene este texto")
-    sp.add_argument("--fuzz-json", help="Escribe casos fuzz generados en JSON crudo")
-    sp.add_argument("--fuzz-html", help="Escribe un reporte HTML autónomo de Fuzz/TestGen")
+    sp.add_argument("--structure", help="Limita la generación abstracta a estructuras cuyo nombre contiene este texto")
+    sp.add_argument("--fuzz-json", help="Escribe casos testgen generados en JSON crudo")
+    sp.add_argument("--fuzz-html", help="Escribe un reporte HTML autónomo de TestGen")
     sp.add_argument("--replay", help="Escribe un script Python de reproducción para secuencias abstractas fallidas")
-    sp.add_argument("--seed-corpus", help="Escribe un archivo JSON por cada semilla/caso fuzz generado")
+    sp.add_argument("--seed-corpus", help="Escribe un archivo JSON por cada semilla/caso testgen generado")
     sp.add_argument("--emit-tests", action="store_true", help="Genera candidatos de pruebas de regresión C++ para contraejemplos")
     sp.add_argument("--test-dir", help="Directorio para candidatos de pruebas de regresión C++ generados")
     sp.add_argument("--include-smoke-tests", action="store_true", help="También emite pruebas smoke cuando no se encuentra ninguna falla")
     sp.set_defaults(func=cmd_fuzz)
 
-    sp = sub.add_parser("testgen", help="Genera candidatos de pruebas de regresión C++ a partir de contraejemplos fuzz de StructGuard")
+    sp = sub.add_parser("testgen", help="Genera candidatos de pruebas de regresión C++ a partir de secuencias abstractas de StructGuard")
     common(sp)
     sp.add_argument("--seeds", type=int, default=30)
     sp.add_argument("--steps", type=int, default=60)
     sp.add_argument("--structure", help="Limita la generación de pruebas a estructuras cuyo nombre contiene este texto")
     sp.add_argument("--test-dir", default="generated_tests", help="Directorio para pruebas C++ generadas")
     sp.add_argument("--include-smoke-tests", action="store_true", help="También emite pruebas smoke cuando no se encuentra ninguna falla")
-    sp.add_argument("--fuzz-json", help="Escribe casos fuzz generados en JSON crudo")
+    sp.add_argument("--fuzz-json", help="Escribe casos testgen generados en JSON crudo")
     sp.add_argument("--replay", help="Escribe un script Python de reproducción para secuencias abstractas fallidas")
     sp.set_defaults(func=cmd_testgen)
 
@@ -851,7 +862,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--rules-json", help="Escribe el catálogo de reglas de seguridad en JSON")
     sp.set_defaults(func=cmd_security)
 
-    sp = sub.add_parser("ci", help="Ejecuta verify + lint + security + fuzz como gate configurable de política CI/CD")
+    sp = sub.add_parser("ci", help="Ejecuta verify + lint + security + testgen abstracto como gate configurable de política CI/CD")
     common(sp)
     sp.add_argument("--seeds", type=int, default=10)
     sp.add_argument("--steps", type=int, default=25)

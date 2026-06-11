@@ -22,6 +22,7 @@ def sarif_document(report: ProjectReport) -> dict[str, Any]:
     rules: dict[str, dict[str, Any]] = {}
     results: list[dict[str, Any]] = []
     for finding in findings_from_report(report):
+        guarantee = finding.guarantee.as_dict()
         rules.setdefault(
             finding.rule_id,
             {
@@ -30,7 +31,12 @@ def sarif_document(report: ProjectReport) -> dict[str, Any]:
                 "shortDescription": {"text": finding.title},
                 "fullDescription": {"text": finding.message[:500]},
                 "defaultConfiguration": {"level": _sarif_level(finding.severity)},
-                "properties": {"tags": finding.tags, "cwe": finding.cwe},
+                "properties": {
+                    "tags": finding.tags,
+                    "cwe": finding.cwe,
+                    "guarantee_level": guarantee["level"],
+                    "guarantee_label": guarantee["label"],
+                },
             },
         )
         physical_location: dict[str, Any] = {
@@ -38,13 +44,16 @@ def sarif_document(report: ProjectReport) -> dict[str, Any]:
         }
         if finding.location.line:
             physical_location["region"] = {"startLine": int(finding.location.line)}
+        properties = finding.as_dict()
+        properties["guarantee_level"] = guarantee["level"]
+        properties["guarantee_label"] = guarantee["label"]
         results.append(
             {
                 "ruleId": finding.rule_id,
                 "level": _sarif_level(finding.severity),
                 "message": {"text": finding.message},
                 "locations": [{"physicalLocation": physical_location}],
-                "properties": finding.as_dict(),
+                "properties": properties,
             }
         )
     return {

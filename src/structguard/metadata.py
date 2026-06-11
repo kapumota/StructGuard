@@ -12,7 +12,7 @@ EVIDENCE_BY_PREFIX: tuple[tuple[str, str], ...] = (
     ("CLANG", "clang_ast"),
     ("PIPELINE", "clang_ast_pipeline"),
     ("SEC", "security_heuristic"),
-    ("FUZZ", "abstract_fuzzing"),
+    ("FUZZ", "abstract_test_generation"),
     ("LINT", "contract_lint"),
     ("DSL", "contract_dsl"),
     ("DOCS", "documentation_model"),
@@ -31,7 +31,7 @@ REMEDIATION_BY_CODE: dict[str, str] = {
     "FORMAL_SMT_ARTIFACT": "Inspeccionar el .smt2 generado y, si hay SAT, revisar el modelo de Z3 como posible contraejemplo del puente formal.",
     "SEC_OVERFLOW_RISK": "Revisar límites de índice/capacidad y añadir guards antes de incrementar o indexar.",
     "SEC_UNINITIALIZED_FIELD": "Inicializar campos en constructor, initializer list o valor por defecto de miembro.",
-    "FUZZ_MISSING_PRECONDITION_COUNTEREXAMPLE": "Agregar una precondición o guarda en tiempo de ejecución para bloquear la secuencia inválida generada por fuzzing abstracto.",
+    "FUZZ_MISSING_PRECONDITION_COUNTEREXAMPLE": "Agregar una precondición o guarda en tiempo de ejecución para bloquear la secuencia inválida generada por testgen abstracto.",
 }
 
 
@@ -59,7 +59,7 @@ def infer_confidence(d: Diagnostic) -> str:
         return "high"
     if evidence in {"clang_ast_gate", "bounded_symbolic_execution", "formal_backend"}:
         return "high"
-    if evidence in {"clang_ast", "contract_lint", "contract_dsl", "abstract_fuzzing"}:
+    if evidence in {"clang_ast", "contract_lint", "contract_dsl", "abstract_fuzzing", "abstract_test_generation"}:
         return "medium"
     if d.level in {"UNKNOWN", "WARNING"}:
         return "low" if d.level == "UNKNOWN" else "medium"
@@ -115,6 +115,10 @@ def enriched_details(d: Diagnostic) -> dict[str, Any]:
 def diagnostic_to_dict(d: Diagnostic) -> dict[str, Any]:
     data = asdict(d)
     data["details"] = enriched_details(d)
+    from .findings.guarantee import diagnostic_display_level, guarantee_to_dict
+
+    data["display_level"] = diagnostic_display_level(d)
+    data["guarantee"] = guarantee_to_dict(d)
     return data
 
 

@@ -8,17 +8,24 @@ import json
 from . import __version__
 from .metadata import diagnostic_to_dict
 from .model import ALL_LEVELS, ProjectReport
+from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_diagnostics, infer_guarantee
+from .reporters.guarantee_badge import guarantee_badge_html
 
 
 RESULT_SEMANTICS = {
-    "PROVED": (
-        "Un backend formal/solver descargó la obligación de prueba generada. "
-        "Es más fuerte que la verificación acotada, pero solo es tan sólido "
-        "como el modelo formal generado."
+    "FORMALLY_VERIFIED": (
+        "Un backend formal soportado descargó la obligación de prueba generada. "
+        "La conclusión solo aplica al modelo formal emitido."
     ),
-    "BOUNDED_VERIFIED": (
+    "BOUNDED_CHECK_PASSED": (
         "No se encontró ninguna violación dentro del modelo finito acotado de "
         "StructGuard. Esto no es una prueba para todas las ejecuciones C++."
+    ),
+    "PROVED": (
+        "Alias interno de compatibilidad para FORMALLY_VERIFIED."
+    ),
+    "BOUNDED_VERIFIED": (
+        "Alias interno de compatibilidad para BOUNDED_CHECK_PASSED."
     ),
     "HEURISTIC": (
         "Evidencia por patrón, lint, fuzzing o seguridad. "
@@ -46,6 +53,7 @@ def report_to_dict(report: ProjectReport) -> dict:
         },
         "root": report.root,
         "counts": report.counts(),
+        "guarantee_counts": guarantee_counts_from_diagnostics(report.diagnostics),
         "result_semantics": RESULT_SEMANTICS,
         "diagnostics": [
             diagnostic_to_dict(d)
@@ -93,11 +101,18 @@ def _order(level: str) -> int:
     }.get(level, 99)
 
 
+def _display_level_text(level: str) -> str:
+    return {
+        "BOUNDED_VERIFIED": "BOUNDED_CHECK_PASSED",
+        "PROVED": "FORMALLY_VERIFIED",
+    }.get(level, level)
+
+
 def _cards_html(counts: dict, total: int, levels: list[str]) -> str:
     cards = "".join(
         (
             f"<div class='card level-{escape(level.lower())}'>"
-            f"<div>{escape(level)}</div>"
+            f"<div>{escape(_display_level_text(level))}</div>"
             f"<b>{counts.get(level, 0)}</b>"
             "</div>"
         )
@@ -138,11 +153,13 @@ def _diagnostic_rows(report: ProjectReport) -> list[str]:
         meta = diagnostic.get("details", {})
         confidence = escape(str(meta.get("confidence", "")))
         evidence = escape(str(meta.get("evidence", "")))
+        guarantee = infer_guarantee(d)
 
         rows.append(
             f"<tr data-level='{escape(d.level)}'>"
             f"<td><span class='pill {escape(d.level.lower())}'>"
-            f"{escape(d.level)}</span></td>"
+            f"{escape(diagnostic_display_level(d))}</span></td>"
+            f"<td>{guarantee_badge_html(guarantee)}</td>"
             f"<td><code>{escape(d.code)}</code></td>"
             f"<td>{escape(d.symbol or '')}</td>"
             f"<td>{escape(loc)}</td>"
@@ -191,7 +208,8 @@ def _file_groups_html(report: ProjectReport) -> tuple[list[str], list[str]]:
         items_html = "".join(
             (
                 f"<li><span class='pill {escape(d.level.lower())}'>"
-                f"{escape(d.level)}</span> "
+                f"{escape(diagnostic_display_level(d))}</span> "
+                f"{guarantee_badge_html(infer_guarantee(d))} "
                 f"<code>{escape(d.code)}</code> "
                 f"{escape(d.symbol or '')}: {escape(d.message)}</li>"
             )
@@ -267,6 +285,13 @@ pre{white-space:pre-wrap;background:#0b1020;color:#d1e7ff;padding:.75rem;border-
 .heuristic{background:#e0f2fe;color:#075985}
 .bounded_verified,.proved{background:#dcfce7;color:#166534}
 .info{background:#dbeafe;color:#1d4ed8}
+.guarantee-badge{display:inline-block;border:1px solid #94a3b8;border-radius:999px;padding:.18rem .45rem;font-size:.72rem;font-weight:800}
+.guarantee-g1-heuristic{background:#eef2ff;color:#3730a3}
+.guarantee-g2-structural{background:#ecfeff;color:#155e75}
+.guarantee-g3-bounded{background:#fef9c3;color:#854d0e}
+.guarantee-g4-executed{background:#dcfce7;color:#166534}
+.guarantee-g5-formally-verified{background:#dbeafe;color:#1e40af}
+.info{background:#dbeafe;color:#1d4ed8}
 .modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem}
 .module{border:1px solid #e5e7eb;border-radius:.75rem;padding:.65rem;display:flex;justify-content:space-between;background:#f8fafc}
 @media(max-width:1000px){
@@ -296,6 +321,11 @@ def write_html(
     file_nav, file_sections = _file_groups_html(report)
     top_codes = _top_codes_html(report)
     module_panel = _module_panel_html(report)
+    guarantee_counts = guarantee_counts_from_diagnostics(report.diagnostics)
+    guarantee_summary = "".join(
+        f"<li><code>{escape(level)}</code> <b>{count}</b></li>"
+        for level, count in guarantee_counts.items()
+    )
 
     raw = escape(
         json.dumps(
@@ -332,8 +362,8 @@ def write_html(
   <h1>{escape(title)}</h1>
   <p><b>Raíz:</b> {escape(report.root)}</p>
   <p>
-    Reporte StructGuard: <b>BOUNDED_VERIFIED</b> significa evidencia acotada;
-    <b>PROVED</b> solo aparece cuando un backend formal/solver descarga la
+    Reporte StructGuard: <b>BOUNDED_CHECK_PASSED</b> significa evidencia acotada;
+    <b>FORMALLY_VERIFIED</b> solo aparece cuando un backend formal soportado descarga la
     obligación generada.
   </p>
 </header>
@@ -355,6 +385,11 @@ def write_html(
     <section class='panel'>
       <h2>Semántica de niveles</h2>
       <ul>{semantics}</ul>
+    </section>
+
+    <section class='panel'>
+      <h2>Resumen por garantía</h2>
+      <ul>{guarantee_summary}</ul>
     </section>
 
     <section class='panel'>
@@ -384,6 +419,7 @@ def write_html(
         <thead>
           <tr>
             <th>Nivel</th>
+            <th>Garantía</th>
             <th>Código</th>
             <th>Símbolo</th>
             <th>Ubicación</th>

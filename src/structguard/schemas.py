@@ -5,6 +5,7 @@ from importlib.resources import files
 from typing import Any
 
 REPORT_LEVELS = {"FAILED", "WARNING", "UNKNOWN", "HEURISTIC", "BOUNDED_VERIFIED", "PROVED", "INFO"}
+GUARANTEE_LEVELS = {"G1_HEURISTIC", "G2_STRUCTURAL", "G3_BOUNDED", "G4_EXECUTED", "G5_FORMALLY_VERIFIED"}
 SARIF_LEVELS = {"error", "warning", "note", "none"}
 
 
@@ -31,6 +32,8 @@ def validate_structguard_report_dict(data: dict[str, Any]) -> list[str]:
         errors.append("tool debe contener name=StructGuard y una version no vacía")
     if not isinstance(data.get("counts"), dict):
         errors.append("counts debe ser un objeto")
+    if "guarantee_counts" in data and not isinstance(data.get("guarantee_counts"), dict):
+        errors.append("guarantee_counts debe ser un objeto")
     if not isinstance(data.get("result_semantics"), dict):
         errors.append("result_semantics debe ser un objeto")
     diagnostics = data.get("diagnostics")
@@ -50,6 +53,12 @@ def validate_structguard_report_dict(data: dict[str, Any]) -> list[str]:
             errors.append(f"diagnostics[{i}].code no debe estar vacío")
         if not isinstance(diag.get("details", {}), dict):
             errors.append(f"diagnostics[{i}].details debe ser un objeto")
+        guarantee = diag.get("guarantee")
+        if guarantee is not None:
+            if not isinstance(guarantee, dict):
+                errors.append(f"diagnostics[{i}].guarantee debe ser un objeto")
+            elif guarantee.get("level") not in GUARANTEE_LEVELS:
+                errors.append(f"diagnostics[{i}].guarantee.level no es válido: {guarantee.get('level')!r}")
     return errors
 
 

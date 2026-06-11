@@ -3,7 +3,7 @@
   "$id": "https://structguard.local/schemas/structguard-report.schema.json",
   "title": "StructGuard JSON report",
   "type": "object",
-  "required": ["schema_version", "tool", "root", "counts", "result_semantics", "diagnostics"],
+  "required": ["schema_version", "tool", "root", "counts", "result_semantics", "diagnostics"]
   "properties": {
     "schema_version": {"const": "structguard-report/v1"},
     "tool": {
@@ -17,6 +17,7 @@
     },
     "root": {"type": "string"},
     "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "guarantee_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
     "result_semantics": {"type": "object", "additionalProperties": {"type": "string"}},
     "diagnostics": {
       "type": "array",
@@ -25,6 +26,17 @@
         "required": ["level", "code", "message", "details"],
         "properties": {
           "level": {"enum": ["FAILED", "WARNING", "UNKNOWN", "HEURISTIC", "BOUNDED_VERIFIED", "PROVED", "INFO"]},
+          "display_level": {"type": "string"},
+          "guarantee": {
+            "type": "object",
+            "required": ["level", "label", "description"],
+            "properties": {
+              "level": {"enum": ["G1_HEURISTIC", "G2_STRUCTURAL", "G3_BOUNDED", "G4_EXECUTED", "G5_FORMALLY_VERIFIED"]},
+              "label": {"type": "string"},
+              "description": {"type": "string"}
+            },
+            "additionalProperties": false
+          },
           "code": {"type": "string", "minLength": 1},
           "message": {"type": "string"},
           "file": {"type": ["string", "null"]},
