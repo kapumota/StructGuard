@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from . import __version__
@@ -30,6 +31,10 @@ from .policy import default_policy_text, github_actions_workflow_text
 from .profiles import PROFILES, ProfileLoadError, default_profiles_root, load_profile_file, load_profiles, apply_profile_defaults
 from .metadata import enriched_details
 from .doctor import collect_doctor_checks, write_doctor_json
+from .sgdsl.diagnostics import SGDSLDiagnostic, SGDSLParseError
+from .sgdsl.parser import load_sgdsl
+from .ir.contract_ir import ContractIR, build_contract_ir
+from .ir.contract_validator import validate_contract_ir
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -145,6 +150,62 @@ def cmd_profiles(args: argparse.Namespace) -> int:
     for contract in profile.contract_paths():
         print(f"- {contract}")
     return 0
+
+def _load_contract_ir(paths: list[str]) -> tuple[ContractIR | None, list[SGDSLDiagnostic]]:
+    try:
+        modules = load_sgdsl([Path(path) for path in paths])
+    except SGDSLParseError as exc:
+        diagnostic = SGDSLDiagnostic(level="FAILED", code="SGDSL_PARSE_ERROR", message=str(exc), source=exc.source, line=exc.line)
+        return None, [diagnostic]
+    ir = build_contract_ir(modules)
+    return ir, validate_contract_ir(ir)
+
+
+def cmd_contract(args: argparse.Namespace) -> int:
+    paths = list(getattr(args, "contract_paths", []))
+    ir, diagnostics = _load_contract_ir(paths)
+    if ir is None:
+        for diagnostic in diagnostics:
+            print(f"Contrato inválido: {diagnostic}")
+        return 1
+
+    if getattr(args, "contract_action", "check") == "dump-ir":
+        payload = json.dumps(ir.as_dict(), indent=2, ensure_ascii=False)
+        if getattr(args, "output", None):
+            out = Path(args.output)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(payload + "\n", encoding="utf-8")
+            print(f"ContractIR escrito en: {out}")
+        elif getattr(args, "json", False):
+            print(payload)
+        else:
+            print("ContractIR:")
+            for structure in ir.structures:
+                print(f"- {structure.qualified_name}: {len(structure.fields)} campos, {len(structure.methods)} métodos")
+        return 0
+
+    failed = [diagnostic for diagnostic in diagnostics if getattr(diagnostic, "level", "") == "FAILED"]
+    warning = [diagnostic for diagnostic in diagnostics if getattr(diagnostic, "level", "") == "WARNING"]
+    print("Validación de contratos SGDSL")
+    print("Fuentes:")
+    for path in paths:
+        print(f"- {path}")
+    print(f"Resultado: {'FALLÓ' if failed else 'OK'}")
+    print(f"Errores: {len(failed)}")
+    print(f"Advertencias: {len(warning)}")
+    for diagnostic in diagnostics:
+        loc = ""
+        if getattr(diagnostic, "source", None):
+            loc = str(diagnostic.source)
+            if getattr(diagnostic, "line", None):
+                loc = f"{loc}:{diagnostic.line}"
+        prefix = f"[{diagnostic.level}] {diagnostic.code}"
+        if loc:
+            prefix = f"{prefix} {loc}"
+        print(prefix)
+        print(f"  {diagnostic.message}")
+    return 1 if failed else 0
+
 
 def cmd_verify(args: argparse.Namespace) -> int:
     profile = apply_profile_defaults(args)
@@ -513,6 +574,17 @@ def build_parser() -> argparse.ArgumentParser:
     validate_sp = profiles_sub.add_parser("validate", help="Valida un profile.yml")
     validate_sp.add_argument("profile_path", help="Ruta a profile.yml o al directorio del perfil")
     validate_sp.set_defaults(func=cmd_profiles)
+
+    sp = sub.add_parser("contract", help="Valida SGDSL estable y emite ContractIR")
+    contract_sub = sp.add_subparsers(dest="contract_action", required=True)
+    check_sp = contract_sub.add_parser("check", help="Valida contratos .sgdsl y reporta errores semánticos")
+    check_sp.add_argument("contract_paths", nargs="+", help="Archivos o directorios de contratos .sgdsl")
+    check_sp.set_defaults(func=cmd_contract)
+    dump_sp = contract_sub.add_parser("dump-ir", help="Muestra ContractIR a partir de contratos .sgdsl")
+    dump_sp.add_argument("contract_paths", nargs="+", help="Archivos o directorios de contratos .sgdsl")
+    dump_sp.add_argument("--json", action="store_true", help="Imprime ContractIR como JSON en stdout")
+    dump_sp.add_argument("--output", help="Escribe ContractIR JSON en una ruta")
+    dump_sp.set_defaults(func=cmd_contract)
 
     def common(sp: argparse.ArgumentParser) -> None:
         sp.add_argument("path", help="Archivo .h de C++ o directorio a analizar")
