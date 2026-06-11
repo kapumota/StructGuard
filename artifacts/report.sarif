@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "StructGuard",
+          "version": "4.6.1-es-professional-stable",
+          "rules": [
+            {
+              "id": "SG-BOUNDS-INDEX-RISK",
+              "name": "Sg-Bounds-Index-Risk",
+              "shortDescription": {
+                "text": "Sg-Bounds-Index-Risk"
+              },
+              "properties": {
+                "guarantee_level": "G2_STRUCTURAL",
+                "guarantee_label": "Estructural"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "SG-BOUNDS-INDEX-RISK",
+          "level": "warning",
+          "message": {
+            "text": "Riesgo de acceso fuera de rango en ejemplo de referencia."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SG-BOUNDS-INDEX-RISK",
+            "title": "Sg-Bounds-Index-Risk",
+            "message": "Riesgo de acceso fuera de rango en ejemplo de referencia.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 14,
+              "column": null
+            },
+            "symbol": "Stack::top",
+            "evidence": [
+              "ejemplo de evidence pack mínimo"
+            ],
+            "remediation": "Revisar la advertencia y decidir si debe convertirse en contrato, excepción de política o corrección de código.",
+            "cwe": null,
+            "tags": [
+              "general",
+              "sg-bounds-index-risk"
+            ],
+            "guarantee": {
+              "level": "G2_STRUCTURAL",
+              "label": "Estructural",
+              "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+            },
+            "level": "WARNING",
+            "details": {
+              "confidence": "medium",
+              "evidence": "ejemplo de evidence pack mínimo",
+              "category": "general",
+              "remediation": "Revisar la advertencia y decidir si debe convertirse en contrato, excepción de política o corrección de código."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+name: StructGuard CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt update
+          sudo apt install -y clang
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Actualizar pip
+        run: python -m pip install --upgrade pip
+
+      - name: Instalar paquete con herramientas de desarrollo
+        run: python -m pip install -e '.[dev,z3]'
+
+      - name: Compilar fuentes de Python
+        run: python -m compileall -q src tests benchmarks scripts
+
+      - name: Validar política de StructGuard
+        run: structguard policy validate structguard.yml
+
+      - name: Ejecutar pruebas unitarias
+        run: pytest -q
+
+      - name: Ejecutar lint crítico con Ruff
+        run: ruff check .
+
+      - name: Ejecutar verificación básica de tipos con mypy
+        run: mypy
+
+      - name: Generar reporte canónico y SARIF de referencia
+        run: |
+          mkdir -p artifacts
+          structguard scan examples/generic_cpp \
+            --profile generic-cpp \
+            --preset security \
+            --headers-only \
+            --report-json artifacts/report.json \
+            --lockfile artifacts/structguard.lock
+          structguard report derive artifacts/report.json \
+            --sarif artifacts/report.sarif
+
+      - name: Subir reportes de CI
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structguard-ci-reports
+          path: |
+            artifacts/report.json
+            artifacts/structguard.lock
+            artifacts/report.sarif
