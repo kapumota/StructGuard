@@ -693,6 +693,71 @@ src/structguard/cache/file_cache.py
 Esta fase no implementa invalidación por `#include`. La invalidación por dependencias de inclusión queda para una fase posterior.
 
 
+
+#### Fase 13: TestGen guiado por contratos
+
+La Fase 13 estabiliza `testgen` como comando principal para generación abstracta de casos de prueba.
+
+El objetivo es corregir el uso confuso de la palabra `fuzz` cuando no existe ejecución real de binarios, instrumentación, sanitizers, libFuzzer o AFL++.
+
+A partir de esta fase, la generación abstracta debe nombrarse como:
+
+```text
+testgen
+contract-guided test generation
+model-based test generation
+```
+
+El comando principal es:
+
+```bash
+structguard testgen examples/generic_cpp \
+  --profile generic-cpp \
+  --contract profiles/generic-cpp/contracts/stack.sgdsl \
+  --output artifacts/testgen-cases.json \
+  --test-dir generated_tests
+```
+
+La salida JSON incluye:
+
+```text
+schema_version
+root
+generation_mode
+summary
+cases
+utility_score
+contract_hint
+classification
+```
+
+`utility_score` permite ordenar casos candidatos según su utilidad esperada. `contract_hint` permite rastrear el caso generado hacia contratos, reglas o señales estructurales.
+
+El comando heredado:
+
+```bash
+structguard fuzz
+```
+
+se mantiene solo como alias de compatibilidad y debe mostrar advertencia de deprecación. No debe presentarse como fuzzing nativo.
+
+Documentación nueva de esta fase:
+
+```text
+docs/TESTGEN.md
+generated_tests/README.md
+```
+
+Módulos nuevos:
+
+```text
+src/structguard/testgen/model.py
+src/structguard/testgen/contract_guided.py
+```
+
+Esta fase no implementa fuzzing nativo ni ejecución real de binarios. Esa capacidad queda reservada para una fase futura.
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:

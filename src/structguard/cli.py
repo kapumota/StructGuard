@@ -45,6 +45,7 @@ from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_
 from .reporters.guarantee_badge import guarantee_badge_text
 from .reporting import derive_reports_from_canonical, load_canonical_report, write_canonical_report, write_lockfile
 from .cache import run_cached_scan
+from .testgen import build_testgen_manifest, testgen_project, write_testgen_cpp_tests, write_testgen_json, write_testgen_replay
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -496,15 +497,42 @@ def cmd_fuzz(args: argparse.Namespace) -> int:
 
 def cmd_testgen(args: argparse.Namespace) -> int:
     root = Path(args.path)
-    cases = collect_fuzz_cases(root, headers_only=args.headers_only, seeds=args.seeds, steps=args.steps, structure_filter=args.structure)
-    report = fuzz_project(root, headers_only=args.headers_only, seeds=args.seeds, steps=args.steps, structure_filter=args.structure)
-    _write_outputs(report, args, "StructGuard TestGen heurístico")
-    manifest = write_cpp_tests(root, args.headers_only, Path(args.test_dir), seeds=args.seeds, steps=args.steps, structure_filter=args.structure, only_failures=not args.include_smoke_tests)
-    print(f"Candidatos de pruebas C++ generados en: {manifest}")
-    if args.fuzz_json:
-        write_fuzz_json(root, cases, Path(args.fuzz_json)); print(f"JSON de casos fuzz escrito en: {args.fuzz_json}")
+    contract_paths = getattr(args, "contract_paths", None)
+    manifest = build_testgen_manifest(
+        root,
+        headers_only=args.headers_only,
+        seeds=args.seeds,
+        steps=args.steps,
+        structure_filter=args.structure,
+        contract_paths=contract_paths,
+    )
+    report = testgen_project(
+        root,
+        headers_only=args.headers_only,
+        seeds=args.seeds,
+        steps=args.steps,
+        structure_filter=args.structure,
+        contract_paths=contract_paths,
+    )
+    _write_outputs(report, args, "StructGuard TestGen guiado por contratos")
+    generated_manifest = write_testgen_cpp_tests(
+        root,
+        headers_only=args.headers_only,
+        out_dir=Path(args.test_dir),
+        seeds=args.seeds,
+        steps=args.steps,
+        structure_filter=args.structure,
+        include_smoke_tests=args.include_smoke_tests,
+        manifest=manifest,
+    )
+    print(f"Candidatos de pruebas C++ generados en: {generated_manifest}")
+    output_path = getattr(args, "output", None) or getattr(args, "fuzz_json", None)
+    if output_path:
+        write_testgen_json(manifest, Path(output_path))
+        print(f"JSON de TestGen escrito en: {output_path}")
     if args.replay:
-        write_replay_script(root, cases, Path(args.replay)); print(f"Script de reproducción escrito en: {args.replay}")
+        write_testgen_replay(root, manifest.cases, Path(args.replay))
+        print(f"Script de reproducción escrito en: {args.replay}")
     return print_report(report, verbose=args.verbose)
 
 
@@ -906,14 +934,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--include-smoke-tests", action="store_true", help="También emite pruebas smoke cuando no se encuentra ninguna falla")
     sp.set_defaults(func=cmd_fuzz)
 
-    sp = sub.add_parser("testgen", help="Genera candidatos de pruebas de regresión C++ a partir de secuencias abstractas de StructGuard")
+    sp = sub.add_parser("testgen", help="Genera candidatos de pruebas de regresión C++ con generación abstracta guiada por contratos")
     common(sp)
     sp.add_argument("--seeds", type=int, default=30)
     sp.add_argument("--steps", type=int, default=60)
     sp.add_argument("--structure", help="Limita la generación de pruebas a estructuras cuyo nombre contiene este texto")
     sp.add_argument("--test-dir", default="generated_tests", help="Directorio para pruebas C++ generadas")
     sp.add_argument("--include-smoke-tests", action="store_true", help="También emite pruebas smoke cuando no se encuentra ninguna falla")
-    sp.add_argument("--fuzz-json", help="Escribe casos testgen generados en JSON crudo")
+    sp.add_argument("--output", help="Escribe el manifiesto JSON canónico de TestGen")
+    sp.add_argument("--fuzz-json", help="Alias heredado de --output para compatibilidad")
     sp.add_argument("--replay", help="Escribe un script Python de reproducción para secuencias abstractas fallidas")
     sp.set_defaults(func=cmd_testgen)
 
