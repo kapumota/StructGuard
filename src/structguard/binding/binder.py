@@ -4,9 +4,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from structguard.ir.contract_ir import ContractIR, FieldIR, MethodIR, StructureIR
+from structguard.ir.source_ir import SourceIR
 
 from .name_resolution import NameResolutionResult, resolve_field, resolve_method, resolve_structure
-from .symbol_table import SourceFieldSymbol, SourceMethodSymbol, SourceStructureSymbol, SourceSymbolTable, build_source_symbol_table
+from .symbol_table import SourceFieldSymbol, SourceMethodSymbol, SourceStructureSymbol, SourceSymbolTable, build_source_symbol_table, build_source_symbol_table_from_source_ir
 
 
 @dataclass(frozen=True)
@@ -116,6 +117,9 @@ def build_binding_ir_from_table(contract_ir: ContractIR, source_table: SourceSym
     return binding_ir
 
 
-def build_binding_ir(root: Path, contract_ir: ContractIR, headers_only: bool = False) -> BindingIR:
-    source_table = build_source_symbol_table(root, headers_only=headers_only)
+def build_binding_ir(root: Path, contract_ir: ContractIR, headers_only: bool = False, source_ir: SourceIR | None = None) -> BindingIR:
+    if source_ir is not None:
+        source_table = build_source_symbol_table_from_source_ir(source_ir)
+    else:
+        source_table = build_source_symbol_table(root, headers_only=headers_only)
     return build_binding_ir_from_table(contract_ir, source_table)

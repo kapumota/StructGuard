@@ -84,6 +84,43 @@ Módulos nuevos:
 
 - `src/structguard/binding/`
 
+
+#### Fase 4: frontend C++ canónico con Clang
+
+La Fase 4 introduce `SourceIR` y un frontend C++ canónico basado en Clang. Clang pasa a ser la fuente principal de verdad para proyectos C++ cuando se usa `--language cpp` con `--compile-commands`.
+
+```bash
+structguard scan examples/cpp_projects \
+  --language cpp \
+  --compile-commands examples/cpp_projects/compile_commands.json \
+  --profile generic-cpp
+```
+
+También se puede guardar la representación interna del código fuente:
+
+```bash
+structguard scan examples/cpp_projects \
+  --language cpp \
+  --compile-commands examples/cpp_projects/compile_commands.json \
+  --profile generic-cpp \
+  --source-ir-json artifacts/source-ir.json
+```
+
+El frontend ligero se conserva solo como modo rápido y fallback educativo. En CI se recomienda no permitir fallback para evitar resultados con garantías semánticas más débiles.
+
+Documentación nueva de esta fase:
+
+- `docs/CPP_FRONTEND.md`
+
+Módulos nuevos:
+
+- `src/structguard/frontend/cpp/`
+- `src/structguard/ir/source_ir.py`
+
+Ejemplo nuevo:
+
+- `examples/cpp_projects/`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
