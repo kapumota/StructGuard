@@ -38,6 +38,7 @@ from .ir.contract_validator import validate_contract_ir
 from .binding import build_binding_ir, match_contracts_to_source
 from .frontend.cpp import build_cpp_source_ir
 from .ir.source_ir import SourceDiagnostic, SourceIR
+from .core import AnalysisContext, AnalysisEngine, available_presets
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -343,36 +344,21 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     return print_report(merged, verbose=args.verbose)
 
 
+def _default_scan_preset(args: argparse.Namespace) -> str:
+    if getattr(args, "preset", None):
+        return str(args.preset)
+    return "source"
+
+
 def cmd_scan(args: argparse.Namespace) -> int:
     profile = apply_profile_defaults(args)
-    root = Path(args.path)
-    source_ir = _build_cpp_source_ir_if_requested(root, args)
-    if source_ir is None:
-        return cmd_analyze(args)
-    diagnostics = [
-        Diagnostic(
-            level="INFO",
-            code="CPP_SOURCE_IR_SUMMARY",
-            message=f"Frontend C++ activo: {source_ir.frontend}",
-            file=str(root),
-            details=source_ir.summary(),
-        ),
-        *[_source_diagnostic_to_project(diagnostic) for diagnostic in source_ir.diagnostics],
-    ]
-    if profile:
-        diagnostics.insert(
-            0,
-            Diagnostic(
-                level="INFO",
-                code="ANALYSIS_PROFILE",
-                message=f"Perfil de análisis activo: {profile.name}",
-                file=str(root),
-                details={"profile": profile.__dict__},
-            ),
-        )
-    report = ProjectReport(root=str(root), diagnostics=diagnostics)
-    _write_outputs(report, args, "Reporte de scan StructGuard")
-    return print_report(report, verbose=args.verbose)
+    preset = _default_scan_preset(args)
+    context = AnalysisContext.from_namespace(args, profile, preset)
+    result = AnalysisEngine().run(context)
+    if result.context.source_ir is not None:
+        _write_source_ir_if_requested(result.context.source_ir, args)
+    _write_outputs(result.report, args, "Reporte de scan StructGuard")
+    return print_report(result.report, verbose=args.verbose)
 
 
 def cmd_suggest(args: argparse.Namespace) -> int:
@@ -736,8 +722,10 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--headers-only", action="store_true", help="Analiza solo cabeceras .h/.hh/.hpp/.hxx")
         sp.add_argument("--no-infer", action="store_true", help="Desactiva contratos inferidos basados en CC-232/assert cuando aplique")
         sp.add_argument("--dsl", action="append", help="Carga un archivo o directorio de contratos DSL de StructGuard; se puede repetir")
+        sp.add_argument("--contract", dest="contract_paths", action="append", help="Limita el análisis a este contrato .sgdsl; se puede repetir")
         sp.add_argument("--max-cases", type=int, default=300, help="Máximo de estados acotados por método")
         sp.add_argument("--profile", help="Perfil de dominio o ejecución: cc232, generic-cpp, stl-adapters, student, ci, strict, formal o security")
+        sp.add_argument("--preset", choices=available_presets(), help="Preset del motor para scan: source, contracts, security, ci o full")
         sp.add_argument("--language", choices=["cpp"], help="Lenguaje de entrada para el frontend canónico")
         sp.add_argument("--compile-commands", help="Ruta a compile_commands.json para el frontend C++ con Clang")
         sp.add_argument("--frontend", choices=["auto", "clang", "lightweight"], default="auto", help="Frontend C++ a usar cuando se solicita --language cpp")

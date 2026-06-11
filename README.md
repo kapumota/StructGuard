@@ -121,6 +121,42 @@ Ejemplo nuevo:
 
 - `examples/cpp_projects/`
 
+#### Fase 5: motor de análisis modular
+
+La Fase 5 introduce un motor común para `scan`. El CLI deja de decidir directamente qué módulos ejecutar y pasa a delegar en `AnalysisEngine`, `AnalysisContext` y `PassManager`.
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset contracts
+```
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security
+```
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset ci
+```
+
+Los comandos antiguos siguen disponibles por compatibilidad, pero el flujo recomendado para nuevas fases es `scan --preset ...`. Si no se indica `--preset`, `scan` usa el modo `source` como exploración inicial no bloqueante.
+
+Documentación nueva de esta fase:
+
+- `docs/ANALYSIS_ENGINE.md`
+
+Módulos nuevos:
+
+- `src/structguard/core/analysis_engine.py`
+- `src/structguard/core/analysis_context.py`
+- `src/structguard/core/pass_manager.py`
+- `src/structguard/core/capabilities.py`
+- `src/structguard/core/result.py`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
@@ -850,3 +886,17 @@ structguard perf ../Libreria_cc232/Semana2/include --headers-only --perf-html re
 ```
 
 Si el proyecto ya compila correctamente con Clang, añade `--strict-ast --std c++17` a los comandos críticos de análisis y CI.
+
+#### Alcance explícito de contratos en scan
+
+Cuando un perfil incluye varios contratos, `scan --preset ci` los valida todos.
+Para analizar un ejemplo parcial o una sola estructura, use `--contract`:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset ci \
+  --contract profiles/generic-cpp/contracts/stack.sgdsl
+```
+
+El perfil sigue definiendo la configuración de dominio, pero el alcance contractual queda limitado al archivo indicado.
