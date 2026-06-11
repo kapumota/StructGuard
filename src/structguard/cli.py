@@ -43,6 +43,7 @@ from .core import AnalysisContext, AnalysisEngine, available_presets
 from .reporters import write_html_report, write_json_report, write_junit_report, write_markdown_report, write_sarif_report
 from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_diagnostics, guarantee_summary_lines, infer_guarantee
 from .reporters.guarantee_badge import guarantee_badge_text
+from .reporting import derive_reports_from_canonical, load_canonical_report, write_canonical_report, write_lockfile
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -106,7 +107,27 @@ def _merge_reports(root: Path, *reports: ProjectReport | None) -> ProjectReport:
     return merged
 
 
+def _context_from_args(args: argparse.Namespace) -> dict[str, object]:
+    return {
+        "command": getattr(args, "cmd", None),
+        "profile": getattr(args, "profile", None),
+        "preset": getattr(args, "preset", None),
+        "language": getattr(args, "language", None),
+        "compile_commands": getattr(args, "compile_commands", None),
+        "frontend": getattr(args, "frontend", None),
+        "contract_paths": getattr(args, "contract_paths", None),
+        "headers_only": getattr(args, "headers_only", None),
+        "strict_ast": getattr(args, "strict_ast", None),
+    }
+
+
+def _root_from_args(args: argparse.Namespace, report: ProjectReport) -> Path:
+    raw = getattr(args, "path", None) or report.root or "."
+    return Path(str(raw))
+
+
 def _write_outputs(report: ProjectReport, args: argparse.Namespace, title: str) -> None:
+    context = _context_from_args(args)
     if getattr(args, "json", None):
         write_json(report, Path(args.json))
     if getattr(args, "html", None):
@@ -121,6 +142,11 @@ def _write_outputs(report: ProjectReport, args: argparse.Namespace, title: str) 
         write_junit_report(report, Path(args.findings_junit))
     if getattr(args, "findings_sarif", None):
         write_sarif_report(report, Path(args.findings_sarif))
+    if getattr(args, "report_json", None):
+        write_canonical_report(report, Path(args.report_json), context=context)
+    if getattr(args, "lockfile", None):
+        root = _root_from_args(args, report)
+        write_lockfile(root, Path(args.lockfile), context=context)
 
 
 
@@ -643,6 +669,27 @@ def cmd_perf(args: argparse.Namespace) -> int:
     return print_report(report, verbose=args.verbose)
 
 
+
+def cmd_report(args: argparse.Namespace) -> int:
+    if args.report_action != "derive":
+        raise ValueError(f"Acción de report no soportada: {args.report_action}")
+    document = load_canonical_report(Path(args.input))
+    written = derive_reports_from_canonical(
+        document,
+        html=Path(args.html) if args.html else None,
+        markdown=Path(args.markdown) if args.markdown else None,
+        sarif=Path(args.sarif) if args.sarif else None,
+        junit=Path(args.junit) if args.junit else None,
+        json_out=Path(args.json) if args.json else None,
+    )
+    if not written:
+        print("No se solicitó ningún reporte derivado.")
+        return 0
+    for path in written:
+        print(f"Reporte derivado escrito en: {path}")
+    return 0
+
+
 def cmd_init(args: argparse.Namespace) -> int:
     out = Path(args.path)
     out.mkdir(parents=True, exist_ok=True)
@@ -789,6 +836,8 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--findings-md", help="Escribe FindingIR en Markdown")
         sp.add_argument("--findings-junit", help="Escribe FindingIR en JUnit XML")
         sp.add_argument("--findings-sarif", help="Escribe FindingIR en SARIF")
+        sp.add_argument("--report-json", help="Escribe report.json canónico como fuente de verdad")
+        sp.add_argument("--lockfile", help="Escribe structguard.lock con hashes y entorno mínimo")
         sp.add_argument("-v", "--verbose", action="store_true", help="Imprime detalles de diagnóstico")
 
     def strict_ast_options(sp: argparse.ArgumentParser) -> None:
@@ -986,6 +1035,17 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--baseline", help="Compara contra un JSON de rendimiento previo o baseline compacto")
     sp.add_argument("--regression-threshold", type=float, default=20.0, help="Falla si el puntaje estático de rendimiento regresa en este porcentaje")
     sp.set_defaults(func=cmd_perf)
+
+    sp = sub.add_parser("report", help="Deriva reportes secundarios desde report.json canónico")
+    report_sub = sp.add_subparsers(dest="report_action", required=True)
+    derive_sp = report_sub.add_parser("derive", help="Genera HTML, SARIF, JUnit, Markdown o JSON desde report.json")
+    derive_sp.add_argument("input", help="Ruta a report.json canónico")
+    derive_sp.add_argument("--html", help="Escribe reporte HTML derivado")
+    derive_sp.add_argument("--markdown", help="Escribe reporte Markdown derivado")
+    derive_sp.add_argument("--sarif", help="Escribe reporte SARIF derivado")
+    derive_sp.add_argument("--junit", help="Escribe reporte JUnit XML derivado")
+    derive_sp.add_argument("--json", help="Escribe una copia normalizada del reporte canónico")
+    derive_sp.set_defaults(func=cmd_report)
 
     sp = sub.add_parser("init", help="Crea un structguard.yml inicial")
     sp.add_argument("path", nargs="?", default=".")
