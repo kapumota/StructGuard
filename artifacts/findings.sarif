@@ -1,0 +1,1701 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "StructGuard",
+          "version": "4.6.1-es-professional-stable",
+          "rules": [
+            {
+              "id": "SEC_CAPACITY_GUARD_MISSING",
+              "name": "Sec Capacity Guard Missing",
+              "shortDescription": {
+                "text": "Sec Capacity Guard Missing"
+              },
+              "fullDescription": {
+                "text": "Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "sec",
+                  "security"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "SEC_BOUNDS_RISK",
+              "name": "Sec Bounds Risk",
+              "shortDescription": {
+                "text": "Sec Bounds Risk"
+              },
+              "fullDescription": {
+                "text": "Posible expresión de índice fuera de límites `n` en Stack::push."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "sec",
+                  "security"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+              "name": "Sec Raw Index Without Guard",
+              "shortDescription": {
+                "text": "Sec Raw Index Without Guard"
+              },
+              "fullDescription": {
+                "text": "Stack::push usa indexación [] sin una guarda cercana de contrato/assert."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "sec",
+                  "security"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "PARTIAL_VERIFICATION",
+              "name": "Partial Verification",
+              "shortDescription": {
+                "text": "Partial Verification"
+              },
+              "fullDescription": {
+                "text": "Stack::top verificó estados acotados, pero la implementación usó construcciones no soportadas."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "general",
+                  "partial"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "SEC_MISSING_PRECONDITION",
+              "name": "Sec Missing Precondition",
+              "shortDescription": {
+                "text": "Sec Missing Precondition"
+              },
+              "fullDescription": {
+                "text": "Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "sec",
+                  "security"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "BOUNDED_CONTRACTS_HOLD",
+              "name": "Bounded Contracts Hold",
+              "shortDescription": {
+                "text": "Bounded Contracts Hold"
+              },
+              "fullDescription": {
+                "text": "Stack::Stack se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "bounded",
+                  "verification"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "BINDING_CONTRACTS_MATCH_SOURCE",
+              "name": "Binding Contracts Match Source",
+              "shortDescription": {
+                "text": "Binding Contracts Match Source"
+              },
+              "fullDescription": {
+                "text": "BindingIR válido: todos los contratos externos tienen símbolo fuente asociado."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "binding",
+                  "general"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "SGDSL_CONTRACT_IR_VALID",
+              "name": "Sgdsl Contract Ir Valid",
+              "shortDescription": {
+                "text": "Sgdsl Contract Ir Valid"
+              },
+              "fullDescription": {
+                "text": "ContractIR válido sin diagnósticos bloqueantes."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "general",
+                  "sgdsl"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "ANALYSIS_PROFILE",
+              "name": "Analysis Profile",
+              "shortDescription": {
+                "text": "Analysis Profile"
+              },
+              "fullDescription": {
+                "text": "Perfil de análisis activo: generic-cpp"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "analysis",
+                  "general"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "ENGINE_CONTRACT_SCOPE_EXPLICIT",
+              "name": "Engine Contract Scope Explicit",
+              "shortDescription": {
+                "text": "Engine Contract Scope Explicit"
+              },
+              "fullDescription": {
+                "text": "Alcance de contratos definido por --contract."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "engine",
+                  "general"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "ENGINE_DOMAIN_PROFILE_LOADED",
+              "name": "Engine Domain Profile Loaded",
+              "shortDescription": {
+                "text": "Engine Domain Profile Loaded"
+              },
+              "fullDescription": {
+                "text": "Perfil de dominio activo: generic-cpp"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "engine",
+                  "general"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "ENGINE_PRESET",
+              "name": "Engine Preset",
+              "shortDescription": {
+                "text": "Engine Preset"
+              },
+              "fullDescription": {
+                "text": "Preset de análisis activo: ci"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "engine",
+                  "general"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "SEC_SECURITY_SUMMARY",
+              "name": "Sec Security Summary",
+              "shortDescription": {
+                "text": "Sec Security Summary"
+              },
+              "fullDescription": {
+                "text": "Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "sec",
+                  "security"
+                ],
+                "cwe": null
+              }
+            },
+            {
+              "id": "DSL_CONTRACTS_APPLIED",
+              "name": "Dsl Contracts Applied",
+              "shortDescription": {
+                "text": "Dsl Contracts Applied"
+              },
+              "fullDescription": {
+                "text": "Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "contracts",
+                  "dsl"
+                ],
+                "cwe": null
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "SEC_CAPACITY_GUARD_MISSING",
+          "level": "warning",
+          "message": {
+            "text": "Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_CAPACITY_GUARD_MISSING",
+            "title": "Sec Capacity Guard Missing",
+            "message": "Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 17,
+              "column": null
+            },
+            "symbol": "Stack::push",
+            "evidence": [
+              "void push(int value) {"
+            ],
+            "remediation": "Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "void push(int value) {",
+              "remediation": "Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.",
+              "confidence": "medium",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_BOUNDS_RISK",
+          "level": "warning",
+          "message": {
+            "text": "Posible expresión de índice fuera de límites `n` en Stack::push."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_BOUNDS_RISK",
+            "title": "Sec Bounds Risk",
+            "message": "Posible expresión de índice fuera de límites `n` en Stack::push.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 21,
+              "column": null
+            },
+            "symbol": "Stack::push",
+            "evidence": [
+              "data[n]"
+            ],
+            "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n]",
+              "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+              "confidence": "medium",
+              "index": "n",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_RAW_INDEX_WITHOUT_GUARD",
+          "level": "warning",
+          "message": {
+            "text": "Stack::push usa indexación [] sin una guarda cercana de contrato/assert."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+            "title": "Sec Raw Index Without Guard",
+            "message": "Stack::push usa indexación [] sin una guarda cercana de contrato/assert.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 21,
+              "column": null
+            },
+            "symbol": "Stack::push",
+            "evidence": [
+              "data[n]"
+            ],
+            "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n]",
+              "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+              "confidence": "medium",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "PARTIAL_VERIFICATION",
+          "level": "warning",
+          "message": {
+            "text": "Stack::top verificó estados acotados, pero la implementación usó construcciones no soportadas."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "PARTIAL_VERIFICATION",
+            "title": "Partial Verification",
+            "message": "Stack::top verificó estados acotados, pero la implementación usó construcciones no soportadas.",
+            "severity": "warning",
+            "confidence": "low",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 25,
+              "column": null
+            },
+            "symbol": "Stack::top",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo.",
+            "cwe": null,
+            "tags": [
+              "general",
+              "partial"
+            ],
+            "level": "UNKNOWN",
+            "details": {
+              "checked_states": 5,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [
+                "n > 0"
+              ],
+              "inferred_ensures": [],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "notes": [
+                "no se pudo evaluar la expresión de retorno: data[n - 1]"
+              ],
+              "confidence": "low",
+              "category": "general",
+              "remediation": "Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo."
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_MISSING_PRECONDITION",
+          "level": "warning",
+          "message": {
+            "text": "Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_MISSING_PRECONDITION",
+            "title": "Sec Missing Precondition",
+            "message": "Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 25,
+              "column": null
+            },
+            "symbol": "Stack::top",
+            "evidence": [
+              "int top() const {"
+            ],
+            "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "int top() const {",
+              "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+              "confidence": "medium",
+              "suggested": "requires: !empty() o límites de índice",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_BOUNDS_RISK",
+          "level": "warning",
+          "message": {
+            "text": "Posible expresión de índice fuera de límites `n - 1` en Stack::top."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_BOUNDS_RISK",
+            "title": "Sec Bounds Risk",
+            "message": "Posible expresión de índice fuera de límites `n - 1` en Stack::top.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 29,
+              "column": null
+            },
+            "symbol": "Stack::top",
+            "evidence": [
+              "data[n - 1]"
+            ],
+            "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n - 1]",
+              "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+              "confidence": "medium",
+              "index": "n - 1",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_RAW_INDEX_WITHOUT_GUARD",
+          "level": "warning",
+          "message": {
+            "text": "Stack::top usa indexación [] sin una guarda cercana de contrato/assert."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+            "title": "Sec Raw Index Without Guard",
+            "message": "Stack::top usa indexación [] sin una guarda cercana de contrato/assert.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 29,
+              "column": null
+            },
+            "symbol": "Stack::top",
+            "evidence": [
+              "data[n - 1]"
+            ],
+            "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n - 1]",
+              "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+              "confidence": "medium",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_MISSING_PRECONDITION",
+          "level": "warning",
+          "message": {
+            "text": "Stack::peek es un método de acceso/eliminación sin una precondición explícita de no vacío/límites."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_MISSING_PRECONDITION",
+            "title": "Sec Missing Precondition",
+            "message": "Stack::peek es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 32,
+              "column": null
+            },
+            "symbol": "Stack::peek",
+            "evidence": [
+              "int peek() const {"
+            ],
+            "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "int peek() const {",
+              "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+              "confidence": "medium",
+              "suggested": "requires: !empty() o límites de índice",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "PARTIAL_VERIFICATION",
+          "level": "warning",
+          "message": {
+            "text": "Stack::pop verificó estados acotados, pero la implementación usó construcciones no soportadas."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "PARTIAL_VERIFICATION",
+            "title": "Partial Verification",
+            "message": "Stack::pop verificó estados acotados, pero la implementación usó construcciones no soportadas.",
+            "severity": "warning",
+            "confidence": "low",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 36,
+              "column": null
+            },
+            "symbol": "Stack::pop",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo.",
+            "cwe": null,
+            "tags": [
+              "general",
+              "partial"
+            ],
+            "level": "UNKNOWN",
+            "details": {
+              "checked_states": 5,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [
+                "n > 0"
+              ],
+              "inferred_ensures": [
+                "n == old(n) - 1"
+              ],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "notes": [
+                "no se pudo evaluar la expresión de retorno: data[n]"
+              ],
+              "confidence": "low",
+              "category": "general",
+              "remediation": "Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo."
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_MISSING_PRECONDITION",
+          "level": "warning",
+          "message": {
+            "text": "Stack::pop es un método de acceso/eliminación sin una precondición explícita de no vacío/límites."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_MISSING_PRECONDITION",
+            "title": "Sec Missing Precondition",
+            "message": "Stack::pop es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 36,
+              "column": null
+            },
+            "symbol": "Stack::pop",
+            "evidence": [
+              "int pop() {"
+            ],
+            "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "int pop() {",
+              "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+              "confidence": "medium",
+              "suggested": "requires: !empty() o límites de índice",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_BOUNDS_RISK",
+          "level": "warning",
+          "message": {
+            "text": "Posible expresión de índice fuera de límites `n` en Stack::pop."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_BOUNDS_RISK",
+            "title": "Sec Bounds Risk",
+            "message": "Posible expresión de índice fuera de límites `n` en Stack::pop.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 41,
+              "column": null
+            },
+            "symbol": "Stack::pop",
+            "evidence": [
+              "data[n]"
+            ],
+            "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n]",
+              "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+              "confidence": "medium",
+              "index": "n",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_RAW_INDEX_WITHOUT_GUARD",
+          "level": "warning",
+          "message": {
+            "text": "Stack::pop usa indexación [] sin una guarda cercana de contrato/assert."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+            "title": "Sec Raw Index Without Guard",
+            "message": "Stack::pop usa indexación [] sin una guarda cercana de contrato/assert.",
+            "severity": "warning",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 41,
+              "column": null
+            },
+            "symbol": "Stack::pop",
+            "evidence": [
+              "data[n]"
+            ],
+            "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "WARNING",
+            "details": {
+              "evidence": "data[n]",
+              "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+              "confidence": "medium",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "BOUNDED_CONTRACTS_HOLD",
+          "level": "note",
+          "message": {
+            "text": "Stack::Stack se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BOUNDED_CONTRACTS_HOLD",
+            "title": "Bounded Contracts Hold",
+            "message": "Stack::Stack se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.",
+            "severity": "note",
+            "confidence": "high",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 7,
+              "column": null
+            },
+            "symbol": "Stack::Stack",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "bounded",
+              "verification"
+            ],
+            "level": "BOUNDED_VERIFIED",
+            "details": {
+              "checked_states": 6,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [],
+              "inferred_ensures": [],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "constructor_initializers": [
+                {
+                  "field": "n",
+                  "expr": "0"
+                }
+              ],
+              "confidence": "high",
+              "category": "verification"
+            }
+          }
+        },
+        {
+          "ruleId": "BOUNDED_CONTRACTS_HOLD",
+          "level": "note",
+          "message": {
+            "text": "Stack::empty se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BOUNDED_CONTRACTS_HOLD",
+            "title": "Bounded Contracts Hold",
+            "message": "Stack::empty se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.",
+            "severity": "note",
+            "confidence": "high",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 9,
+              "column": null
+            },
+            "symbol": "Stack::empty",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "bounded",
+              "verification"
+            ],
+            "level": "BOUNDED_VERIFIED",
+            "details": {
+              "checked_states": 6,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [],
+              "inferred_ensures": [
+                "result == (n == 0)",
+                "result == (n == 0)"
+              ],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "confidence": "high",
+              "category": "verification"
+            }
+          }
+        },
+        {
+          "ruleId": "BOUNDED_CONTRACTS_HOLD",
+          "level": "note",
+          "message": {
+            "text": "Stack::size se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BOUNDED_CONTRACTS_HOLD",
+            "title": "Bounded Contracts Hold",
+            "message": "Stack::size se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.",
+            "severity": "note",
+            "confidence": "high",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 13,
+              "column": null
+            },
+            "symbol": "Stack::size",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "bounded",
+              "verification"
+            ],
+            "level": "BOUNDED_VERIFIED",
+            "details": {
+              "checked_states": 6,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [],
+              "inferred_ensures": [
+                "result == n",
+                "result == n"
+              ],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "confidence": "high",
+              "category": "verification"
+            }
+          }
+        },
+        {
+          "ruleId": "BOUNDED_CONTRACTS_HOLD",
+          "level": "note",
+          "message": {
+            "text": "Stack::push se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BOUNDED_CONTRACTS_HOLD",
+            "title": "Bounded Contracts Hold",
+            "message": "Stack::push se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.",
+            "severity": "note",
+            "confidence": "high",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 17,
+              "column": null
+            },
+            "symbol": "Stack::push",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "bounded",
+              "verification"
+            ],
+            "level": "BOUNDED_VERIFIED",
+            "details": {
+              "checked_states": 6,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [],
+              "inferred_ensures": [
+                "n == old(n) + 1"
+              ],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "confidence": "high",
+              "category": "verification"
+            }
+          }
+        },
+        {
+          "ruleId": "BOUNDED_CONTRACTS_HOLD",
+          "level": "note",
+          "message": {
+            "text": "Stack::peek se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BOUNDED_CONTRACTS_HOLD",
+            "title": "Bounded Contracts Hold",
+            "message": "Stack::peek se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.",
+            "severity": "note",
+            "confidence": "high",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 32,
+              "column": null
+            },
+            "symbol": "Stack::peek",
+            "evidence": [
+              "bounded_exhaustive_over_selected_domains"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "bounded",
+              "verification"
+            ],
+            "level": "BOUNDED_VERIFIED",
+            "details": {
+              "checked_states": 5,
+              "variables": [
+                "n"
+              ],
+              "executor": "branch_aware_bounded_interpreter",
+              "inferred_invariants": [
+                "n >= 0"
+              ],
+              "inferred_requires": [
+                "n > 0"
+              ],
+              "inferred_ensures": [],
+              "verification_scope": "bounded_model",
+              "evidence": "bounded_exhaustive_over_selected_domains",
+              "frontend": "cppscan",
+              "confidence": "high",
+              "category": "verification"
+            }
+          }
+        },
+        {
+          "ruleId": "BINDING_CONTRACTS_MATCH_SOURCE",
+          "level": "note",
+          "message": {
+            "text": "BindingIR válido: todos los contratos externos tienen símbolo fuente asociado."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ""
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "BINDING_CONTRACTS_MATCH_SOURCE",
+            "title": "Binding Contracts Match Source",
+            "message": "BindingIR válido: todos los contratos externos tienen símbolo fuente asociado.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": null,
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "binding",
+              "general"
+            ],
+            "level": "INFO",
+            "details": {
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "SGDSL_CONTRACT_IR_VALID",
+          "level": "note",
+          "message": {
+            "text": "ContractIR válido sin diagnósticos bloqueantes."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ""
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SGDSL_CONTRACT_IR_VALID",
+            "title": "Sgdsl Contract Ir Valid",
+            "message": "ContractIR válido sin diagnósticos bloqueantes.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": null,
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "general",
+              "sgdsl"
+            ],
+            "level": "INFO",
+            "details": {
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "ANALYSIS_PROFILE",
+          "level": "note",
+          "message": {
+            "text": "Perfil de análisis activo: generic-cpp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "ANALYSIS_PROFILE",
+            "title": "Analysis Profile",
+            "message": "Perfil de análisis activo: generic-cpp",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp",
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "analysis",
+              "general"
+            ],
+            "level": "INFO",
+            "details": {
+              "profile": {
+                "name": "generic-cpp",
+                "strict_ast": false,
+                "include_security": false,
+                "deep_security": false,
+                "include_formal": false,
+                "run_solver": false,
+                "fail_on_warnings": false,
+                "fail_on_unknown": false,
+                "max_cases": 300,
+                "verbose_hint": false,
+                "domain": "generic-cpp"
+              },
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "ENGINE_CONTRACT_SCOPE_EXPLICIT",
+          "level": "note",
+          "message": {
+            "text": "Alcance de contratos definido por --contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "ENGINE_CONTRACT_SCOPE_EXPLICIT",
+            "title": "Engine Contract Scope Explicit",
+            "message": "Alcance de contratos definido por --contract.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp",
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "engine",
+              "general"
+            ],
+            "level": "INFO",
+            "details": {
+              "contracts": [
+                "profiles/generic-cpp/contracts/stack.sgdsl"
+              ],
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "ENGINE_DOMAIN_PROFILE_LOADED",
+          "level": "note",
+          "message": {
+            "text": "Perfil de dominio activo: generic-cpp"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "ENGINE_DOMAIN_PROFILE_LOADED",
+            "title": "Engine Domain Profile Loaded",
+            "message": "Perfil de dominio activo: generic-cpp",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp",
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "engine",
+              "general"
+            ],
+            "level": "INFO",
+            "details": {
+              "name": "generic-cpp",
+              "display_name": "Generic C++ Profile",
+              "description": "Perfil general para validar estructuras de datos C++ contra contratos explicitos.",
+              "language": "cpp",
+              "status": "draft",
+              "contracts": [
+                "contracts/stack.sgdsl",
+                "contracts/queue.sgdsl",
+                "contracts/vector.sgdsl"
+              ],
+              "analysis": {
+                "headers_only": true,
+                "strict_ast": false,
+                "bounded": true,
+                "max_cases": null,
+                "include_security": false,
+                "deep_security": false,
+                "include_formal": false,
+                "run_solver": false,
+                "fail_on_warnings": false,
+                "fail_on_unknown": false
+              },
+              "outputs": {
+                "html": true,
+                "json": true,
+                "sarif": true,
+                "junit": false
+              },
+              "path": "/home/project/StructGuard/profiles/generic-cpp/profile.yml",
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "ENGINE_PRESET",
+          "level": "note",
+          "message": {
+            "text": "Preset de análisis activo: ci"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "ENGINE_PRESET",
+            "title": "Engine Preset",
+            "message": "Preset de análisis activo: ci",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp",
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "static_analysis"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "engine",
+              "general"
+            ],
+            "level": "INFO",
+            "details": {
+              "source_ir": true,
+              "contract_ir": true,
+              "binding": true,
+              "bounded": true,
+              "lint": true,
+              "security": true,
+              "formal": false,
+              "reports": true,
+              "notes": [
+                "Ejecuta el conjunto base para CI usando el motor común."
+              ],
+              "confidence": "medium",
+              "evidence": "static_analysis",
+              "category": "general"
+            }
+          }
+        },
+        {
+          "ruleId": "SEC_SECURITY_SUMMARY",
+          "level": "note",
+          "message": {
+            "text": "Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "SEC_SECURITY_SUMMARY",
+            "title": "Sec Security Summary",
+            "message": "Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp",
+              "line": null,
+              "column": null
+            },
+            "symbol": "",
+            "evidence": [
+              "security_heuristic"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "sec",
+              "security"
+            ],
+            "level": "INFO",
+            "details": {
+              "classes": 1,
+              "methods": 7,
+              "raw_indexes": 3,
+              "asserts": 0,
+              "allocations": 0,
+              "deep_findings": 10,
+              "deep": true,
+              "rules": 15,
+              "confidence": "medium",
+              "evidence": "security_heuristic",
+              "category": "security"
+            }
+          }
+        },
+        {
+          "ruleId": "DSL_CONTRACTS_APPLIED",
+          "level": "note",
+          "message": {
+            "text": "Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "DSL_CONTRACTS_APPLIED",
+            "title": "Dsl Contracts Applied",
+            "message": "Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 5,
+              "column": null
+            },
+            "symbol": "Stack",
+            "evidence": [
+              "contract_dsl"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "contracts",
+              "dsl"
+            ],
+            "level": "INFO",
+            "details": {
+              "structure_pattern": "Stack",
+              "dsl_sources": [
+                "profiles/generic-cpp/contracts/stack.sgdsl"
+              ],
+              "confidence": "medium",
+              "evidence": "contract_dsl",
+              "category": "contracts"
+            }
+          }
+        },
+        {
+          "ruleId": "DSL_CONTRACTS_APPLIED",
+          "level": "note",
+          "message": {
+            "text": "Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/generic_cpp/Stack.hpp"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "rule_id": "DSL_CONTRACTS_APPLIED",
+            "title": "Dsl Contracts Applied",
+            "message": "Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método.",
+            "severity": "info",
+            "confidence": "medium",
+            "location": {
+              "file": "examples/generic_cpp/Stack.hpp",
+              "line": 5,
+              "column": null
+            },
+            "symbol": "Stack",
+            "evidence": [
+              "contract_dsl"
+            ],
+            "remediation": "",
+            "cwe": null,
+            "tags": [
+              "contracts",
+              "dsl"
+            ],
+            "level": "INFO",
+            "details": {
+              "structure_pattern": "Stack",
+              "dsl_sources": [
+                "profiles/generic-cpp/contracts/stack.sgdsl"
+              ],
+              "confidence": "medium",
+              "evidence": "contract_dsl",
+              "category": "contracts"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

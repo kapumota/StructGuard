@@ -1,0 +1,152 @@
+### Reporte de scan StructGuard
+
+Raíz: `examples/generic_cpp`
+
+#### Resumen
+
+- info: 9
+- note: 5
+- warning: 12
+
+#### Hallazgos
+
+- **WARNING** `SEC_CAPACITY_GUARD_MISSING` Stack::push
+  - ubicación: `Stack.hpp:17`
+  - mensaje: Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento.
+  - confianza: medium
+  - evidencia: void push(int value) {
+  - remediación: Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.
+- **WARNING** `SEC_BOUNDS_RISK` Stack::push
+  - ubicación: `Stack.hpp:21`
+  - mensaje: Posible expresión de índice fuera de límites `n` en Stack::push.
+  - confianza: medium
+  - evidencia: data[n]
+  - remediación: Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.
+- **WARNING** `SEC_RAW_INDEX_WITHOUT_GUARD` Stack::push
+  - ubicación: `Stack.hpp:21`
+  - mensaje: Stack::push usa indexación [] sin una guarda cercana de contrato/assert.
+  - confianza: medium
+  - evidencia: data[n]
+  - remediación: Agrega precondiciones de límites o asserts locales antes del acceso indexado.
+- **WARNING** `PARTIAL_VERIFICATION` Stack::top
+  - ubicación: `Stack.hpp:25`
+  - mensaje: Stack::top verificó estados acotados, pero la implementación usó construcciones no soportadas.
+  - confianza: low
+  - evidencia: bounded_exhaustive_over_selected_domains
+  - remediación: Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo.
+- **WARNING** `SEC_MISSING_PRECONDITION` Stack::top
+  - ubicación: `Stack.hpp:25`
+  - mensaje: Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.
+  - confianza: medium
+  - evidencia: int top() const {
+  - remediación: Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.
+- **WARNING** `SEC_BOUNDS_RISK` Stack::top
+  - ubicación: `Stack.hpp:29`
+  - mensaje: Posible expresión de índice fuera de límites `n - 1` en Stack::top.
+  - confianza: medium
+  - evidencia: data[n - 1]
+  - remediación: Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.
+- **WARNING** `SEC_RAW_INDEX_WITHOUT_GUARD` Stack::top
+  - ubicación: `Stack.hpp:29`
+  - mensaje: Stack::top usa indexación [] sin una guarda cercana de contrato/assert.
+  - confianza: medium
+  - evidencia: data[n - 1]
+  - remediación: Agrega precondiciones de límites o asserts locales antes del acceso indexado.
+- **WARNING** `SEC_MISSING_PRECONDITION` Stack::peek
+  - ubicación: `Stack.hpp:32`
+  - mensaje: Stack::peek es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.
+  - confianza: medium
+  - evidencia: int peek() const {
+  - remediación: Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.
+- **WARNING** `PARTIAL_VERIFICATION` Stack::pop
+  - ubicación: `Stack.hpp:36`
+  - mensaje: Stack::pop verificó estados acotados, pero la implementación usó construcciones no soportadas.
+  - confianza: low
+  - evidencia: bounded_exhaustive_over_selected_domains
+  - remediación: Reducir complejidad del método, añadir contratos explícitos o activar Clang/SMT para aumentar cobertura del modelo.
+- **WARNING** `SEC_MISSING_PRECONDITION` Stack::pop
+  - ubicación: `Stack.hpp:36`
+  - mensaje: Stack::pop es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.
+  - confianza: medium
+  - evidencia: int pop() {
+  - remediación: Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.
+- **WARNING** `SEC_BOUNDS_RISK` Stack::pop
+  - ubicación: `Stack.hpp:41`
+  - mensaje: Posible expresión de índice fuera de límites `n` en Stack::pop.
+  - confianza: medium
+  - evidencia: data[n]
+  - remediación: Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.
+- **WARNING** `SEC_RAW_INDEX_WITHOUT_GUARD` Stack::pop
+  - ubicación: `Stack.hpp:41`
+  - mensaje: Stack::pop usa indexación [] sin una guarda cercana de contrato/assert.
+  - confianza: medium
+  - evidencia: data[n]
+  - remediación: Agrega precondiciones de límites o asserts locales antes del acceso indexado.
+- **NOTE** `BOUNDED_CONTRACTS_HOLD` Stack::Stack
+  - ubicación: `Stack.hpp:7`
+  - mensaje: Stack::Stack se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.
+  - confianza: high
+  - evidencia: bounded_exhaustive_over_selected_domains
+- **NOTE** `BOUNDED_CONTRACTS_HOLD` Stack::empty
+  - ubicación: `Stack.hpp:9`
+  - mensaje: Stack::empty se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.
+  - confianza: high
+  - evidencia: bounded_exhaustive_over_selected_domains
+- **NOTE** `BOUNDED_CONTRACTS_HOLD` Stack::size
+  - ubicación: `Stack.hpp:13`
+  - mensaje: Stack::size se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.
+  - confianza: high
+  - evidencia: bounded_exhaustive_over_selected_domains
+- **NOTE** `BOUNDED_CONTRACTS_HOLD` Stack::push
+  - ubicación: `Stack.hpp:17`
+  - mensaje: Stack::push se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.
+  - confianza: high
+  - evidencia: bounded_exhaustive_over_selected_domains
+- **NOTE** `BOUNDED_CONTRACTS_HOLD` Stack::peek
+  - ubicación: `Stack.hpp:32`
+  - mensaje: Stack::peek se mantiene en el modelo acotado de StructGuard; esto no es una prueba formal.
+  - confianza: high
+  - evidencia: bounded_exhaustive_over_selected_domains
+- **INFO** `BINDING_CONTRACTS_MATCH_SOURCE`
+  - mensaje: BindingIR válido: todos los contratos externos tienen símbolo fuente asociado.
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `SGDSL_CONTRACT_IR_VALID`
+  - mensaje: ContractIR válido sin diagnósticos bloqueantes.
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `ANALYSIS_PROFILE`
+  - ubicación: `.`
+  - mensaje: Perfil de análisis activo: generic-cpp
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `ENGINE_CONTRACT_SCOPE_EXPLICIT`
+  - ubicación: `.`
+  - mensaje: Alcance de contratos definido por --contract.
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `ENGINE_DOMAIN_PROFILE_LOADED`
+  - ubicación: `.`
+  - mensaje: Perfil de dominio activo: generic-cpp
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `ENGINE_PRESET`
+  - ubicación: `.`
+  - mensaje: Preset de análisis activo: ci
+  - confianza: medium
+  - evidencia: static_analysis
+- **INFO** `SEC_SECURITY_SUMMARY`
+  - ubicación: `.`
+  - mensaje: Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True.
+  - confianza: medium
+  - evidencia: security_heuristic
+- **INFO** `DSL_CONTRACTS_APPLIED` Stack
+  - ubicación: `Stack.hpp:5`
+  - mensaje: Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método.
+  - confianza: medium
+  - evidencia: contract_dsl
+- **INFO** `DSL_CONTRACTS_APPLIED` Stack
+  - ubicación: `Stack.hpp:5`
+  - mensaje: Contratos DSL aplicados a Stack: 1 invariantes, 5 contratos de método.
+  - confianza: medium
+  - evidencia: contract_dsl

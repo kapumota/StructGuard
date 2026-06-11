@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from structguard.findings import Finding, findings_from_report
 from structguard.model import Diagnostic, ProjectReport
 
 
@@ -32,6 +33,10 @@ class AnalysisEngineResult:
     def failed(self) -> bool:
         return any(diagnostic.level == "FAILED" for diagnostic in self.report.diagnostics)
 
+    @property
+    def findings(self) -> list[Finding]:
+        return findings_from_report(self.report)
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "context": self.context.as_dict() if hasattr(self.context, "as_dict") else {},
@@ -41,4 +46,5 @@ class AnalysisEngineResult:
                 "diagnostics": [diagnostic.__dict__ for diagnostic in self.report.diagnostics],
                 "counts": self.report.counts(),
             },
+            "findings": [finding.as_dict() for finding in self.findings],
         }

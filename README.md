@@ -157,6 +157,40 @@ Módulos nuevos:
 - `src/structguard/core/capabilities.py`
 - `src/structguard/core/result.py`
 
+#### Fase 6: FindingIR y reportes desacoplados
+
+La Fase 6 agrega un modelo común de hallazgos. Los analizadores pueden seguir emitiendo diagnósticos internos, pero los reportes nuevos consumen `FindingIR` como capa intermedia estable.
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset ci \
+  --contract profiles/generic-cpp/contracts/stack.sgdsl \
+  --findings-json artifacts/findings.json
+```
+
+También se pueden generar reportes desacoplados en HTML, Markdown, JUnit y SARIF:
+
+```bash
+--findings-html artifacts/findings.html
+--findings-md artifacts/findings.md
+--findings-junit artifacts/findings.xml
+--findings-sarif artifacts/findings.sarif
+```
+
+Documentación nueva de esta fase:
+
+- `docs/FINDINGS_MODEL.md`
+
+Módulos nuevos:
+
+- `src/structguard/findings/`
+- `src/structguard/reporters/json_reporter.py`
+- `src/structguard/reporters/html_reporter.py`
+- `src/structguard/reporters/markdown_reporter.py`
+- `src/structguard/reporters/junit_reporter.py`
+- `src/structguard/reporters/sarif_reporter.py`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
