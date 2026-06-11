@@ -30,6 +30,9 @@ def write_junit_report(report: ProjectReport, path: Path, suite_name: str = "Str
                 "name": f"{finding.rule_id}:{finding.symbol or index}",
             },
         )
+        props = ET.SubElement(testcase, "properties")
+        ET.SubElement(props, "property", {"name": "guarantee_level", "value": finding.guarantee.level.value})
+        ET.SubElement(props, "property", {"name": "guarantee_label", "value": finding.guarantee.label})
         if finding.severity == "error":
             node = ET.SubElement(testcase, "failure", {"message": finding.message, "type": finding.rule_id})
             node.text = json.dumps(finding.as_dict(), indent=2, ensure_ascii=False)

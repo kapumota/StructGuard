@@ -290,6 +290,50 @@ Se documenta su estado para evitar romper CLI, pruebas o demos antes de migrarlo
 
 Esta fase prepara el camino para la Fase 10, donde la evidencia reproducible debe registrar comandos y artefactos sin arrastrar ambigüedad sobre scripts antiguos.
 
+#### Fase 9.6: niveles de garantía y semántica visual
+
+La Fase 9.6 agrega una taxonomía explícita de garantías para evitar que resultados heurísticos o acotados se comuniquen como verificación formal.
+
+StructGuard ahora distingue severidad y garantía:
+
+```text
+severidad = gravedad del hallazgo
+garantía = tipo de evidencia que produjo el hallazgo
+```
+
+Niveles definidos:
+
+```text
+G1_HEURISTIC          = señal heurística
+G2_STRUCTURAL         = regla estructural sobre IR o contratos
+G3_BOUNDED            = chequeo acotado
+G4_EXECUTED           = resultado observado por ejecución real
+G5_FORMALLY_VERIFIED  = obligación descargada por backend formal soportado
+```
+
+Los reportes FindingIR, HTML, Markdown, JUnit, SARIF y la CLI muestran el nivel de garantía asociado a cada hallazgo.
+
+Estados visibles nuevos:
+
+```text
+BOUNDED_VERIFIED -> BOUNDED_CHECK_PASSED
+PROVED           -> FORMALLY_VERIFIED
+```
+
+Los nombres antiguos se conservan internamente solo como compatibilidad histórica. La interfaz debe evitar que un chequeo acotado parezca una prueba formal.
+
+Documentación nueva de esta fase:
+
+- `docs/GUARANTEE_LEVELS.md`
+- `docs/V1_SUCCESS_CRITERIA.md`
+
+Módulos nuevos:
+
+- `src/structguard/findings/guarantee.py`
+- `src/structguard/reporters/guarantee_badge.py`
+
+Esta fase deja preparado el terreno para la Fase 10, donde el corpus y los benchmarks podrán medir resultados con niveles de garantía claros.
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
@@ -598,7 +642,7 @@ StructGuard ejecuta varias capas de revisión sobre estructuras de datos:
 | `fuzz` / `testgen` | Genera secuencias abstractas, contraejemplos candidatos y pruebas de regresión. |
 | `ci` / `ci-init` | Integra StructGuard con compuertas de CI, reportes HTML/JSON/JUnit/SARIF y anotaciones de GitHub Actions. |
 | `clang` / `--strict-ast` | Usa Clang como compuerta de parseo real de C++ antes de confiar en diagnósticos acotados o heurísticos. |
-| `formal` / `pipeline-formal` | Exporta artefactos SMT-LIB/Viper experimentales. Solo reporta `PROVED` si un backend externo descarga la obligación. |
+| `formal` / `pipeline-formal` | Exporta artefactos SMT-LIB/Viper experimentales. La interfaz muestra `FORMALLY_VERIFIED` solo si un backend formal soportado descarga la obligación. |
 | `rust` / `python` | Frontends iniciales para analizar contratos simples en Rust y Python. |
 | `assist` / `advanced` | Genera recomendaciones heurísticas y plantillas para estructuras avanzadas. |
 
@@ -611,7 +655,7 @@ El flujo conceptual de StructGuard es:
 Cabeceras .h / .hpp
         |
         v
-Frontend ligero de C++ / Clang opcional
+Fast-scan educativo / Clang canónico
         |
         v
 Extracción de estructuras, métodos, campos y contratos
@@ -621,10 +665,10 @@ DSL de contratos opcional (.sgdsl)
         |
         v
 Análisis por módulos
-  - bounded checking
-  - contract lint
-  - security heuristics
-  - fuzzing abstracto
+  - bounded checking con garantía G3
+  - contract lint con garantía G2
+  - security heuristics con garantía G1
+  - testgen abstracto con garantía G1
   - documentación
   - rendimiento
         |
@@ -649,7 +693,7 @@ La arquitectura está separada en módulos dentro de `src/structguard/`:
 | `verifier.py`, `formal.py`, `pipeline.py` | Construyen y evalúan obligaciones de verificación acotada o formal experimental. |
 | `lint.py`, `security.py`, `performance.py` | Ejecutan análisis especializados. |
 | `docs.py`, `report.py`, `ci_outputs.py` | Generan reportes legibles por humanos y por herramientas de CI. |
-| `fuzz.py`, `counterexample.py`, `trace.py` | Producen secuencias abstractas, trazas y contraejemplos candidatos. |
+| `fuzz.py`, `counterexample.py`, `trace.py` | Producen secuencias abstractas, trazas y contraejemplos candidatos. El comando `fuzz` queda como alias heredado de `testgen`, no como fuzzing nativo. |
 | `standard_contracts.py`, `profiles/`, `policy/` | Definen contratos, perfiles y políticas de ejecución. |
 
 
@@ -837,9 +881,9 @@ StructGuard separa el diagnóstico operativo del nivel de confianza.
 | `UNKNOWN` | El método, contrato o patrón requiere un modelo más fuerte. No debe leerse como correcto ni como incorrecto. |
 | `WARNING` | Hay riesgo, ausencia de contrato o práctica que conviene revisar. Puede no ser un bug real. |
 | `INFO` | Señal auxiliar, resumen o recomendación. |
-| `BOUNDED_VERIFIED` | No se encontró violación dentro de los límites del modelo acotado. No es una prueba universal. |
+| `BOUNDED_CHECK_PASSED` | No se encontró violación dentro de los límites del modelo acotado. No es una prueba universal. |
 | `HEURISTIC` | Resultado basado en patrones o inferencias. Sirve para revisión, no para una conclusión formal. |
-| `PROVED` | Una obligación formal generada fue descargada por un backend externo. No significa que todo el programa C++ esté probado. |
+| `FORMALLY_VERIFIED` | Una obligación formal generada fue descargada por un backend formal soportado. No significa que todo el programa C++ esté probado. |
 
 Regla práctica:
 
@@ -936,7 +980,7 @@ Un falso negativo ocurre cuando StructGuard no reporta un problema que sí exist
 - la precondición faltante no coincide con los patrones conocidos,
 - el comportamiento depende de efectos laterales no modelados.
 
-Por eso un resultado `BOUNDED_VERIFIED` debe leerse como: "no se encontró contraejemplo dentro del modelo acotado", no como "el programa es correcto para todos los casos".
+Por eso un resultado visible `BOUNDED_CHECK_PASSED` debe leerse como: "no se encontró contraejemplo dentro del modelo acotado", no como "el programa es correcto para todos los casos".
 
 
 #### 12. CI/CD

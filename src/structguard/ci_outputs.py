@@ -7,6 +7,7 @@ from pathlib import Path
 from . import __version__
 from .metadata import diagnostic_to_dict
 from .model import ALL_LEVELS, ProjectReport
+from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_diagnostics, infer_guarantee
 
 
 def _sarif_level(level: str) -> str:
@@ -155,10 +156,12 @@ def write_sarif(report: ProjectReport, path: Path) -> Path:
                 "properties": {
                     "structguardLevel": d.level,
                     "symbol": d.symbol,
+                    "display_level": diagnostic_display_level(d),
                     "details": diagnostic_to_dict(d).get("details", {}),
+                    "guarantee": infer_guarantee(d).as_dict(),
                     "confidenceSemantics": (
-                        "BOUNDED_VERIFIED es evidencia acotada, no una prueba formal; "
-                        "PROVED se emite únicamente por backends formales o solvers."
+                        "BOUNDED_CHECK_PASSED es evidencia acotada, no una prueba formal; "
+                        "FORMALLY_VERIFIED se emite únicamente por backends formales soportados."
                     ),
                 },
             }
@@ -198,6 +201,7 @@ def write_summary_markdown(
     path.parent.mkdir(parents=True, exist_ok=True)
 
     counts = report.counts()
+    guarantee_counts = guarantee_counts_from_diagnostics(report.diagnostics)
     gate = next(
         (
             d
@@ -222,7 +226,7 @@ def write_summary_markdown(
 
     if gate:
         lines += [
-            f"**{gate.code}** — {gate.message}",
+            f"**{gate.code}** - {gate.message}",
             "",
         ]
 
@@ -235,6 +239,17 @@ def write_summary_markdown(
 
     for level in ALL_LEVELS:
         lines.append(f"| {level} | {counts.get(level, 0)} |")
+
+    lines += [
+        "",
+        "## Conteos por garantía",
+        "",
+        "| Garantía | Cantidad |",
+        "|---|---:|",
+    ]
+
+    for level, count in guarantee_counts.items():
+        lines.append(f"| {level} | {count} |")
 
     lines += [
         "",
@@ -256,7 +271,7 @@ def write_summary_markdown(
     for d in [x for x in report.diagnostics if x.level in {"FAILED", "WARNING"}][:30]:
         loc = f"{d.file}:{d.line}" if d.file and d.line else (d.file or "")
         lines.append(
-            f"- **{d.level}** `{d.code}` `{d.symbol or ''}` {loc} — {d.message}"
+            f"- **{diagnostic_display_level(d)}** `{infer_guarantee(d).level.value}` `{d.code}` `{d.symbol or ''}` {loc} - {d.message}"
         )
 
     path.write_text(

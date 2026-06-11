@@ -7,6 +7,7 @@ from typing import Any
 from structguard.metadata import diagnostic_to_dict, enriched_details
 from structguard.model import Diagnostic, ProjectReport
 
+from .guarantee import GuaranteeInfo, default_guarantee, guarantee_counts, infer_guarantee
 from .severity import severity_from_level, sort_key
 
 
@@ -47,6 +48,7 @@ class Finding:
     remediation: str = ""
     cwe: str | None = None
     tags: list[str] = field(default_factory=list)
+    guarantee: GuaranteeInfo = field(default_factory=default_guarantee)
     level: str = "INFO"
     details: dict[str, Any] = field(default_factory=dict)
 
@@ -63,6 +65,7 @@ class Finding:
             "remediation": self.remediation,
             "cwe": self.cwe,
             "tags": list(self.tags),
+            "guarantee": self.guarantee.as_dict(),
             "level": self.level,
             "details": dict(self.details),
         }
@@ -84,6 +87,7 @@ class Finding:
             remediation=str(details.get("remediation", "")),
             cwe=_normalize_cwe(details.get("cwe")),
             tags=tags,
+            guarantee=infer_guarantee(diagnostic),
             level=diagnostic.level,
             details=details,
         )
@@ -112,10 +116,12 @@ def findings_document(report: ProjectReport) -> dict[str, Any]:
     counts: dict[str, int] = {}
     for finding in findings:
         counts[finding.severity] = counts.get(finding.severity, 0) + 1
+    guarantee_by_level = guarantee_counts(finding.guarantee for finding in findings)
     return {
         "schema_version": "structguard-findings/v1",
         "root": report.root,
         "counts": counts,
+        "guarantee_counts": guarantee_by_level,
         "findings": [finding.as_dict() for finding in findings],
     }
 
@@ -179,6 +185,7 @@ def relative_location(finding: Finding, root: str) -> str:
 
 __all__ = [
     "Finding",
+    "GuaranteeInfo",
     "Location",
     "findings_document",
     "findings_from_diagnostics",
