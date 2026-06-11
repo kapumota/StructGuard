@@ -97,11 +97,19 @@ def _minimal_yaml(text: str) -> dict[str, Any]:
     return root
 
 def load_policy(path: str | Path | None) -> CIPolicy:
-    if not path: return CIPolicy()
-    p=Path(path)
-    if not p.exists(): raise FileNotFoundError(f"Archivo de política no encontrado: {p}")
-    text=p.read_text(encoding="utf-8", errors="ignore")
-    data=json.loads(text) if p.suffix.lower()==".json" else _minimal_yaml(text)
+    if not path:
+        return CIPolicy()
+    p = Path(path)
+    if not p.exists():
+        raise FileNotFoundError(f"Archivo de política no encontrado: {p}")
+    from .validator import validate_policy_file
+
+    validation = validate_policy_file(p)
+    if not validation.valid:
+        messages = "\n".join(issue.message for issue in validation.issues)
+        raise ValueError(f"Política inválida: {p}\n{messages}")
+    text = p.read_text(encoding="utf-8", errors="ignore")
+    data = json.loads(text) if p.suffix.lower() == ".json" else _minimal_yaml(text)
     return CIPolicy.from_mapping(data, path=p)
 
 def default_policy_text(project_path: str = "Libreria_cc232") -> str:
