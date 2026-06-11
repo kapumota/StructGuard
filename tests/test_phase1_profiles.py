@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from structguard.profiles import load_profile_file, resolve_profile
+from structguard.profiles import apply_profile_defaults, load_profile_file, resolve_profile
 
 
 def test_profile_loader_reads_generic_cpp_profile() -> None:
@@ -57,3 +57,24 @@ def test_scan_uses_domain_profile_contracts() -> None:
     assert result.returncode == 0
     assert "ANALYSIS_PROFILE" in result.stdout
     assert "generic-cpp" in result.stdout
+
+
+class _Args:
+    profile = "generic-cpp"
+    contract_paths = ["profiles/generic-cpp/contracts/stack.sgdsl"]
+    dsl = None
+    headers_only = False
+    strict_ast = False
+    max_cases = 300
+    deep_security = False
+    fail_on_warnings = False
+    fail_on_unknown = False
+
+
+def test_profile_explicit_contracts_do_not_append_all_profile_contracts() -> None:
+    args = _Args()
+
+    apply_profile_defaults(args)
+
+    assert args.dsl == ["profiles/generic-cpp/contracts/stack.sgdsl"]
+    assert args.profile_contract_mode == "explicit"

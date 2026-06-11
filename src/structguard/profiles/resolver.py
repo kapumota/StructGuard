@@ -47,11 +47,18 @@ def apply_domain_profile(args: Any, start: Path | None = None) -> DomainProfile 
     except ProfileLoadError:
         return None
 
-    dsl_paths = list(getattr(args, "dsl", None) or [])
-    for contract in profile.contract_paths():
-        contract_text = str(contract)
-        if contract_text not in dsl_paths:
-            dsl_paths.append(contract_text)
+    explicit_contracts = list(getattr(args, "contract_paths", None) or [])
+    if explicit_contracts:
+        # Los contratos explícitos delimitan el alcance del perfil para este análisis.
+        dsl_paths = explicit_contracts
+        setattr(args, "profile_contract_mode", "explicit")
+    else:
+        dsl_paths = list(getattr(args, "dsl", None) or [])
+        for contract in profile.contract_paths():
+            contract_text = str(contract)
+            if contract_text not in dsl_paths:
+                dsl_paths.append(contract_text)
+        setattr(args, "profile_contract_mode", "profile")
     setattr(args, "dsl", dsl_paths)
 
     if profile.analysis.headers_only and hasattr(args, "headers_only") and not getattr(args, "headers_only", False):
