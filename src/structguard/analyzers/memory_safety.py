@@ -3,8 +3,23 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from structguard.analyzers.contracts import RuleDefinition
 from structguard.memory import ClassMemoryModel, MemoryAllocation, MemoryRelease, build_memory_models
 from structguard.model import Diagnostic, ProjectReport
+
+
+MEMORY_RULES: dict[str, RuleDefinition] = {
+    "SG-MEMORY-OWNERSHIP-RISK": RuleDefinition(
+        rule_id="SG-MEMORY-OWNERSHIP-RISK",
+        description="Reserva manual sin ownership y liberación compatibles.",
+        default_severity="error",
+        good_example="data = new int[n]; ~Vector() { delete[] data; }",
+        bad_example="data = new int[n]; ~Vector() { delete data; }",
+        profiles=("cc232", "generic-cpp"),
+        cwe="CWE-401",
+        tags=("memory", "ownership", "cpp"),
+    ),
+}
 
 
 def analyze_memory_safety_project(root: Path, headers_only: bool = False) -> ProjectReport:
@@ -66,6 +81,7 @@ def _check_allocations(report: ProjectReport, model: ClassMemoryModel) -> None:
                 confidence="high",
                 metadata={"target": allocation.target, "allocation_kind": allocation.kind, "release_kind": release.kind},
             )
+            _add_structural_ownership_risk(report, release.location.file, release.location.line, release.symbol, release.expression, allocation.target)
             continue
         _add(
             report,
@@ -80,6 +96,7 @@ def _check_allocations(report: ProjectReport, model: ClassMemoryModel) -> None:
             confidence="medium",
             metadata={"target": allocation.target, "kind": allocation.kind},
         )
+        _add_structural_ownership_risk(report, allocation.location.file, allocation.location.line, allocation.symbol, allocation.expression, allocation.target)
 
 
 def _check_double_delete(report: ProjectReport, model: ClassMemoryModel) -> None:
@@ -99,6 +116,7 @@ def _check_double_delete(report: ProjectReport, model: ClassMemoryModel) -> None
             confidence="high",
             metadata={"target": target, "kind": kind},
         )
+        _add_structural_ownership_risk(report, first.location.file, first.location.line, first.symbol, first.expression, target)
 
 
 def _check_null_dereferences(report: ProjectReport, model: ClassMemoryModel) -> None:
@@ -137,6 +155,29 @@ def _check_capacity_relations(report: ProjectReport, model: ClassMemoryModel) ->
             confidence="high",
             metadata=relation.as_dict(),
         )
+
+
+def _add_structural_ownership_risk(report: ProjectReport, file: str, line: int, symbol: str, evidence: str, target: str) -> None:
+    rule = MEMORY_RULES["SG-MEMORY-OWNERSHIP-RISK"]
+    report.diagnostics.append(
+        Diagnostic(
+            level="FAILED",
+            code=rule.rule_id,
+            message=f"{target} tiene un riesgo de ownership manual que requiere revisión.",
+            file=file,
+            line=line,
+            symbol=symbol,
+            details={
+                "title": rule.description,
+                "confidence": "medium",
+                "evidence": evidence,
+                "remediation": "Asegura una única responsabilidad de liberación y un par new/delete compatible.",
+                "cwe": rule.cwe,
+                "tags": list(rule.tags),
+                "rule": rule.as_dict(),
+            },
+        )
+    )
 
 
 def _add(

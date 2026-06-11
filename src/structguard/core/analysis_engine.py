@@ -4,7 +4,11 @@ import tempfile
 from pathlib import Path
 
 from structguard.binding import build_binding_ir, match_contracts_to_source
+from structguard.analyzers.bounds import analyze_bounds_project
+from structguard.analyzers.complexity_hints import analyze_complexity_hints_project
+from structguard.analyzers.contracts import analyze_contract_rules_project
 from structguard.analyzers.memory_safety import analyze_memory_safety_project
+from structguard.analyzers.structure_semantics import analyze_structure_semantics_project
 from structguard.frontend.cpp import build_cpp_source_ir
 from structguard.ir.contract_ir import build_contract_ir
 from structguard.ir.contract_validator import validate_contract_ir
@@ -208,6 +212,33 @@ class SecurityPass:
         return _report_to_pass_result(self.name, report)
 
 
+class StructuralRulesPass:
+    name = "RunStructuralRules"
+
+    def run(self, context: AnalysisContext) -> AnalysisPassResult:
+        if not context.capabilities.structural_rules:
+            return AnalysisPassResult(self.name, "skipped", [], {"reason": "El preset no solicita reglas estructurales."})
+        diagnostics: list[Diagnostic] = []
+        for report in (
+            analyze_contract_rules_project(context.root, headers_only=context.headers_only),
+            analyze_bounds_project(context.root, headers_only=context.headers_only),
+            analyze_structure_semantics_project(context.root, headers_only=context.headers_only),
+        ):
+            diagnostics.extend(report.diagnostics)
+        status = "failed" if any(diagnostic.level == "FAILED" for diagnostic in diagnostics) else "ok"
+        return AnalysisPassResult(self.name, status, diagnostics, {"counts": _counts(diagnostics)})
+
+
+class ComplexityHintsPass:
+    name = "RunComplexityHints"
+
+    def run(self, context: AnalysisContext) -> AnalysisPassResult:
+        if not context.capabilities.complexity_hints:
+            return AnalysisPassResult(self.name, "skipped", [], {"reason": "El preset no solicita pistas de complejidad."})
+        report = analyze_complexity_hints_project(context.root, headers_only=context.headers_only)
+        return _report_to_pass_result(self.name, report)
+
+
 class MemorySafetyPass:
     name = "RunMemorySafety"
 
@@ -269,12 +300,12 @@ class AnalysisEngine:
         if preset == "source":
             return common
         if preset == "security":
-            return [*common, SecurityPass(), MemorySafetyPass()]
+            return [*common, SecurityPass(), MemorySafetyPass(), StructuralRulesPass(), ComplexityHintsPass()]
         if preset == "ci":
-            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass()]
+            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass(), StructuralRulesPass(), ComplexityHintsPass()]
         if preset == "full":
-            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass(), FormalPass()]
-        return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass()]
+            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass(), StructuralRulesPass(), ComplexityHintsPass(), FormalPass()]
+        return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), StructuralRulesPass()]
 
 
 def _sgdsl_to_diagnostic(diagnostic: SGDSLDiagnostic) -> Diagnostic:
@@ -290,3 +321,10 @@ def _sgdsl_to_diagnostic(diagnostic: SGDSLDiagnostic) -> Diagnostic:
 def _report_to_pass_result(name: str, report: ProjectReport) -> AnalysisPassResult:
     status = "failed" if any(diagnostic.level == "FAILED" for diagnostic in report.diagnostics) else "ok"
     return AnalysisPassResult(name, status, list(report.diagnostics), {"counts": report.counts()})
+
+
+def _counts(diagnostics: list[Diagnostic]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for diagnostic in diagnostics:
+        counts[diagnostic.level] = counts.get(diagnostic.level, 0) + 1
+    return counts
