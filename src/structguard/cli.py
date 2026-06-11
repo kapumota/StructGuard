@@ -27,7 +27,7 @@ from .docs import build_documentation_model, docs_report, write_docs_html, write
 from .performance import build_performance_profiles, performance_report, write_performance_json, write_performance_html, write_performance_markdown, write_perf_harness, write_growth_json
 from .ci_outputs import write_junit, write_sarif, write_summary_markdown, print_github_annotations
 from .policy import default_policy_text, github_actions_workflow_text
-from .profiles import PROFILES, apply_profile_defaults
+from .profiles import PROFILES, ProfileLoadError, default_profiles_root, load_profile_file, load_profiles, apply_profile_defaults
 from .metadata import enriched_details
 from .doctor import collect_doctor_checks, write_doctor_json
 
@@ -108,6 +108,43 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         write_doctor_json(root, Path(args.json))
         print(f"JSON de doctor escrito en: {args.json}")
     return worst
+
+
+def cmd_profiles(args: argparse.Namespace) -> int:
+    root = Path(getattr(args, "profiles_root", "profiles"))
+    if getattr(args, "profiles_action", "list") == "list":
+        profiles = load_profiles(root)
+        if not profiles:
+            print(f"No se encontraron perfiles en: {root}")
+            return 1
+        print("Perfiles de dominio disponibles:")
+        for name in sorted(profiles):
+            profile = profiles[name]
+            print(f"- {profile.name}: {profile.display_name} [{profile.language}, {profile.status}]")
+            print(f"  ruta: {profile.path}")
+            print(f"  contratos: {len(profile.contracts)}")
+        print()
+        print("Perfiles de ejecución compatibles:")
+        for name in sorted(k for k in PROFILES if k not in profiles):
+            print(f"- {name}")
+        return 0
+
+    profile_path = Path(args.profile_path)
+    try:
+        profile = load_profile_file(profile_path)
+    except ProfileLoadError as exc:
+        print(f"Perfil inválido: {profile_path}")
+        for line in str(exc).splitlines():
+            print(f"- {line}")
+        return 1
+    print(f"Perfil válido: {profile.name}")
+    print(f"Nombre visible: {profile.display_name}")
+    print(f"Lenguaje: {profile.language}")
+    print(f"Estado: {profile.status}")
+    print("Contratos:")
+    for contract in profile.contract_paths():
+        print(f"- {contract}")
+    return 0
 
 def cmd_verify(args: argparse.Namespace) -> int:
     profile = apply_profile_defaults(args)
@@ -468,13 +505,22 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--strict", action="store_true", help="Devuelve código distinto de cero ante advertencias y requisitos obligatorios ausentes")
     sp.set_defaults(func=cmd_doctor)
 
+    sp = sub.add_parser("profiles", help="Lista y valida perfiles de dominio de StructGuard")
+    profiles_sub = sp.add_subparsers(dest="profiles_action", required=True)
+    list_sp = profiles_sub.add_parser("list", help="Lista perfiles encontrados bajo profiles/")
+    list_sp.add_argument("--profiles-root", default=str(default_profiles_root()), help="Directorio que contiene perfiles de dominio")
+    list_sp.set_defaults(func=cmd_profiles)
+    validate_sp = profiles_sub.add_parser("validate", help="Valida un profile.yml")
+    validate_sp.add_argument("profile_path", help="Ruta a profile.yml o al directorio del perfil")
+    validate_sp.set_defaults(func=cmd_profiles)
+
     def common(sp: argparse.ArgumentParser) -> None:
         sp.add_argument("path", help="Archivo .h de C++ o directorio a analizar")
         sp.add_argument("--headers-only", action="store_true", help="Analiza solo cabeceras .h/.hh/.hpp/.hxx")
         sp.add_argument("--no-infer", action="store_true", help="Desactiva contratos inferidos basados en CC-232/assert cuando aplique")
         sp.add_argument("--dsl", action="append", help="Carga un archivo o directorio de contratos DSL de StructGuard; se puede repetir")
         sp.add_argument("--max-cases", type=int, default=300, help="Máximo de estados acotados por método")
-        sp.add_argument("--profile", choices=sorted(PROFILES), help="Perfil de análisis: student, ci, strict, formal o security")
+        sp.add_argument("--profile", help="Perfil de dominio o ejecución: cc232, generic-cpp, stl-adapters, student, ci, strict, formal o security")
         sp.add_argument("--json", help="Escribe el reporte JSON en esta ruta")
         sp.add_argument("--html", help="Escribe el reporte HTML en esta ruta")
         sp.add_argument("-v", "--verbose", action="store_true", help="Imprime detalles de diagnóstico")
@@ -493,6 +539,9 @@ def build_parser() -> argparse.ArgumentParser:
     common(sp); sp.set_defaults(func=cmd_lint)
 
     sp = sub.add_parser("analyze", help="Ejecuta verificación acotada de contratos y lint de contratos en una sola pasada")
+    common(sp); strict_ast_options(sp); sp.set_defaults(func=cmd_analyze)
+
+    sp = sub.add_parser("scan", help="Ejecuta el análisis principal usando perfiles de dominio explícitos")
     common(sp); strict_ast_options(sp); sp.set_defaults(func=cmd_analyze)
 
     sp = sub.add_parser("suggest", help="Sugiere anotaciones // invariant, // requires y // ensures para cabeceras .h")

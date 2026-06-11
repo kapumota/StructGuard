@@ -32,6 +32,18 @@ Perfiles base agregados:
 - `profiles/stl-adapters/`
 - `profiles/custom-template/`
 
+#### Fase 1: sistema de perfiles real
+
+La Fase 1 convierte esos perfiles en entradas reales de la CLI. Ahora se pueden listar, validar y aplicar perfiles de dominio sin pasar manualmente todos los contratos base.
+
+```bash
+structguard profiles list
+structguard profiles validate profiles/generic-cpp/profile.yml
+structguard scan examples/generic_cpp --profile generic-cpp
+```
+
+`scan` es un alias operativo de `analyze` orientado al flujo nuevo. Los comandos antiguos siguen disponibles para mantener compatibilidad.
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
@@ -392,7 +404,7 @@ La arquitectura está separada en módulos dentro de `src/structguard/`:
 | `lint.py`, `security.py`, `performance.py` | Ejecutan análisis especializados. |
 | `docs.py`, `report.py`, `ci_outputs.py` | Generan reportes legibles por humanos y por herramientas de CI. |
 | `fuzz.py`, `counterexample.py`, `trace.py` | Producen secuencias abstractas, trazas y contraejemplos candidatos. |
-| `standard_contracts.py`, `profiles.py`, `policy.py` | Definen contratos, perfiles y políticas de ejecución. |
+| `standard_contracts.py`, `profiles/`, `policy.py` | Definen contratos, perfiles y políticas de ejecución. |
 
 
 #### 4. Primer objetivo recomendado con perfiles
@@ -400,18 +412,17 @@ La arquitectura está separada en módulos dentro de `src/structguard/`:
 Empieza por una ejecución simple sobre el perfil que corresponda. Para CC-232 puedes usar el contrato movido al perfil dedicado:
 
 ```bash
-structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl
+structguard scan ../Libreria_cc232/Semana2/include --profile cc232
 ```
 
-Este comando sirve para comprobar rápidamente si StructGuard puede leer las cabeceras, aplicar contratos base del perfil y emitir diagnósticos útiles. Para una librería C++ propia, usa contratos bajo `profiles/generic-cpp/contracts/` o crea un perfil nuevo desde `profiles/custom-template/`.
+Este comando sirve para comprobar rápidamente si StructGuard puede leer las cabeceras, aplicar contratos base del perfil y emitir diagnósticos útiles. Para una librería C++ propia, usa `--profile generic-cpp` o crea un perfil nuevo desde `profiles/custom-template/`.
 
 Para guardar resultados en archivos:
 
 ```bash
 mkdir -p report
-structguard analyze ../Libreria_cc232/Semana2/include \
-  --headers-only \
-  --dsl profiles/cc232/contracts/cc232_core.sgdsl \
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
   --html report/cc232_analysis.html \
   --json report/cc232_analysis.json
 ```
@@ -419,11 +430,10 @@ structguard analyze ../Libreria_cc232/Semana2/include \
 Si tienes Clang instalado y quieres exigir que las cabeceras sean parseables por un frontend real de C++, añade `--strict-ast`:
 
 ```bash
-structguard analyze ../Libreria_cc232/Semana2/include \
-  --headers-only \
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
   --strict-ast \
-  --std c++17 \
-  --dsl profiles/cc232/contracts/cc232_core.sgdsl
+  --std c++17
 ```
 
 `--strict-ast` no prueba los contratos; actúa como una compuerta de confianza. Si Clang no puede parsear una cabecera, StructGuard evita presentar resultados heurísticos como si fueran confiables.
