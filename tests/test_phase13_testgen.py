@@ -98,5 +98,5 @@ def test_fuzz_cli_warns_that_it_is_deprecated(tmp_path: Path, capsys) -> None:
     main(["fuzz", str(tmp_path), "--headers-only", "--seeds", "1", "--steps", "3"])
 
     captured = capsys.readouterr()
-    assert "DEPRECATED" in captured.out
+    assert "DEPRECADO" in captured.out
     assert "testgen" in captured.out

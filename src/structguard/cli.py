@@ -46,6 +46,7 @@ from .reporters.guarantee_badge import guarantee_badge_text
 from .reporting import derive_reports_from_canonical, load_canonical_report, write_canonical_report, write_lockfile
 from .cache import run_cached_scan
 from .testgen import build_testgen_manifest, testgen_project, write_testgen_cpp_tests, write_testgen_json, write_testgen_replay
+from .legacy import emit_legacy_notice, legacy_policy_rows
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -360,6 +361,7 @@ def cmd_contract(args: argparse.Namespace) -> int:
 
 
 def cmd_verify(args: argparse.Namespace) -> int:
+    emit_legacy_notice("verify")
     profile = apply_profile_defaults(args)
     root = Path(args.path)
     strict = _strict_ast_report(root, args)
@@ -370,6 +372,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 
 def cmd_lint(args: argparse.Namespace) -> int:
+    emit_legacy_notice("lint")
     root = Path(args.path)
     report = lint_project(root, headers_only=args.headers_only, dsl_paths=getattr(args, "dsl", None))
     _write_outputs(report, args, "Reporte de lint StructGuard")
@@ -453,6 +456,7 @@ def cmd_suggest(args: argparse.Namespace) -> int:
 
 
 def cmd_bench(args: argparse.Namespace) -> int:
+    emit_legacy_notice("bench")
     root = Path(args.path)
     report = bench_project(root, headers_only=args.headers_only)
     _write_outputs(report, args, "Perfil de benchmark StructGuard")
@@ -477,7 +481,8 @@ def cmd_trace(args: argparse.Namespace) -> int:
 
 
 def cmd_fuzz(args: argparse.Namespace) -> int:
-    print("[DEPRECATED] El comando fuzz genera secuencias abstractas y será reemplazado por testgen. No ejecuta binarios ni realiza fuzzing nativo.")
+    print("[DEPRECADO] El comando fuzz se mantiene como alias heredado. Use testgen para generación abstracta de pruebas.")
+    emit_legacy_notice("fuzz")
     root = Path(args.path)
     report = fuzz_project(root, headers_only=args.headers_only, seeds=args.seeds, steps=args.steps, structure_filter=args.structure)
     _write_outputs(report, args, "StructGuard Fuzz/TestGen heurístico")
@@ -537,6 +542,7 @@ def cmd_testgen(args: argparse.Namespace) -> int:
 
 
 def cmd_security(args: argparse.Namespace) -> int:
+    emit_legacy_notice("security")
     root = Path(args.path)
     report = security_project(root, headers_only=args.headers_only, deep=args.deep)
     _write_outputs(report, args, "StructGuard Deep Security heurístico" if args.deep else "Reporte de seguridad StructGuard")
@@ -550,6 +556,7 @@ def cmd_security(args: argparse.Namespace) -> int:
 
 
 def cmd_ci(args: argparse.Namespace) -> int:
+    emit_legacy_notice("ci")
     apply_profile_defaults(args)
     root = Path(args.path)
     try:
@@ -607,6 +614,7 @@ def cmd_frontend(args: argparse.Namespace) -> int:
 
 
 def cmd_clang(args: argparse.Namespace) -> int:
+    emit_legacy_notice("clang")
     root = Path(args.path)
     report = clang_frontend_project(root, headers_only=args.headers_only, clang=args.clang, std=args.std, max_files=args.max_files, timeout=args.timeout, ast_filter=None if args.no_ast_filter else "auto")
     _write_outputs(report, args, "Reporte del frontend AST Clang de StructGuard")
@@ -617,6 +625,7 @@ def cmd_clang(args: argparse.Namespace) -> int:
 
 
 def cmd_formal(args: argparse.Namespace) -> int:
+    emit_legacy_notice("formal")
     root = Path(args.path)
     _, report = write_formal_artifacts(root, Path(args.out_dir), backend=args.backend, headers_only=args.headers_only, infer=not args.no_infer, dsl_paths=getattr(args, "dsl", None), run_solver=args.run_solver)
     _write_outputs(report, args, "Reporte del backend formal de StructGuard")
@@ -652,12 +661,14 @@ def cmd_python_front(args: argparse.Namespace) -> int:
     return print_report(report, verbose=args.verbose)
 
 def cmd_assist(args: argparse.Namespace) -> int:
+    emit_legacy_notice("assist")
     root = Path(args.path); report = assist_project(root, headers_only=args.headers_only, dsl_paths=getattr(args, "dsl", None), seeds=args.seeds, steps=args.steps); _write_outputs(report, args, "Recomendaciones heurísticas de StructGuard")
     if args.assist_json:
         write_assist_json(report, Path(args.assist_json)); print(f"JSON de asistencia escrito en: {args.assist_json}")
     return print_report(report, verbose=args.verbose)
 
 def cmd_advanced(args: argparse.Namespace) -> int:
+    emit_legacy_notice("advanced")
     report = advanced_report(); _write_outputs(report, args, "Estructuras avanzadas de StructGuard")
     if args.dsl_out:
         write_advanced_dsl(Path(args.dsl_out)); print(f"DSL avanzado escrito en: {args.dsl_out}")
@@ -684,6 +695,7 @@ def cmd_docs(args: argparse.Namespace) -> int:
 
 
 def cmd_perf(args: argparse.Namespace) -> int:
+    emit_legacy_notice("perf")
     root = Path(args.path)
     baseline = Path(args.baseline) if args.baseline else None
     profiles = build_performance_profiles(root, headers_only=args.headers_only)
@@ -725,6 +737,17 @@ def cmd_report(args: argparse.Namespace) -> int:
         return 0
     for path in written:
         print(f"Reporte derivado escrito en: {path}")
+    return 0
+
+
+def cmd_legacy(args: argparse.Namespace) -> int:
+    if args.legacy_action != "list":
+        raise ValueError(f"Acción legacy no soportada: {args.legacy_action}")
+    print("Comandos heredados de StructGuard")
+    print("comando | decision | reemplazo o estado | retiro")
+    print("-----------------")
+    for policy in legacy_policy_rows():
+        print(f"{policy.command} | {policy.decision} | {policy.replacement} | {policy.removal}")
     return 0
 
 
@@ -1088,6 +1111,11 @@ def build_parser() -> argparse.ArgumentParser:
     derive_sp.add_argument("--junit", help="Escribe reporte JUnit XML derivado")
     derive_sp.add_argument("--json", help="Escribe una copia normalizada del reporte canónico")
     derive_sp.set_defaults(func=cmd_report)
+
+    sp = sub.add_parser("legacy", help="Muestra decisiones de migración para comandos heredados")
+    legacy_sub = sp.add_subparsers(dest="legacy_action", required=True)
+    list_sp = legacy_sub.add_parser("list", help="Lista decisiones de compatibilidad, migración o deprecación")
+    list_sp.set_defaults(func=cmd_legacy)
 
     sp = sub.add_parser("init", help="Crea un structguard.yml inicial")
     sp.add_argument("path", nargs="?", default=".")

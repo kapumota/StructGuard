@@ -832,6 +832,75 @@ artifacts/report.sarif
 Esta fase no agrega nuevos analizadores. Su función es convertir el benchmark, la política y los reportes canónicos en compuertas automáticas de regresión.
 
 
+
+#### Fase 15: deprecación controlada de comandos heredados
+
+La Fase 15 centraliza la decisión sobre comandos heredados del CLI.
+
+El objetivo es reducir la complejidad histórica sin romper usuarios actuales, scripts docentes, demos ni workflows existentes.
+
+Comandos revisados:
+
+```text
+verify
+lint
+security
+perf
+ci
+bench
+assist
+advanced
+clang
+formal
+fuzz
+```
+
+Cada comando heredado tiene una decisión explícita:
+
+```text
+mantener
+migrar
+deprecar
+eliminar después
+```
+
+El registro de decisiones está documentado en:
+
+```text
+docs/CLI_DEPRECATION.md
+```
+
+También se puede consultar desde la CLI:
+
+```bash
+structguard legacy list
+```
+
+Estrategia de transición:
+
+```text
+mantener alias temporales
+mostrar avisos de compatibilidad o deprecación
+documentar reemplazos
+migrar pruebas y documentación
+eliminar solo cuando no haya referencias activas
+```
+
+Ejemplos de reemplazo:
+
+```text
+verify    -> scan --preset contracts
+lint      -> scan --preset contracts
+security  -> scan --preset security
+ci        -> scan --preset ci y workflows de CI
+bench     -> python benchmarks/run_benchmark.py
+clang     -> scan --language cpp --frontend clang --compile-commands ...
+fuzz      -> testgen
+```
+
+Esta fase no elimina comandos. Solo agrega avisos, documentación y una tabla canónica para que la migración posterior sea medible y segura.
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
