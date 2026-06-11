@@ -13,6 +13,7 @@ from .dsl import apply_dsl_contracts, load_dsl
 from .expr import Binary, Bool, Call, ExprError, Ident, Node, Number, Unary, parse_expr, normalize_expr
 from .model import ClassModel, Contract, Diagnostic, MethodModel, ProjectReport
 from .verifier import infer_class_invariants, infer_method_ensures, infer_method_requires, ASSIGN_RE, RETURN_RE, extract_body_vars, contract_exprs, size_symbol, capacity_symbol, extract_initializer_assignments
+from .exporters.dafny import export_dafny_contracts, write_dafny_manifest
 
 
 @dataclass
@@ -340,10 +341,56 @@ def write_formal_artifacts(
     run_solver: bool = False,
 ) -> tuple[list[FormalArtifact], ProjectReport]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    artifacts: list[FormalArtifact] = []
+    if backend == "dafny":
+        report = ProjectReport(root=str(root), diagnostics=[])
+        if not dsl_paths:
+            report.diagnostics.append(
+                Diagnostic(
+                    level="WARNING",
+                    code="FORMAL_DAFNY_NO_CONTRACTS",
+                    message="El backend Dafny experimental requiere contratos SGDSL; no traduce C++ real con punteros.",
+                    file=str(root),
+                )
+            )
+            return artifacts, report
+        results = export_dafny_contracts(dsl_paths, out_dir, run_verifier=run_solver)
+        manifest = out_dir / "dafny_manifest.json"
+        write_dafny_manifest(results, manifest)
+        for result in results:
+            artifact_file = result.file or str(manifest)
+            artifacts.append(FormalArtifact("dafny", artifact_file, result.structure, result.status, result.notes))
+            level = "INFO"
+            if result.status == "VERIFIED":
+                level = "PROVED"
+            elif result.status == "FAILED":
+                level = "FAILED"
+            elif result.status in {"UNKNOWN", "UNSUPPORTED"}:
+                level = "UNKNOWN"
+            report.diagnostics.append(
+                Diagnostic(
+                    level=level,
+                    code="FORMAL_DAFNY_ARTIFACT",
+                    message=f"Artefacto Dafny experimental para {result.structure}: {result.status}.",
+                    file=artifact_file,
+                    symbol=result.structure,
+                    details={"backend": "dafny", "status": result.status, "notes": result.notes},
+                )
+            )
+        report.diagnostics.append(
+            Diagnostic(
+                level="INFO",
+                code="FORMAL_DAFNY_MANIFEST",
+                message="Manifiesto Dafny escrito.",
+                file=str(manifest),
+                details={"artifacts": len(artifacts), "manifest": str(manifest), "backend": backend},
+            )
+        )
+        return artifacts, report
+
     classes = scan_project(root, headers_only=headers_only)
     dsl_contracts = load_dsl(dsl_paths)
     dsl_diagnostics = apply_dsl_contracts(classes, dsl_contracts) if dsl_contracts else []
-    artifacts: list[FormalArtifact] = []
     report = ProjectReport(root=str(root), diagnostics=list(dsl_diagnostics))
     if not classes:
         report.diagnostics.append(Diagnostic(level="WARNING", code="FORMAL_NO_CLASSES", message="No se encontraron clases para la exportación formal.", file=str(root)))

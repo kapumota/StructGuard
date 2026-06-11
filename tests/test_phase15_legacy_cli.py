@@ -83,3 +83,13 @@ def test_legacy_rows_keep_stable_order() -> None:
         "formal",
         "fuzz",
     ]
+
+
+def test_formal_uses_experimental_notice(capsys) -> None:  # type: ignore[no-untyped-def]
+    emit_legacy_notice("formal")
+
+    captured = capsys.readouterr()
+
+    assert "Aviso experimental" in captured.err
+    assert "formal" in captured.err
+    assert "backend formal experimental" in captured.err

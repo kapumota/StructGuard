@@ -110,7 +110,9 @@ def get_legacy_policy(command: str) -> LegacyCommandPolicy:
 
 def format_legacy_notice(policy: LegacyCommandPolicy) -> str:
     prefix = "Advertencia legacy"
-    if policy.decision == "mantener":
+    if policy.command == "formal":
+        prefix = "Aviso experimental"
+    elif policy.decision == "mantener":
         prefix = "Aviso legacy"
     return (
         f"{prefix}: el comando '{policy.command}' tiene decision '{policy.decision}'. "

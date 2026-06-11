@@ -1,0 +1,8 @@
+package formal.dafny;
+
+structure ArrayStack {
+  invariant n >= 0;
+  invariant n <= capacity();
+  method add { requires 0 <= i && i <= n; ensures n == old(n) + 1; }
+  method remove { requires 0 <= i && i < n; ensures n == old(n) - 1; }
+}
