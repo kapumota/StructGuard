@@ -113,3 +113,37 @@ structguard scan examples/generic_cpp \
 
 En este modo, el perfil sigue aportando configuración de dominio, pero los contratos cargados son solo los indicados explícitamente.
 Esto evita que un ejemplo parcial de `Stack` falle por contratos de `Queue` o `Vector` que pertenecen al mismo perfil general.
+
+### Reglas estructurales de Fase 9
+
+La Fase 9 conecta reglas estructurales al motor modular mediante dos pasos nuevos:
+
+```text
+RunStructuralRules
+RunComplexityHints
+```
+
+`RunStructuralRules` agrupa reglas contractuales, reglas de límites y reglas semánticas de estructuras. `RunComplexityHints` agrega pistas conservadoras de complejidad cuando el patrón es claro.
+
+Presets que ejecutan reglas estructurales:
+
+```text
+contracts
+security
+ci
+full
+```
+
+Presets que ejecutan pistas de complejidad:
+
+```text
+security
+ci
+full
+```
+
+La referencia completa de reglas está en:
+
+```text
+docs/RULES_REFERENCE.md
+```

@@ -234,6 +234,44 @@ Módulos nuevos:
 - `src/structguard/memory/aliasing.py`
 - `src/structguard/analyzers/memory_safety.py`
 
+#### Fase 9: análisis estructural por contratos
+
+La Fase 9 convierte reglas educativas en análisis estructural configurable. El objetivo es que las reglas iniciales tengan identificador estable, descripción, severidad por defecto, ejemplos, perfiles aplicables y CWE cuando corresponde.
+
+Reglas iniciales:
+
+```text
+SG-CONTRACT-MISSING-PRECONDITION
+SG-STACK-POP-EMPTY
+SG-QUEUE-FIFO-VIOLATION
+SG-BOUNDS-INDEX-RISK
+SG-SIZE-NOT-UPDATED
+SG-HEAP-PROPERTY-RISK
+SG-BST-ORDER-RISK
+SG-NULL-DEREFERENCE-RISK
+SG-MEMORY-OWNERSHIP-RISK
+```
+
+Ejemplo:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security
+```
+
+Documentación nueva de esta fase:
+
+- `docs/RULES_REFERENCE.md`
+
+Módulos nuevos o ampliados:
+
+- `src/structguard/analyzers/contracts.py`
+- `src/structguard/analyzers/bounds.py`
+- `src/structguard/analyzers/structure_semantics.py`
+- `src/structguard/analyzers/memory_safety.py`
+- `src/structguard/analyzers/complexity_hints.py`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
