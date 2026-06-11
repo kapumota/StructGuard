@@ -871,25 +871,102 @@ bash scripts/demo_bug_detection.sh  # debe fallar de forma esperada y validada
 bash scripts/final_demo.sh          # ejecuta ambas rutas
 ```
 
-#### 7. Lectura de resultados
+### Fase 7: política YAML validada
 
-StructGuard separa el diagnóstico operativo del nivel de confianza.
+La Fase 7 agrega validación estricta para `structguard.yml`.
 
-| Resultado | Interpretación |
-|---|---|
-| `FAILED` | Hay una violación, contraejemplo, fallo de política o error de parseo en el modelo soportado. Debe revisarse. |
-| `UNKNOWN` | El método, contrato o patrón requiere un modelo más fuerte. No debe leerse como correcto ni como incorrecto. |
-| `WARNING` | Hay riesgo, ausencia de contrato o práctica que conviene revisar. Puede no ser un bug real. |
-| `INFO` | Señal auxiliar, resumen o recomendación. |
-| `BOUNDED_CHECK_PASSED` | No se encontró violación dentro de los límites del modelo acotado. No es una prueba universal. |
-| `HEURISTIC` | Resultado basado en patrones o inferencias. Sirve para revisión, no para una conclusión formal. |
-| `FORMALLY_VERIFIED` | Una obligación formal generada fue descargada por un backend formal soportado. No significa que todo el programa C++ esté probado. |
+El objetivo de esta fase es evitar configuraciones ambiguas, claves mal escritas o campos ignorados silenciosamente. A partir de esta fase, StructGuard puede validar la política del proyecto antes de ejecutar análisis, reportes o flujos de CI.
 
-Regla práctica:
+#### Comando principal
 
-- Un diagnóstico `FAILED` indica una violación o contraejemplo dentro del modelo soportado.
-- Un diagnóstico `UNKNOWN` indica que el método o patrón requiere un modelo más fuerte.
-- Un diagnóstico `WARNING` indica riesgo, ausencia de contrato o práctica que conviene revisar.
+```bash
+structguard policy validate structguard.yml
+```
+
+#### Ejemplo de error esperado
+
+```text
+Política inválida: structguard.yml
+[FAILED] POLICY_UNKNOWN_KEY deep-secuirty
+  Clave desconocida: deep-secuirty. Quizá quiso decir deep-security.
+```
+
+#### Archivos principales
+
+```text
+src/structguard/policy/
+schemas/structguard-policy.schema.json
+docs/POLICY_REFERENCE.md
+structguard.yml
+```
+
+#### Alcance
+
+Esta fase no agrega nuevos analizadores. Su función es asegurar que la configuración usada por StructGuard sea explícita, validada y reproducible.
+
+La validación de política es especialmente importante para fases posteriores, porque evita que presets, perfiles, contratos o reglas se ejecuten con opciones mal escritas o parcialmente ignoradas.
+
+#### Resultado
+
+Con esta fase, StructGuard diferencia entre:
+
+```text
+configuración válida
+configuración inválida
+claves desconocidas
+valores fuera de esquema
+opciones no soportadas
+```
+
+Esto reduce errores silenciosos y prepara el proyecto para flujos más reproducibles de benchmark, reportes, cache y CI.
+
+
+### Comandos recomendados y comandos heredados
+
+StructGuard conserva comandos heredados por compatibilidad, pero el flujo recomendado para nuevas fases es usar `scan --preset`.
+
+El objetivo es evitar que el CLI crezca con comandos duplicados y reducir la deuda técnica de mantenimiento. Los comandos antiguos seguirán disponibles durante una etapa de transición, pero las nuevas funcionalidades deben integrarse primero en el motor modular y en los presets de `scan`.
+
+#### Flujo recomendado
+
+```bash
+structguard scan . --preset source
+structguard scan . --preset contracts
+structguard scan . --preset security
+structguard scan . --preset ci
+structguard scan . --preset full
+```
+
+#### Tabla de migración
+
+| Comando heredado | Reemplazo recomendado                        | Estado                 |
+| ---------------- | -------------------------------------------- | ---------------------- |
+| `analyze`        | `scan --preset contracts`                    | Compatibilidad         |
+| `verify`         | `scan --preset contracts`                    | Compatibilidad         |
+| `lint`           | `scan --preset contracts`                    | Compatibilidad         |
+| `security`       | `scan --preset security`                     | Compatibilidad         |
+| `ci`             | `scan --preset ci`                           | Compatibilidad         |
+| `bench`          | Futuro `benchmark`                           | Pendiente de migración |
+| `fuzz`           | `testgen`                                    | Deprecado              |
+| `assist`         | Sin reemplazo directo                        | Legacy heurístico      |
+| `advanced`       | Perfiles y contratos SGDSL                   | Legacy educativo       |
+| `clang`          | `scan --language cpp --compile-commands ...` | Compatibilidad         |
+| `formal`         | Exportadores formales futuros                | Experimental           |
+
+#### Regla para nuevas fases
+
+Las nuevas fases deben implementar primero sus capacidades en:
+
+```text
+AnalysisEngine
+FindingIR
+reporters
+policy
+scan --preset
+```
+
+Los comandos heredados solo deben actuar como envoltorios de compatibilidad cuando exista una traducción clara al flujo nuevo.
+
 
 
 #### 8. Uso de contratos DSL
@@ -921,19 +998,68 @@ Usa `--dsl` en `analyze`, `docs`, `security`, `perf`, `ci`, `fuzz` y otros coman
 structguard analyze <ruta> --headers-only --dsl contracts/cc232_core.sgdsl
 ```
 
-#### 9. Consejos prácticos para CC-232
 
-Anota primero estructuras simples como `ArrayStack`, `ArrayQueue`, `ArrayDeque` y `DengVector`. Luego avanza hacia árboles, heaps, hashing, grafos y estructuras avanzadas.
 
-Orden recomendado:
+### Política de deprecación del CLI
 
-1. Ejecuta `analyze` sin `--strict-ast` para detectar problemas rápidos de contratos y patrones.
-2. Corrige errores obvios de precondiciones, índices e invariantes.
-3. Ejecuta `docs` para revisar qué API detectó StructGuard.
-4. Ejecuta `security --deep` para buscar riesgos de límites, underflow, overflow e inicialización.
-5. Ejecuta `perf` para obtener una lectura inicial de complejidad esperada y generar un harness.
-6. Añade `--strict-ast` cuando las cabeceras ya compilen o cuando quieras usar Clang como compuerta estricta.
-7. Integra `ci` cuando el flujo local sea estable.
+StructGuard mantiene comandos heredados para no romper flujos existentes, scripts de demo o pruebas históricas. Sin embargo, esos comandos no representan el diseño final del CLI.
+
+La migración será gradual.
+
+#### Etapas
+
+| Etapa    | Decisión                                                               |
+| -------- | ---------------------------------------------------------------------- |
+| Fase 9.6 | Documentar comandos heredados y marcar `fuzz` como deprecado           |
+| Fase 10  | Medir qué comandos se usan en benchmark, demos y documentación         |
+| Fase 11  | Agregar advertencias de deprecación para comandos con reemplazo claro  |
+| Fase 12  | Redirigir comandos simples hacia `scan --preset ...` cuando sea seguro |
+| Fase 15  | Decidir qué comandos se mantienen, migran o eliminan                   |
+
+#### Criterio de eliminación
+
+Un comando heredado solo puede eliminarse si cumple estas condiciones:
+
+```text
+tiene reemplazo documentado
+sus pruebas fueron migradas
+no aparece en demos activas
+no aparece en documentación principal
+no es necesario para compatibilidad de una fase anterior
+```
+
+#### Ejemplo de transición
+
+El comando:
+
+```bash
+structguard fuzz
+```
+
+queda reservado como alias heredado. El comando recomendado para generación abstracta de casos de prueba es:
+
+```bash
+structguard testgen
+```
+
+`fuzz` no debe presentarse como fuzzing nativo, porque no ejecuta binarios ni usa instrumentación como sanitizers, libFuzzer o AFL++.
+
+#### Resultado esperado
+
+El CLI debe converger gradualmente hacia un flujo más simple:
+
+```text
+scan
+contract
+profile
+policy
+report
+benchmark
+testgen
+```
+
+Esto permite mantener compatibilidad sin duplicar indefinidamente la lógica de análisis.
+
 
 
 #### 10. Limitaciones importantes
