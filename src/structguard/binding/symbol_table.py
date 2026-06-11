@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from structguard.cppscan import scan_project
+from structguard.ir.source_ir import SourceIR
 
 
 @dataclass(frozen=True)
@@ -124,6 +125,43 @@ def _inline_contracts(raw_contracts: list[Any], source: str) -> list[InlineContr
             )
         )
     return out
+
+
+def build_source_symbol_table_from_source_ir(source_ir: SourceIR) -> SourceSymbolTable:
+    table = SourceSymbolTable(root=source_ir.root)
+    for structure_ir in source_ir.structures:
+        source = structure_ir.location.file
+        structure = table.structures.setdefault(
+            structure_ir.qualified_name,
+            SourceStructureSymbol(
+                name=structure_ir.qualified_name,
+                source=source,
+                line=structure_ir.location.line,
+            ),
+        )
+        if structure_ir.name not in table.structures:
+            table.structures[structure_ir.name] = structure
+        for field_ir in structure_ir.fields:
+            structure.fields.setdefault(
+                field_ir.name,
+                SourceFieldSymbol(
+                    name=field_ir.name,
+                    class_name=structure_ir.qualified_name,
+                    source=field_ir.location.file,
+                    line=field_ir.location.line,
+                ),
+            )
+        for method_ir in structure_ir.methods:
+            structure.add_method(
+                SourceMethodSymbol(
+                    name=method_ir.name,
+                    class_name=structure_ir.qualified_name,
+                    signature=method_ir.signature,
+                    source=method_ir.location.file,
+                    line=method_ir.location.line,
+                )
+            )
+    return table
 
 
 def build_source_symbol_table(root: Path, headers_only: bool = False) -> SourceSymbolTable:

@@ -36,6 +36,8 @@ from .sgdsl.parser import load_sgdsl
 from .ir.contract_ir import ContractIR, build_contract_ir
 from .ir.contract_validator import validate_contract_ir
 from .binding import build_binding_ir, match_contracts_to_source
+from .frontend.cpp import build_cpp_source_ir
+from .ir.source_ir import SourceDiagnostic, SourceIR
 
 
 def print_report(report: ProjectReport, verbose: bool = False) -> int:
@@ -98,6 +100,55 @@ def _write_outputs(report: ProjectReport, args: argparse.Namespace, title: str) 
         write_html(report, Path(args.html), title=title)
 
 
+
+
+
+def _source_diagnostic_to_project(diagnostic: SourceDiagnostic) -> Diagnostic:
+    location = diagnostic.location
+    return Diagnostic(
+        level=diagnostic.level,
+        code=diagnostic.code,
+        message=diagnostic.message,
+        file=location.file if location else None,
+        line=location.line if location and location.line else None,
+        details=diagnostic.details,
+    )
+
+
+def _write_source_ir_if_requested(source_ir: SourceIR, args: argparse.Namespace) -> None:
+    out_path = getattr(args, "source_ir_json", None)
+    if not out_path:
+        return
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(source_ir.as_dict(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"SourceIR escrito en: {out}")
+
+
+def _build_cpp_source_ir_if_requested(root: Path, args: argparse.Namespace) -> SourceIR | None:
+    language = getattr(args, "language", None)
+    compile_commands = getattr(args, "compile_commands", None)
+    frontend = getattr(args, "frontend", "auto")
+    if language != "cpp" and not compile_commands and frontend == "auto":
+        return None
+    if language not in {None, "cpp"}:
+        return None
+    if frontend == "lightweight":
+        from .frontend.cpp.source_ir_builder import _lightweight_source_ir
+
+        source_ir = _lightweight_source_ir(root, headers_only=getattr(args, "headers_only", False), reason="Frontend ligero solicitado explícitamente")
+    else:
+        source_ir = build_cpp_source_ir(
+            root,
+            compile_commands=Path(compile_commands) if compile_commands else None,
+            clang=getattr(args, "clang", None),
+            std=getattr(args, "std", "c++17"),
+            timeout=getattr(args, "timeout", 12),
+            headers_only=getattr(args, "headers_only", False),
+            fallback_allowed=getattr(args, "fallback_allowed", False),
+        )
+    _write_source_ir_if_requested(source_ir, args)
+    return source_ir
 
 def cmd_doctor(args: argparse.Namespace) -> int:
     root = Path(getattr(args, "path", "."))
@@ -171,7 +222,9 @@ def cmd_contract(args: argparse.Namespace) -> int:
         return 1
 
     if getattr(args, "contract_action", "check") == "bind":
-        binding_ir = build_binding_ir(Path(args.path), ir, headers_only=getattr(args, "headers_only", False))
+        root = Path(args.path)
+        source_ir = _build_cpp_source_ir_if_requested(root, args)
+        binding_ir = build_binding_ir(root, ir, headers_only=getattr(args, "headers_only", False), source_ir=source_ir)
         binding_diagnostics = match_contracts_to_source(binding_ir)
         failed = [diagnostic for diagnostic in binding_diagnostics if getattr(diagnostic, "level", "") == "FAILED"]
         if getattr(args, "output", None):
@@ -259,6 +312,19 @@ def cmd_lint(args: argparse.Namespace) -> int:
 def cmd_analyze(args: argparse.Namespace) -> int:
     profile = apply_profile_defaults(args)
     root = Path(args.path)
+    source_ir = _build_cpp_source_ir_if_requested(root, args)
+    source_report = None
+    if source_ir is not None:
+        source_report = ProjectReport(root=str(root), diagnostics=[
+            Diagnostic(
+                level="INFO",
+                code="CPP_SOURCE_IR_SUMMARY",
+                message=f"Frontend C++ activo: {source_ir.frontend}",
+                file=str(root),
+                details=source_ir.summary(),
+            ),
+            *[_source_diagnostic_to_project(diagnostic) for diagnostic in source_ir.diagnostics],
+        ])
     strict = _strict_ast_report(root, args)
     verify = verify_project(root, headers_only=args.headers_only, infer=not args.no_infer, max_cases=args.max_cases, dsl_paths=getattr(args, "dsl", None), clang_structural=bool(profile and profile.strict_ast), clang=getattr(args, "clang", None), std=getattr(args, "std", "c++17"), max_files=getattr(args, "max_files", 30), timeout=getattr(args, "timeout", 12))
     lint = lint_project(root, headers_only=args.headers_only, dsl_paths=getattr(args, "dsl", None))
@@ -270,7 +336,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         with TemporaryDirectory(prefix="structguard-formal-") as tmp:
             _, formal_report = write_formal_artifacts(root, Path(tmp), backend="smt", headers_only=args.headers_only, infer=not args.no_infer, dsl_paths=getattr(args, "dsl", None), run_solver=profile.run_solver)
             extra_reports.append(formal_report)
-    merged = _merge_reports(root, strict, verify, lint, *extra_reports)
+    merged = _merge_reports(root, source_report, strict, verify, lint, *extra_reports)
     if profile:
         merged.diagnostics.insert(0, ProjectReport(root=str(root), diagnostics=[]).diagnostics[0] if False else Diagnostic(level="INFO", code="ANALYSIS_PROFILE", message=f"Perfil de análisis activo: {profile.name}", file=str(root), details={"profile": profile.__dict__}))
     _write_outputs(merged, args, "Reporte de análisis StructGuard")
@@ -621,6 +687,14 @@ def build_parser() -> argparse.ArgumentParser:
     bind_sp.add_argument("path", help="Archivo o directorio C++ a vincular con contratos externos")
     bind_sp.add_argument("--contract", dest="contract_paths", action="append", required=True, help="Archivo o directorio .sgdsl; se puede repetir")
     bind_sp.add_argument("--headers-only", action="store_true", help="Analiza solo cabeceras .h/.hh/.hpp/.hxx")
+    bind_sp.add_argument("--language", choices=["cpp"], help="Lenguaje de entrada para construir SourceIR")
+    bind_sp.add_argument("--compile-commands", help="Ruta a compile_commands.json para el frontend C++ con Clang")
+    bind_sp.add_argument("--frontend", choices=["auto", "clang", "lightweight"], default="auto", help="Frontend C++ usado para el binding")
+    bind_sp.add_argument("--fallback-allowed", action="store_true", help="Permite usar frontend ligero si Clang falla")
+    bind_sp.add_argument("--clang", help="Ruta al binario clang++/clang")
+    bind_sp.add_argument("--std", default="c++17", help="Estándar C++ pasado a Clang")
+    bind_sp.add_argument("--timeout", type=int, default=12, help="Tiempo límite por archivo para Clang")
+    bind_sp.add_argument("--source-ir-json", help="Escribe SourceIR JSON en esta ruta")
     bind_sp.add_argument("--json", action="store_true", help="Imprime BindingIR y diagnósticos como JSON")
     bind_sp.add_argument("--output", help="Escribe BindingIR JSON en una ruta")
     bind_sp.set_defaults(func=cmd_contract)
@@ -632,6 +706,11 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--dsl", action="append", help="Carga un archivo o directorio de contratos DSL de StructGuard; se puede repetir")
         sp.add_argument("--max-cases", type=int, default=300, help="Máximo de estados acotados por método")
         sp.add_argument("--profile", help="Perfil de dominio o ejecución: cc232, generic-cpp, stl-adapters, student, ci, strict, formal o security")
+        sp.add_argument("--language", choices=["cpp"], help="Lenguaje de entrada para el frontend canónico")
+        sp.add_argument("--compile-commands", help="Ruta a compile_commands.json para el frontend C++ con Clang")
+        sp.add_argument("--frontend", choices=["auto", "clang", "lightweight"], default="auto", help="Frontend C++ a usar cuando se solicita --language cpp")
+        sp.add_argument("--fallback-allowed", action="store_true", help="Permite degradar a frontend ligero si Clang no está disponible o falla")
+        sp.add_argument("--source-ir-json", help="Escribe SourceIR JSON en esta ruta")
         sp.add_argument("--json", help="Escribe el reporte JSON en esta ruta")
         sp.add_argument("--html", help="Escribe el reporte HTML en esta ruta")
         sp.add_argument("-v", "--verbose", action="store_true", help="Imprime detalles de diagnóstico")

@@ -8,6 +8,11 @@ contracts:
   - contracts/stack.sgdsl
   - contracts/queue.sgdsl
   - contracts/vector.sgdsl
+frontend:
+  cpp:
+    primary: clang
+    fallback: lightweight
+    fallback_allowed: false
 analysis:
   headers_only: true
   strict_ast: false

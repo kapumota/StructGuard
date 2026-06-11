@@ -6,6 +6,11 @@ language: cpp
 status: draft
 contracts:
   - contracts/stl_containers.sgdsl
+frontend:
+  cpp:
+    primary: clang
+    fallback: lightweight
+    fallback_allowed: false
 analysis:
   headers_only: true
   strict_ast: false
