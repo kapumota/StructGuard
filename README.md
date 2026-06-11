@@ -65,6 +65,25 @@ Módulos nuevos:
 - `src/structguard/ir/contract_ir.py`
 - `src/structguard/ir/contract_validator.py`
 
+#### Fase 3: binding entre contrato y código fuente
+
+La Fase 3 agrega una validación explícita entre contratos externos SGDSL y símbolos reales del código fuente.
+
+```bash
+structguard contract bind examples/generic_cpp \
+  --contract profiles/generic-cpp/contracts/stack.sgdsl
+```
+
+Esta fase introduce `BindingIR`, tabla de símbolos fuente, resolución de nombres y detección de contratos huérfanos. Si un contrato declara un método que ya no existe en el código, StructGuard emite `BINDING_ORPHAN_METHOD` en lugar de ignorarlo.
+
+Documentación nueva de esta fase:
+
+- `docs/CONTRACT_BINDING.md`
+
+Módulos nuevos:
+
+- `src/structguard/binding/`
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
