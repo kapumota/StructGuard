@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://structguard.local/schemas/structguard-policy.schema.json",
+  "title": "StructGuard Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version"],
+  "properties": {
+    "version": {"type": ["integer", "string"]},
+    "project": {"type": "string"},
+    "profile": {"type": "string"},
+    "paths": {"type": "array", "items": {"type": "string"}},
+    "scan": {"type": "object"},
+    "frontend": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpp": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": {"type": "string"},
+            "fallback": {"type": "string"},
+            "fallback_allowed": {"type": "boolean"},
+            "compile_commands": {"type": "string"},
+            "std": {"type": "string"},
+            "clang": {"type": "string"},
+            "timeout": {"type": "integer"},
+            "max_files": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "rules": {"type": "object", "additionalProperties": true},
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sarif": {"type": "boolean"},
+        "junit": {"type": "boolean"},
+        "html": {"type": "boolean"},
+        "json": {"type": "boolean"},
+        "markdown": {"type": "boolean"},
+        "summary_md": {"type": "boolean"}
+      }
+    },
+    "verification": {"type": "object"},
+    "lint": {"type": "object"},
+    "security": {"type": "object"},
+    "fuzz": {"type": "object"},
+    "thresholds": {"type": "object"},
+    "clang": {"type": "object"},
+    "ci": {"type": "object"},
+    "report": {"type": "object"},
+    "dsl": {"type": "object"},
+    "formal": {"type": "object"},
+    "pipeline": {"type": "object"},
+    "frontends": {"type": "object"},
+    "assist": {"type": "object"},
+    "advanced": {"type": "object"},
+    "docs": {"type": "object"},
+    "deep-security": {"type": "boolean"}
+  }
+}

@@ -28,6 +28,7 @@ from .docs import build_documentation_model, docs_report, write_docs_html, write
 from .performance import build_performance_profiles, performance_report, write_performance_json, write_performance_html, write_performance_markdown, write_perf_harness, write_growth_json
 from .ci_outputs import write_junit, write_sarif, write_summary_markdown, print_github_annotations
 from .policy import default_policy_text, github_actions_workflow_text
+from .policy.validator import validate_policy_file
 from .profiles import PROFILES, ProfileLoadError, default_profiles_root, load_profile_file, load_profiles, apply_profile_defaults
 from .metadata import enriched_details
 from .doctor import collect_doctor_checks, write_doctor_json
@@ -178,6 +179,22 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         print(f"JSON de doctor escrito en: {args.json}")
     return worst
 
+
+
+
+def cmd_policy(args: argparse.Namespace) -> int:
+    result = validate_policy_file(Path(args.policy_path))
+    if getattr(args, "json", False):
+        print(json.dumps(result.as_dict(), indent=2, ensure_ascii=False))
+        return 0 if result.valid else 1
+    if result.valid:
+        print(f"Política válida: {result.path}")
+        return 0
+    print(f"Política inválida: {result.path}")
+    for issue in result.issues:
+        print(f"[{issue.level}] {issue.code} {issue.path}")
+        print(f"  {issue.message}")
+    return 1
 
 def cmd_profiles(args: argparse.Namespace) -> int:
     root = Path(getattr(args, "profiles_root", "profiles"))
@@ -460,7 +477,11 @@ def cmd_security(args: argparse.Namespace) -> int:
 def cmd_ci(args: argparse.Namespace) -> int:
     apply_profile_defaults(args)
     root = Path(args.path)
-    report = ci_project(root, headers_only=args.headers_only, max_cases=args.max_cases, fuzz_seeds=args.seeds, fuzz_steps=args.steps, fail_on_warnings=args.fail_on_warnings, dsl_paths=getattr(args, "dsl", None), deep_security=getattr(args, "deep_security", False), policy_path=getattr(args, "policy", None), fail_on_unknown=getattr(args, "fail_on_unknown", None), strict_ast=getattr(args, "strict_ast", False), clang=getattr(args, "clang", None), std=getattr(args, "std", "c++17"), max_files=getattr(args, "max_files", 30), timeout=getattr(args, "timeout", 12), ast_filter=None)
+    try:
+        report = ci_project(root, headers_only=args.headers_only, max_cases=args.max_cases, fuzz_seeds=args.seeds, fuzz_steps=args.steps, fail_on_warnings=args.fail_on_warnings, dsl_paths=getattr(args, "dsl", None), deep_security=getattr(args, "deep_security", False), policy_path=getattr(args, "policy", None), fail_on_unknown=getattr(args, "fail_on_unknown", None), strict_ast=getattr(args, "strict_ast", False), clang=getattr(args, "clang", None), std=getattr(args, "std", "c++17"), max_files=getattr(args, "max_files", 30), timeout=getattr(args, "timeout", 12), ast_filter=None)
+    except ValueError as exc:
+        print(str(exc))
+        return 1
     _write_outputs(report, args, "Gate de política CI/CD de StructGuard")
     if args.junit:
         write_junit(report, Path(args.junit)); print(f"XML JUnit escrito en: {args.junit}")
@@ -701,6 +722,14 @@ def build_parser() -> argparse.ArgumentParser:
     validate_sp = profiles_sub.add_parser("validate", help="Valida un profile.yml")
     validate_sp.add_argument("profile_path", help="Ruta a profile.yml o al directorio del perfil")
     validate_sp.set_defaults(func=cmd_profiles)
+
+
+    sp = sub.add_parser("policy", help="Valida structguard.yml con esquema estricto")
+    policy_sub = sp.add_subparsers(dest="policy_action", required=True)
+    validate_sp = policy_sub.add_parser("validate", help="Valida una política YAML o JSON")
+    validate_sp.add_argument("policy_path", help="Ruta a structguard.yml o a una política JSON")
+    validate_sp.add_argument("--json", action="store_true", help="Imprime el resultado de validación como JSON")
+    validate_sp.set_defaults(func=cmd_policy)
 
     sp = sub.add_parser("contract", help="Valida SGDSL estable y emite ContractIR")
     contract_sub = sp.add_subparsers(dest="contract_action", required=True)
