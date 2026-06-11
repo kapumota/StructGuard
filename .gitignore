@@ -33,3 +33,6 @@ Thumbs.db
 # Artefactos internos del benchmark de fase 10
 artifacts/benchmark-cases/
 artifacts/generated_mutations/
+
+# Cache incremental local de StructGuard
+.structguard/cache/
