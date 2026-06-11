@@ -1,0 +1,7 @@
+package custom.profile;
+
+structure Structure {
+  invariant n >= 0;
+  method add { ensures n == old(n) + 1; }
+  method remove { requires n > 0; ensures n == old(n) - 1; }
+}

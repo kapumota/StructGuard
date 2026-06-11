@@ -1,0 +1,22 @@
+package stl.adapters;
+
+structure StackAdapter {
+  invariant n >= 0;
+  method push { ensures n == old(n) + 1; }
+  method pop { requires n > 0; ensures n == old(n) - 1; }
+  method top requires n > 0;
+}
+
+structure QueueAdapter {
+  invariant n >= 0;
+  method push { ensures n == old(n) + 1; }
+  method pop { requires n > 0; ensures n == old(n) - 1; }
+  method front requires n > 0;
+}
+
+structure PriorityQueueAdapter {
+  invariant n >= 0;
+  method push { ensures n == old(n) + 1; }
+  method pop { requires n > 0; ensures n == old(n) - 1; }
+  method top requires n > 0;
+}

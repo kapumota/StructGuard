@@ -1,0 +1,9 @@
+package generic.cpp;
+
+structure Stack {
+  invariant n >= 0;
+  method push { ensures n == old(n) + 1; }
+  method pop { requires n > 0; ensures n == old(n) - 1; }
+  method top requires n > 0;
+  method peek requires n > 0;
+}

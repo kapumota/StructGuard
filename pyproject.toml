@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "structguard"
 version = "4.6.1"
-description = "StructGuard 4.6.1 Professional ES: analizador heurístico, contract lint y checker acotado para estructuras de datos C++17, con perfiles de análisis, reportes enriquecidos, CI, modo Clang AST opcional, fuzzing abstracto y backend formal experimental."
+description = "StructGuard 4.6.1 Professional ES: plataforma extensible de contratos, análisis acotado, evidencia reproducible y exportación formal experimental para estructuras de datos C++17."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

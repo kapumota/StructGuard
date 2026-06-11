@@ -1,0 +1,18 @@
+# Perfil general para librerias C++ propias.
+name: generic-cpp
+display_name: Generic C++ Profile
+description: Perfil general para validar estructuras de datos C++ contra contratos explicitos.
+language: cpp
+status: draft
+contracts:
+  - contracts/stack.sgdsl
+  - contracts/queue.sgdsl
+  - contracts/vector.sgdsl
+analysis:
+  headers_only: true
+  strict_ast: false
+  bounded: true
+outputs:
+  html: true
+  json: true
+  sarif: true

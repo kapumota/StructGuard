@@ -1,0 +1,16 @@
+# Plantilla para perfiles propios de StructGuard.
+name: custom-template
+display_name: Custom Template Profile
+description: Plantilla base para crear perfiles de dominio.
+language: cpp
+status: template
+contracts:
+  - contracts/custom_structure.sgdsl
+analysis:
+  headers_only: true
+  strict_ast: false
+  bounded: true
+outputs:
+  html: true
+  json: true
+  sarif: true

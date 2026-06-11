@@ -1,0 +1,16 @@
+# Perfil educativo inicial de StructGuard.
+name: cc232
+display_name: CC-232 Profile
+description: Perfil academico inicial para estructuras de datos de CC-232.
+language: cpp
+status: draft
+contracts:
+  - contracts/cc232_core.sgdsl
+analysis:
+  headers_only: true
+  strict_ast: false
+  bounded: true
+outputs:
+  html: true
+  json: true
+  sarif: true
