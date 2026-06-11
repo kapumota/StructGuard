@@ -1,0 +1,96 @@
+tracked_rules:
+  - SG-CONTRACT-MISSING-PRECONDITION
+  - SG-STACK-POP-EMPTY
+  - SG-QUEUE-FIFO-VIOLATION
+  - SG-BOUNDS-INDEX-RISK
+  - SG-SIZE-NOT-UPDATED
+  - SG-HEAP-PROPERTY-RISK
+  - SG-BST-ORDER-RISK
+  - SG-NULL-DEREFERENCE-RISK
+  - SG-MEMORY-OWNERSHIP-RISK
+  - SG-COMPLEXITY-DEQUEUE-LINEAR-RISK
+  - MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY
+  - MEM_NEW_WITHOUT_DELETE
+  - MEM_DELETE_KIND_MISMATCH
+  - MEM_DOUBLE_DELETE
+  - MEM_NULL_DEREF_RISK
+  - MEM_CAPACITY_SIZE_MISMATCH
+
+settings:
+  profile: generic-cpp
+  preset: security
+  headers_only: true
+
+cases:
+  - id: array_stack_ok
+    path: benchmarks/corpus/correct/ArrayStackOk.hpp
+    kind: correct
+    expected_findings:
+  - id: circular_queue_ok
+    path: benchmarks/corpus/correct/CircularQueueOk.hpp
+    kind: correct
+    expected_findings:
+  - id: helper_guard_stack_ok
+    path: benchmarks/corpus/correct/HelperGuardStackOk.hpp
+    kind: challenge_correct
+    expected_findings:
+  - id: array_stack_no_guard
+    path: benchmarks/corpus/buggy/ArrayStackNoGuard.hpp
+    kind: buggy
+    expected_findings:
+      - SG-CONTRACT-MISSING-PRECONDITION
+      - SG-STACK-POP-EMPTY
+      - SG-BOUNDS-INDEX-RISK
+  - id: queue_wrong_end
+    path: benchmarks/corpus/buggy/QueueWrongEnd.hpp
+    kind: buggy
+    expected_findings:
+      - SG-CONTRACT-MISSING-PRECONDITION
+      - SG-QUEUE-FIFO-VIOLATION
+      - SG-BOUNDS-INDEX-RISK
+  - id: queue_linear_dequeue
+    path: benchmarks/corpus/buggy/QueueLinearDequeue.hpp
+    kind: buggy
+    expected_findings:
+      - SG-COMPLEXITY-DEQUEUE-LINEAR-RISK
+  - id: vector_memory_leak
+    path: benchmarks/corpus/buggy/VectorMemoryLeak.hpp
+    kind: buggy
+    expected_findings:
+      - MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY
+      - SG-MEMORY-OWNERSHIP-RISK
+      - SG-BOUNDS-INDEX-RISK
+  - id: vector_append_no_size_update
+    path: benchmarks/corpus/buggy/VectorAppendNoSizeUpdate.hpp
+    kind: challenge_buggy
+    expected_findings:
+      - SG-SIZE-NOT-UPDATED
+
+mutations:
+  - id: mutation_stack_remove_guard
+    source: benchmarks/corpus/correct/ArrayStackOk.hpp
+    mutation: remove_empty_guard_from_stack_pop
+    expected_findings:
+      - SG-CONTRACT-MISSING-PRECONDITION
+      - SG-STACK-POP-EMPTY
+      - SG-BOUNDS-INDEX-RISK
+  - id: mutation_stack_omit_size_increment
+    source: benchmarks/corpus/correct/ArrayStackOk.hpp
+    mutation: omit_size_increment
+    expected_findings:
+      - SG-SIZE-NOT-UPDATED
+  - id: mutation_queue_wrong_end
+    source: benchmarks/corpus/correct/CircularQueueOk.hpp
+    mutation: wrong_queue_end
+    expected_findings:
+      - SG-QUEUE-FIFO-VIOLATION
+  - id: mutation_stack_remove_capacity_guard
+    source: benchmarks/corpus/correct/ArrayStackOk.hpp
+    mutation: remove_capacity_guard_from_stack_push
+    expected_findings:
+      - SG-BOUNDS-INDEX-RISK
+  - id: mutation_queue_omit_size_decrement
+    source: benchmarks/corpus/correct/CircularQueueOk.hpp
+    mutation: omit_queue_size_decrement
+    expected_findings:
+      - SG-SIZE-NOT-UPDATED

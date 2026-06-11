@@ -1,0 +1,359 @@
+{
+  "schema_version": "structguard-benchmark/v1",
+  "tool": "StructGuard",
+  "phase": "10",
+  "description": "Corpus mínimo y benchmark de regresión",
+  "profile": "generic-cpp",
+  "preset": "security",
+  "ground_truth": "benchmarks/ground_truth.yaml",
+  "tracked_rules": [
+    "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY",
+    "MEM_CAPACITY_SIZE_MISMATCH",
+    "MEM_DELETE_KIND_MISMATCH",
+    "MEM_DOUBLE_DELETE",
+    "MEM_NEW_WITHOUT_DELETE",
+    "MEM_NULL_DEREF_RISK",
+    "SG-BOUNDS-INDEX-RISK",
+    "SG-BST-ORDER-RISK",
+    "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK",
+    "SG-CONTRACT-MISSING-PRECONDITION",
+    "SG-HEAP-PROPERTY-RISK",
+    "SG-MEMORY-OWNERSHIP-RISK",
+    "SG-NULL-DEREFERENCE-RISK",
+    "SG-QUEUE-FIFO-VIOLATION",
+    "SG-SIZE-NOT-UPDATED",
+    "SG-STACK-POP-EMPTY"
+  ],
+  "metrics": {
+    "case_count": 13,
+    "true_positive_count": 17,
+    "false_positive_count": 4,
+    "false_negative_count": 1,
+    "precision": 0.8095,
+    "recall": 0.9444,
+    "false_positive_rate": 0.1905,
+    "analysis_time_ms_total": 1096,
+    "analysis_time_ms_per_file": 84.31,
+    "mutation_detection_rate": 1.0,
+    "rules_triggered": {
+      "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY": 1,
+      "SG-BOUNDS-INDEX-RISK": 7,
+      "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK": 1,
+      "SG-CONTRACT-MISSING-PRECONDITION": 4,
+      "SG-MEMORY-OWNERSHIP-RISK": 1,
+      "SG-QUEUE-FIFO-VIOLATION": 2,
+      "SG-SIZE-NOT-UPDATED": 2,
+      "SG-STACK-POP-EMPTY": 3
+    }
+  },
+  "thresholds": {
+    "precision": {
+      "actual": 0.8095,
+      "expected": 0.8,
+      "operator": ">=",
+      "passed": true
+    },
+    "recall": {
+      "actual": 0.9444,
+      "expected": 0.85,
+      "operator": ">=",
+      "passed": true
+    },
+    "false_positive_rate": {
+      "actual": 0.1905,
+      "expected": 0.2,
+      "operator": "<=",
+      "passed": true
+    },
+    "analysis_time_ms_per_file": {
+      "actual": 84.31,
+      "expected": 5000.0,
+      "operator": "<=",
+      "passed": true
+    },
+    "mutation_detection_rate": {
+      "actual": 1.0,
+      "expected": 0.6,
+      "operator": ">=",
+      "passed": true
+    }
+  },
+  "cases": [
+    {
+      "case_id": "array_stack_ok",
+      "path": "benchmarks/corpus/correct/ArrayStackOk.hpp",
+      "kind": "correct",
+      "expected_findings": [],
+      "actual_findings": [],
+      "true_positives": [],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 140,
+      "return_code": 0,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "circular_queue_ok",
+      "path": "benchmarks/corpus/correct/CircularQueueOk.hpp",
+      "kind": "correct",
+      "expected_findings": [],
+      "actual_findings": [],
+      "true_positives": [],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 78,
+      "return_code": 0,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "helper_guard_stack_ok",
+      "path": "benchmarks/corpus/correct/HelperGuardStackOk.hpp",
+      "kind": "challenge_correct",
+      "expected_findings": [],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "true_positives": [],
+      "false_positives": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "false_negatives": [],
+      "analysis_time_ms": 78,
+      "return_code": 1,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "array_stack_no_guard",
+      "path": "benchmarks/corpus/buggy/ArrayStackNoGuard.hpp",
+      "kind": "buggy",
+      "expected_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "true_positives": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 86,
+      "return_code": 1,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "queue_wrong_end",
+      "path": "benchmarks/corpus/buggy/QueueWrongEnd.hpp",
+      "kind": "buggy",
+      "expected_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "true_positives": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 76,
+      "return_code": 0,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "queue_linear_dequeue",
+      "path": "benchmarks/corpus/buggy/QueueLinearDequeue.hpp",
+      "kind": "buggy",
+      "expected_findings": [
+        "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK"
+      ],
+      "actual_findings": [
+        "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK"
+      ],
+      "true_positives": [
+        "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 87,
+      "return_code": 0,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "vector_memory_leak",
+      "path": "benchmarks/corpus/buggy/VectorMemoryLeak.hpp",
+      "kind": "buggy",
+      "expected_findings": [
+        "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY",
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-MEMORY-OWNERSHIP-RISK"
+      ],
+      "actual_findings": [
+        "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY",
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-MEMORY-OWNERSHIP-RISK"
+      ],
+      "true_positives": [
+        "MEM_ARRAY_NEW_WITHOUT_DELETE_ARRAY",
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-MEMORY-OWNERSHIP-RISK"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 76,
+      "return_code": 1,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "vector_append_no_size_update",
+      "path": "benchmarks/corpus/buggy/VectorAppendNoSizeUpdate.hpp",
+      "kind": "challenge_buggy",
+      "expected_findings": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK"
+      ],
+      "true_positives": [],
+      "false_positives": [
+        "SG-BOUNDS-INDEX-RISK"
+      ],
+      "false_negatives": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "analysis_time_ms": 75,
+      "return_code": 0,
+      "generated": false,
+      "mutation": null
+    },
+    {
+      "case_id": "mutation_stack_remove_guard",
+      "path": "artifacts/generated_mutations/mutation_stack_remove_guard.hpp",
+      "kind": "mutation",
+      "expected_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "true_positives": [
+        "SG-BOUNDS-INDEX-RISK",
+        "SG-CONTRACT-MISSING-PRECONDITION",
+        "SG-STACK-POP-EMPTY"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 77,
+      "return_code": 1,
+      "generated": true,
+      "mutation": "remove_empty_guard_from_stack_pop"
+    },
+    {
+      "case_id": "mutation_stack_omit_size_increment",
+      "path": "artifacts/generated_mutations/mutation_stack_omit_size_increment.hpp",
+      "kind": "mutation",
+      "expected_findings": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "actual_findings": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "true_positives": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 78,
+      "return_code": 0,
+      "generated": true,
+      "mutation": "omit_size_increment"
+    },
+    {
+      "case_id": "mutation_queue_wrong_end",
+      "path": "artifacts/generated_mutations/mutation_queue_wrong_end.hpp",
+      "kind": "mutation",
+      "expected_findings": [
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "actual_findings": [
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "true_positives": [
+        "SG-QUEUE-FIFO-VIOLATION"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 88,
+      "return_code": 0,
+      "generated": true,
+      "mutation": "wrong_queue_end"
+    },
+    {
+      "case_id": "mutation_stack_remove_capacity_guard",
+      "path": "artifacts/generated_mutations/mutation_stack_remove_capacity_guard.hpp",
+      "kind": "mutation",
+      "expected_findings": [
+        "SG-BOUNDS-INDEX-RISK"
+      ],
+      "actual_findings": [
+        "SG-BOUNDS-INDEX-RISK"
+      ],
+      "true_positives": [
+        "SG-BOUNDS-INDEX-RISK"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 77,
+      "return_code": 0,
+      "generated": true,
+      "mutation": "remove_capacity_guard_from_stack_push"
+    },
+    {
+      "case_id": "mutation_queue_omit_size_decrement",
+      "path": "artifacts/generated_mutations/mutation_queue_omit_size_decrement.hpp",
+      "kind": "mutation",
+      "expected_findings": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "actual_findings": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "true_positives": [
+        "SG-SIZE-NOT-UPDATED"
+      ],
+      "false_positives": [],
+      "false_negatives": [],
+      "analysis_time_ms": 80,
+      "return_code": 0,
+      "generated": true,
+      "mutation": "omit_queue_size_decrement"
+    }
+  ]
+}

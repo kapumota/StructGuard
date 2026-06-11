@@ -1,0 +1,5 @@
+precision: 0.80
+recall: 0.85
+false_positive_rate: 0.20
+analysis_time_ms_per_file: 5000
+mutation_detection_rate: 0.60
