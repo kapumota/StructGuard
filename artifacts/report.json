@@ -1,0 +1,1903 @@
+{
+  "schema_version": "structguard-canonical-report/v1",
+  "tool": {
+    "name": "StructGuard",
+    "version": "4.6.1-es-professional-stable"
+  },
+  "run": {
+    "root": "examples/generic_cpp",
+    "generated_at_utc": "2026-06-11T17:20:54Z",
+    "command": "scan",
+    "profile": "generic-cpp",
+    "preset": "security",
+    "frontend": "auto",
+    "headers_only": true,
+    "strict_ast": false
+  },
+  "summary": {
+    "total_findings": 20,
+    "counts": {
+      "warning": 11,
+      "info": 9
+    },
+    "guarantee_counts": {
+      "G1_HEURISTIC": 18,
+      "G2_STRUCTURAL": 2,
+      "G3_BOUNDED": 0,
+      "G4_EXECUTED": 0,
+      "G5_FORMALLY_VERIFIED": 0
+    }
+  },
+  "rules": [
+    {
+      "rule_id": "ANALYSIS_PROFILE",
+      "title": "Analysis Profile",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "analysis",
+        "general"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "ENGINE_DOMAIN_PROFILE_LOADED",
+      "title": "Engine Domain Profile Loaded",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "engine",
+        "general"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "ENGINE_PRESET",
+      "title": "Engine Preset",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "engine",
+        "general"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "MEM_MEMORY_SUMMARY",
+      "title": "Mem Memory Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      },
+      "tags": [
+        "general",
+        "mem"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SEC_BOUNDS_RISK",
+      "title": "Sec Bounds Risk",
+      "default_severity": "warning",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SEC_CAPACITY_GUARD_MISSING",
+      "title": "Sec Capacity Guard Missing",
+      "default_severity": "warning",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SEC_MISSING_PRECONDITION",
+      "title": "Sec Missing Precondition",
+      "default_severity": "warning",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "title": "Sec Raw Index Without Guard",
+      "default_severity": "warning",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SEC_SECURITY_SUMMARY",
+      "title": "Sec Security Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+      "title": "Precondición faltante en método sensible",
+      "default_severity": "warning",
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      },
+      "tags": [
+        "contracts",
+        "cpp",
+        "precondition",
+        "sg-contract-missing-precondition",
+        "verification"
+      ],
+      "cwe": "CWE-20"
+    },
+    {
+      "rule_id": "SG_BOUNDS_RULES_SUMMARY",
+      "title": "Sg Bounds Rules Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "bounds",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SG_COMPLEXITY_RULES_SUMMARY",
+      "title": "Sg Complexity Rules Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "complexity",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SG_CONTRACT_RULES_SUMMARY",
+      "title": "Sg Contract Rules Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "contracts",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "cwe": null
+    },
+    {
+      "rule_id": "SG_STRUCTURE_RULES_SUMMARY",
+      "title": "Sg Structure Rules Summary",
+      "default_severity": "info",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "tags": [
+        "general",
+        "rules",
+        "sg",
+        "structure"
+      ],
+      "cwe": null
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "SEC_CAPACITY_GUARD_MISSING",
+      "title": "Sec Capacity Guard Missing",
+      "message": "Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 17,
+        "column": null
+      },
+      "symbol": "Stack::push",
+      "evidence": [
+        "void push(int value) {"
+      ],
+      "remediation": "Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "void push(int value) {",
+        "remediation": "Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.",
+        "confidence": "medium",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_BOUNDS_RISK",
+      "title": "Sec Bounds Risk",
+      "message": "Posible expresión de índice fuera de límites `n` en Stack::push.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 21,
+        "column": null
+      },
+      "symbol": "Stack::push",
+      "evidence": [
+        "data[n]"
+      ],
+      "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "title": "Sec Raw Index Without Guard",
+      "message": "Stack::push usa indexación [] sin una guarda cercana de contrato/assert.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 21,
+        "column": null
+      },
+      "symbol": "Stack::push",
+      "evidence": [
+        "data[n]"
+      ],
+      "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_MISSING_PRECONDITION",
+      "title": "Sec Missing Precondition",
+      "message": "Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 25,
+        "column": null
+      },
+      "symbol": "Stack::top",
+      "evidence": [
+        "int top() const {"
+      ],
+      "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "int top() const {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_BOUNDS_RISK",
+      "title": "Sec Bounds Risk",
+      "message": "Posible expresión de índice fuera de límites `n - 1` en Stack::top.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 29,
+        "column": null
+      },
+      "symbol": "Stack::top",
+      "evidence": [
+        "data[n - 1]"
+      ],
+      "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n - 1]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n - 1",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "title": "Sec Raw Index Without Guard",
+      "message": "Stack::top usa indexación [] sin una guarda cercana de contrato/assert.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 29,
+        "column": null
+      },
+      "symbol": "Stack::top",
+      "evidence": [
+        "data[n - 1]"
+      ],
+      "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n - 1]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_MISSING_PRECONDITION",
+      "title": "Sec Missing Precondition",
+      "message": "Stack::peek es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 32,
+        "column": null
+      },
+      "symbol": "Stack::peek",
+      "evidence": [
+        "int peek() const {"
+      ],
+      "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "int peek() const {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+      "title": "Precondición faltante en método sensible",
+      "message": "Stack::peek es sensible y no tiene precondición explícita ni guarda local visible.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 32,
+        "column": null
+      },
+      "symbol": "Stack::peek",
+      "evidence": [
+        "int peek() const {"
+      ],
+      "remediation": "Agrega requires explícito o una guarda local antes de acceder, eliminar o devolver elementos.",
+      "cwe": "CWE-20",
+      "tags": [
+        "contracts",
+        "cpp",
+        "precondition",
+        "sg-contract-missing-precondition",
+        "verification"
+      ],
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      },
+      "level": "WARNING",
+      "details": {
+        "title": "Precondición faltante en método sensible",
+        "confidence": "medium",
+        "evidence": "int peek() const {",
+        "remediation": "Agrega requires explícito o una guarda local antes de acceder, eliminar o devolver elementos.",
+        "cwe": "CWE-20",
+        "tags": [
+          "contracts",
+          "precondition",
+          "cpp"
+        ],
+        "rule": {
+          "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+          "description": "Método sensible sin precondición explícita ni guarda local clara.",
+          "default_severity": "warning",
+          "good_example": "// requires n > 0\nint pop();",
+          "bad_example": "int pop() { return data[--n]; }",
+          "profiles": [
+            "cc232",
+            "generic-cpp",
+            "stl-adapters"
+          ],
+          "cwe": "CWE-20",
+          "tags": [
+            "contracts",
+            "precondition",
+            "cpp"
+          ]
+        },
+        "category": "verification"
+      }
+    },
+    {
+      "rule_id": "SEC_MISSING_PRECONDITION",
+      "title": "Sec Missing Precondition",
+      "message": "Stack::pop es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 36,
+        "column": null
+      },
+      "symbol": "Stack::pop",
+      "evidence": [
+        "int pop() {"
+      ],
+      "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "int pop() {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_BOUNDS_RISK",
+      "title": "Sec Bounds Risk",
+      "message": "Posible expresión de índice fuera de límites `n` en Stack::pop.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 41,
+        "column": null
+      },
+      "symbol": "Stack::pop",
+      "evidence": [
+        "data[n]"
+      ],
+      "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "title": "Sec Raw Index Without Guard",
+      "message": "Stack::pop usa indexación [] sin una guarda cercana de contrato/assert.",
+      "severity": "warning",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp/Stack.hpp",
+        "line": 41,
+        "column": null
+      },
+      "symbol": "Stack::pop",
+      "evidence": [
+        "data[n]"
+      ],
+      "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "WARNING",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "ANALYSIS_PROFILE",
+      "title": "Analysis Profile",
+      "message": "Perfil de análisis activo: generic-cpp",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "analysis",
+        "general"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "profile": {
+          "name": "generic-cpp",
+          "strict_ast": false,
+          "include_security": false,
+          "deep_security": false,
+          "include_formal": false,
+          "run_solver": false,
+          "fail_on_warnings": false,
+          "fail_on_unknown": false,
+          "max_cases": 300,
+          "verbose_hint": false,
+          "domain": "generic-cpp"
+        },
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "ENGINE_DOMAIN_PROFILE_LOADED",
+      "title": "Engine Domain Profile Loaded",
+      "message": "Perfil de dominio activo: generic-cpp",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "engine",
+        "general"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "name": "generic-cpp",
+        "display_name": "Generic C++ Profile",
+        "description": "Perfil general para validar estructuras de datos C++ contra contratos explicitos.",
+        "language": "cpp",
+        "status": "draft",
+        "contracts": [
+          "contracts/stack.sgdsl",
+          "contracts/queue.sgdsl",
+          "contracts/vector.sgdsl"
+        ],
+        "analysis": {
+          "headers_only": true,
+          "strict_ast": false,
+          "bounded": true,
+          "max_cases": null,
+          "include_security": false,
+          "deep_security": false,
+          "include_formal": false,
+          "run_solver": false,
+          "fail_on_warnings": false,
+          "fail_on_unknown": false
+        },
+        "outputs": {
+          "html": true,
+          "json": true,
+          "sarif": true,
+          "junit": false
+        },
+        "path": "/home/project/StructGuard/profiles/generic-cpp/profile.yml",
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "ENGINE_PRESET",
+      "title": "Engine Preset",
+      "message": "Preset de análisis activo: security",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "engine",
+        "general"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "source_ir": true,
+        "contract_ir": false,
+        "binding": false,
+        "bounded": false,
+        "lint": false,
+        "security": true,
+        "memory_safety": true,
+        "structural_rules": true,
+        "complexity_hints": true,
+        "formal": false,
+        "reports": true,
+        "notes": [
+          "Ejecuta reglas de seguridad estructural y memoria usando el motor común."
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "MEM_MEMORY_SUMMARY",
+      "title": "Mem Memory Summary",
+      "message": "Modelo de memoria construido: 1 clases analizadas.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "general",
+        "mem"
+      ],
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      },
+      "level": "INFO",
+      "details": {
+        "classes": [
+          {
+            "class_name": "Stack",
+            "file": "examples/generic_cpp/Stack.hpp",
+            "pointer_fields": [],
+            "allocations": [],
+            "releases": [],
+            "dereferences": [],
+            "null_assignments": [],
+            "capacity_relations": []
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "SEC_SECURITY_SUMMARY",
+      "title": "Sec Security Summary",
+      "message": "Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "security_heuristic"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "sec",
+        "security"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "classes": 1,
+        "methods": 7,
+        "raw_indexes": 3,
+        "asserts": 0,
+        "allocations": 0,
+        "deep_findings": 10,
+        "deep": true,
+        "rules": 15,
+        "confidence": "medium",
+        "evidence": "security_heuristic",
+        "category": "security"
+      }
+    },
+    {
+      "rule_id": "SG_BOUNDS_RULES_SUMMARY",
+      "title": "Sg Bounds Rules Summary",
+      "message": "Reglas de límites evaluadas: 1 clases analizadas.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "bounds",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "tags": [
+          "bounds",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-BOUNDS-INDEX-RISK",
+            "description": "Acceso indexado sin guarda local o precondición de límites visible.",
+            "default_severity": "warning",
+            "good_example": "// requires 0 <= i && i < size\nreturn data[i];",
+            "bad_example": "return data[i];",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": "CWE-125",
+            "tags": [
+              "bounds",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "SG_COMPLEXITY_RULES_SUMMARY",
+      "title": "Sg Complexity Rules Summary",
+      "message": "Pistas de complejidad evaluadas: 1 clases analizadas.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "complexity",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "tags": [
+          "complexity",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK",
+            "description": "Operación dequeue parece desplazar elementos y puede ser O(n).",
+            "default_severity": "warning",
+            "good_example": "return data[head++];",
+            "bad_example": "for (int i = 1; i < n; ++i) data[i - 1] = data[i];",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "complexity",
+              "queue",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "SG_CONTRACT_RULES_SUMMARY",
+      "title": "Sg Contract Rules Summary",
+      "message": "Reglas contractuales evaluadas: 1 clases analizadas.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "contracts",
+        "general",
+        "rules",
+        "sg"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "tags": [
+          "contracts",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+            "description": "Método sensible sin precondición explícita ni guarda local clara.",
+            "default_severity": "warning",
+            "good_example": "// requires n > 0\nint pop();",
+            "bad_example": "int pop() { return data[--n]; }",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": "CWE-20",
+            "tags": [
+              "contracts",
+              "precondition",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    },
+    {
+      "rule_id": "SG_STRUCTURE_RULES_SUMMARY",
+      "title": "Sg Structure Rules Summary",
+      "message": "Reglas estructurales evaluadas: 1 clases analizadas.",
+      "severity": "info",
+      "confidence": "medium",
+      "location": {
+        "file": "examples/generic_cpp",
+        "line": null,
+        "column": null
+      },
+      "symbol": "",
+      "evidence": [
+        "static_analysis"
+      ],
+      "remediation": "",
+      "cwe": null,
+      "tags": [
+        "general",
+        "rules",
+        "sg",
+        "structure"
+      ],
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      },
+      "level": "INFO",
+      "details": {
+        "tags": [
+          "structure",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-STACK-POP-EMPTY",
+            "description": "Operación de pila que puede leer o eliminar desde una pila vacía.",
+            "default_severity": "error",
+            "good_example": "// requires n > 0\nT pop();",
+            "bad_example": "T pop() { return data[--n]; }",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": "CWE-787",
+            "tags": [
+              "stack",
+              "contracts",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-QUEUE-FIFO-VIOLATION",
+            "description": "Operación de cola que parece retirar desde el extremo equivocado.",
+            "default_severity": "warning",
+            "good_example": "return data[head++];",
+            "bad_example": "return data[--tail];",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": null,
+            "tags": [
+              "queue",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-SIZE-NOT-UPDATED",
+            "description": "Método mutador que no actualiza un campo de tamaño visible.",
+            "default_severity": "warning",
+            "good_example": "data[n] = value; n += 1;",
+            "bad_example": "data[n] = value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "size",
+              "invariant",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-HEAP-PROPERTY-RISK",
+            "description": "Método de heap que no muestra restauración de propiedad heap.",
+            "default_severity": "warning",
+            "good_example": "push(value); bubbleUp(index);",
+            "bad_example": "data[n++] = value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "heap",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-BST-ORDER-RISK",
+            "description": "Método de BST que no muestra comparación de orden durante inserción o búsqueda.",
+            "default_severity": "warning",
+            "good_example": "if (x < node->key) node = node->left;",
+            "bad_example": "root = new Node(x);",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "bst",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-NULL-DEREFERENCE-RISK",
+            "description": "Uso de puntero que puede ser nulo sin guarda local visible.",
+            "default_severity": "warning",
+            "good_example": "if (node != nullptr) return node->value;",
+            "bad_example": "return node->value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": "CWE-476",
+            "tags": [
+              "null",
+              "memory",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      }
+    }
+  ],
+  "legacy_diagnostics": [
+    {
+      "level": "INFO",
+      "code": "ENGINE_PRESET",
+      "message": "Preset de análisis activo: security",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "source_ir": true,
+        "contract_ir": false,
+        "binding": false,
+        "bounded": false,
+        "lint": false,
+        "security": true,
+        "memory_safety": true,
+        "structural_rules": true,
+        "complexity_hints": true,
+        "formal": false,
+        "reports": true,
+        "notes": [
+          "Ejecuta reglas de seguridad estructural y memoria usando el motor común."
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "ANALYSIS_PROFILE",
+      "message": "Perfil de análisis activo: generic-cpp",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "profile": {
+          "name": "generic-cpp",
+          "strict_ast": false,
+          "include_security": false,
+          "deep_security": false,
+          "include_formal": false,
+          "run_solver": false,
+          "fail_on_warnings": false,
+          "fail_on_unknown": false,
+          "max_cases": 300,
+          "verbose_hint": false,
+          "domain": "generic-cpp"
+        },
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "ENGINE_DOMAIN_PROFILE_LOADED",
+      "message": "Perfil de dominio activo: generic-cpp",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "name": "generic-cpp",
+        "display_name": "Generic C++ Profile",
+        "description": "Perfil general para validar estructuras de datos C++ contra contratos explicitos.",
+        "language": "cpp",
+        "status": "draft",
+        "contracts": [
+          "contracts/stack.sgdsl",
+          "contracts/queue.sgdsl",
+          "contracts/vector.sgdsl"
+        ],
+        "analysis": {
+          "headers_only": true,
+          "strict_ast": false,
+          "bounded": true,
+          "max_cases": null,
+          "include_security": false,
+          "deep_security": false,
+          "include_formal": false,
+          "run_solver": false,
+          "fail_on_warnings": false,
+          "fail_on_unknown": false
+        },
+        "outputs": {
+          "html": true,
+          "json": true,
+          "sarif": true,
+          "junit": false
+        },
+        "path": "/home/project/StructGuard/profiles/generic-cpp/profile.yml",
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "SEC_SECURITY_SUMMARY",
+      "message": "Escaneo de seguridad completado: 1 clases, 7 métodos, 3 accesos indexados, deep=True.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "classes": 1,
+        "methods": 7,
+        "raw_indexes": 3,
+        "asserts": 0,
+        "allocations": 0,
+        "deep_findings": 10,
+        "deep": true,
+        "rules": 15,
+        "confidence": "medium",
+        "evidence": "security_heuristic",
+        "category": "security"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "message": "Stack::push usa indexación [] sin una guarda cercana de contrato/assert.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 21,
+      "symbol": "Stack::push",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_BOUNDS_RISK",
+      "message": "Posible expresión de índice fuera de límites `n` en Stack::push.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 21,
+      "symbol": "Stack::push",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_CAPACITY_GUARD_MISSING",
+      "message": "Stack::push podría escribir en almacenamiento sin una guarda visible de capacidad o ruta de redimensionamiento.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 17,
+      "symbol": "Stack::push",
+      "details": {
+        "evidence": "void push(int value) {",
+        "remediation": "Agrega requires: n < capacity() o asegura que el redimensionamiento ocurra antes de escribir.",
+        "confidence": "medium",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_MISSING_PRECONDITION",
+      "message": "Stack::top es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 25,
+      "symbol": "Stack::top",
+      "details": {
+        "evidence": "int top() const {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "message": "Stack::top usa indexación [] sin una guarda cercana de contrato/assert.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 29,
+      "symbol": "Stack::top",
+      "details": {
+        "evidence": "data[n - 1]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_BOUNDS_RISK",
+      "message": "Posible expresión de índice fuera de límites `n - 1` en Stack::top.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 29,
+      "symbol": "Stack::top",
+      "details": {
+        "evidence": "data[n - 1]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n - 1",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_MISSING_PRECONDITION",
+      "message": "Stack::peek es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 32,
+      "symbol": "Stack::peek",
+      "details": {
+        "evidence": "int peek() const {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_MISSING_PRECONDITION",
+      "message": "Stack::pop es un método de acceso/eliminación sin una precondición explícita de no vacío/límites.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 36,
+      "symbol": "Stack::pop",
+      "details": {
+        "evidence": "int pop() {",
+        "remediation": "Agrega un // requires: explícito con !empty(), n > 0 o límites de índice válidos.",
+        "confidence": "medium",
+        "suggested": "requires: !empty() o límites de índice",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_RAW_INDEX_WITHOUT_GUARD",
+      "message": "Stack::pop usa indexación [] sin una guarda cercana de contrato/assert.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 41,
+      "symbol": "Stack::pop",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Agrega precondiciones de límites o asserts locales antes del acceso indexado.",
+        "confidence": "medium",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SEC_BOUNDS_RISK",
+      "message": "Posible expresión de índice fuera de límites `n` en Stack::pop.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 41,
+      "symbol": "Stack::pop",
+      "details": {
+        "evidence": "data[n]",
+        "remediation": "Prueba o documenta 0 <= índice < tamaño/capacidad; agrega requires/invariant.",
+        "confidence": "medium",
+        "index": "n",
+        "category": "security"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "MEM_MEMORY_SUMMARY",
+      "message": "Modelo de memoria construido: 1 clases analizadas.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "classes": [
+          {
+            "class_name": "Stack",
+            "file": "examples/generic_cpp/Stack.hpp",
+            "pointer_fields": [],
+            "allocations": [],
+            "releases": [],
+            "dereferences": [],
+            "null_assignments": [],
+            "capacity_relations": []
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "SG_CONTRACT_RULES_SUMMARY",
+      "message": "Reglas contractuales evaluadas: 1 clases analizadas.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "tags": [
+          "contracts",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+            "description": "Método sensible sin precondición explícita ni guarda local clara.",
+            "default_severity": "warning",
+            "good_example": "// requires n > 0\nint pop();",
+            "bad_example": "int pop() { return data[--n]; }",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": "CWE-20",
+            "tags": [
+              "contracts",
+              "precondition",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "SG-CONTRACT-MISSING-PRECONDITION",
+      "message": "Stack::peek es sensible y no tiene precondición explícita ni guarda local visible.",
+      "file": "examples/generic_cpp/Stack.hpp",
+      "line": 32,
+      "symbol": "Stack::peek",
+      "details": {
+        "title": "Precondición faltante en método sensible",
+        "confidence": "medium",
+        "evidence": "int peek() const {",
+        "remediation": "Agrega requires explícito o una guarda local antes de acceder, eliminar o devolver elementos.",
+        "cwe": "CWE-20",
+        "tags": [
+          "contracts",
+          "precondition",
+          "cpp"
+        ],
+        "rule": {
+          "rule_id": "SG-CONTRACT-MISSING-PRECONDITION",
+          "description": "Método sensible sin precondición explícita ni guarda local clara.",
+          "default_severity": "warning",
+          "good_example": "// requires n > 0\nint pop();",
+          "bad_example": "int pop() { return data[--n]; }",
+          "profiles": [
+            "cc232",
+            "generic-cpp",
+            "stl-adapters"
+          ],
+          "cwe": "CWE-20",
+          "tags": [
+            "contracts",
+            "precondition",
+            "cpp"
+          ]
+        },
+        "category": "verification"
+      },
+      "display_level": "WARNING",
+      "guarantee": {
+        "level": "G2_STRUCTURAL",
+        "label": "Estructural",
+        "description": "Resultado derivado de SourceIR, ContractIR, BindingIR o reglas estructurales documentadas."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "SG_BOUNDS_RULES_SUMMARY",
+      "message": "Reglas de límites evaluadas: 1 clases analizadas.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "tags": [
+          "bounds",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-BOUNDS-INDEX-RISK",
+            "description": "Acceso indexado sin guarda local o precondición de límites visible.",
+            "default_severity": "warning",
+            "good_example": "// requires 0 <= i && i < size\nreturn data[i];",
+            "bad_example": "return data[i];",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": "CWE-125",
+            "tags": [
+              "bounds",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "SG_STRUCTURE_RULES_SUMMARY",
+      "message": "Reglas estructurales evaluadas: 1 clases analizadas.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "tags": [
+          "structure",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-STACK-POP-EMPTY",
+            "description": "Operación de pila que puede leer o eliminar desde una pila vacía.",
+            "default_severity": "error",
+            "good_example": "// requires n > 0\nT pop();",
+            "bad_example": "T pop() { return data[--n]; }",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": "CWE-787",
+            "tags": [
+              "stack",
+              "contracts",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-QUEUE-FIFO-VIOLATION",
+            "description": "Operación de cola que parece retirar desde el extremo equivocado.",
+            "default_severity": "warning",
+            "good_example": "return data[head++];",
+            "bad_example": "return data[--tail];",
+            "profiles": [
+              "cc232",
+              "generic-cpp",
+              "stl-adapters"
+            ],
+            "cwe": null,
+            "tags": [
+              "queue",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-SIZE-NOT-UPDATED",
+            "description": "Método mutador que no actualiza un campo de tamaño visible.",
+            "default_severity": "warning",
+            "good_example": "data[n] = value; n += 1;",
+            "bad_example": "data[n] = value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "size",
+              "invariant",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-HEAP-PROPERTY-RISK",
+            "description": "Método de heap que no muestra restauración de propiedad heap.",
+            "default_severity": "warning",
+            "good_example": "push(value); bubbleUp(index);",
+            "bad_example": "data[n++] = value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "heap",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-BST-ORDER-RISK",
+            "description": "Método de BST que no muestra comparación de orden durante inserción o búsqueda.",
+            "default_severity": "warning",
+            "good_example": "if (x < node->key) node = node->left;",
+            "bad_example": "root = new Node(x);",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "bst",
+              "semantics",
+              "cpp"
+            ]
+          },
+          {
+            "rule_id": "SG-NULL-DEREFERENCE-RISK",
+            "description": "Uso de puntero que puede ser nulo sin guarda local visible.",
+            "default_severity": "warning",
+            "good_example": "if (node != nullptr) return node->value;",
+            "bad_example": "return node->value;",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": "CWE-476",
+            "tags": [
+              "null",
+              "memory",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    },
+    {
+      "level": "INFO",
+      "code": "SG_COMPLEXITY_RULES_SUMMARY",
+      "message": "Pistas de complejidad evaluadas: 1 clases analizadas.",
+      "file": "examples/generic_cpp",
+      "line": null,
+      "symbol": null,
+      "details": {
+        "tags": [
+          "complexity",
+          "rules"
+        ],
+        "rules": [
+          {
+            "rule_id": "SG-COMPLEXITY-DEQUEUE-LINEAR-RISK",
+            "description": "Operación dequeue parece desplazar elementos y puede ser O(n).",
+            "default_severity": "warning",
+            "good_example": "return data[head++];",
+            "bad_example": "for (int i = 1; i < n; ++i) data[i - 1] = data[i];",
+            "profiles": [
+              "cc232",
+              "generic-cpp"
+            ],
+            "cwe": null,
+            "tags": [
+              "complexity",
+              "queue",
+              "cpp"
+            ]
+          }
+        ],
+        "confidence": "medium",
+        "evidence": "static_analysis",
+        "category": "general"
+      },
+      "display_level": "INFO",
+      "guarantee": {
+        "level": "G1_HEURISTIC",
+        "label": "Heurístico",
+        "description": "Resultado basado en patrones, nombres, tokens o señales incompletas. No prueba corrección."
+      }
+    }
+  ]
+}

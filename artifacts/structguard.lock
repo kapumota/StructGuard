@@ -1,0 +1,28 @@
+{
+  "schema_version": "structguard-lock/v1",
+  "tool": {
+    "name": "StructGuard",
+    "version": "4.6.1-es-professional-stable"
+  },
+  "generated_at_utc": "2026-06-11T17:20:54Z",
+  "root": "examples/generic_cpp",
+  "context": {
+    "command": "scan",
+    "profile": "generic-cpp",
+    "preset": "security",
+    "frontend": "auto",
+    "headers_only": true,
+    "strict_ast": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-35-generic-x86_64-with-glibc2.39"
+  },
+  "input_hashes": [
+    {
+      "path": "Stack.hpp",
+      "sha256": "02c4bd2621673584b9d2713bbc994c962ed007b2e0780496273a3244746b9934",
+      "size_bytes": 731
+    }
+  ]
+}

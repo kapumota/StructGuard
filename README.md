@@ -437,13 +437,13 @@ La migración será gradual.
 
 #### Etapas
 
-| Etapa    | Decisión                                                               |
-| -------- | ---------------------------------------------------------------------- |
-| Fase 9.6 | Documentar comandos heredados y marcar `fuzz` como deprecado           |
-| Fase 10  | Medir qué comandos se usan en benchmark, demos y documentación         |
-| Fase 11  | Agregar advertencias de deprecación para comandos con reemplazo claro  |
-| Fase 12  | Redirigir comandos simples hacia `scan --preset ...` cuando sea seguro |
-| Fase 15  | Decidir qué comandos se mantienen, migran o eliminan                   |
+| Etapa | Decisión |
+|---|---|
+| Fase 9.6 | Documentar comandos heredados y marcar `fuzz` como deprecado |
+| Fase 10 | Medir el uso de comandos en benchmark, demos y documentación |
+| Fase 11 | Mantener compatibilidad sin ampliar el CLI legacy y derivar reportes desde `report.json` |
+| Fase 15 | Agregar advertencias y redirecciones para comandos con reemplazo claro |
+| Posterior a Fase 15 | Decidir qué comandos se mantienen, migran o eliminan |
 
 #### Criterio de eliminación
 
@@ -488,6 +488,142 @@ testgen
 ```
 
 Esto permite mantener compatibilidad sin duplicar indefinidamente la lógica de análisis.
+
+
+
+#### Fase 10: corpus mínimo y benchmark de regresión
+
+La Fase 10 agrega un corpus pequeño y un benchmark reproducible para medir si StructGuard mejora o empeora entre fases.
+
+El objetivo es evitar seguir agregando arquitectura sin medir precisión, recall, falsos positivos, falsos negativos, tiempo de análisis y detección de mutaciones.
+
+Entregables principales:
+
+```text
+benchmarks/corpus/correct/
+benchmarks/corpus/buggy/
+benchmarks/mutations/
+benchmarks/ground_truth.yaml
+benchmarks/thresholds.yml
+benchmarks/run_benchmark.py
+artifacts/benchmark-report.json
+docs/BENCHMARKING.md
+```
+
+Comando reproducible:
+
+```bash
+python benchmarks/run_benchmark.py
+```
+
+Métricas mínimas:
+
+```text
+precision
+recall
+false_positive_count
+false_negative_count
+false_positive_rate
+analysis_time_ms_total
+analysis_time_ms_per_file
+rules_triggered
+mutation_detection_rate
+```
+
+El corpus incluye casos correctos, casos defectuosos y casos de desafío. La línea base no busca resultados perfectos, sino una medición honesta que permita detectar regresiones.
+
+Resultado de referencia del corpus reforzado:
+
+```text
+precision: 0.8095
+recall: 0.9444
+false_positive_count: 4
+false_negative_count: 1
+mutation_detection_rate: 1.0
+```
+
+Documentación nueva de esta fase:
+
+```text
+docs/BENCHMARKING.md
+```
+
+Esta fase no agrega nuevos analizadores. Su función es crear una base de medición para fases posteriores.
+
+
+#### Fase 11: reporte canónico y Evidence Pack mínimo
+
+La Fase 11 define `report.json` como fuente canónica de verdad para una ejecución de StructGuard.
+
+El objetivo es evitar un Evidence Pack burocrático. Una ejecución mínima debe poder conservar evidencia reproducible con solo dos archivos:
+
+```text
+artifacts/report.json
+artifacts/structguard.lock
+```
+
+`report.json` contiene:
+
+```text
+hallazgos
+reglas activadas
+perfil
+preset
+resumen
+niveles de garantía
+diagnósticos heredados
+```
+
+`structguard.lock` contiene:
+
+```text
+versión de StructGuard
+hashes SHA-256 de entradas
+flags principales
+perfil
+preset
+lenguaje
+versión de Python
+plataforma
+```
+
+Ejemplo:
+
+```bash
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset security \
+  --report-json artifacts/report.json \
+  --lockfile artifacts/structguard.lock
+```
+
+Los reportes secundarios son derivados opcionales. No son obligatorios por ejecución:
+
+```bash
+structguard report derive artifacts/report.json \
+  --html artifacts/report.html \
+  --sarif artifacts/report.sarif \
+  --junit artifacts/junit.xml \
+  --markdown artifacts/report.md
+```
+
+Documentación nueva de esta fase:
+
+```text
+docs/REPORT_FORMAT.md
+docs/EVIDENCE_PACK.md
+```
+
+Módulos nuevos:
+
+```text
+src/structguard/reporting/canonical_report.py
+src/structguard/reporting/lockfile.py
+src/structguard/reporting/derivatives.py
+```
+
+Esta fase no implementa cache incremental. La cache queda para la Fase 12.
+
 
 #### Clang opcional para análisis AST estricto
 
