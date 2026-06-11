@@ -1023,11 +1023,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--no-ast-filter", action="store_true", help="Desactiva ast-dump-filter de Clang; útil para archivos pequeños, lento para cabeceras grandes")
     sp.set_defaults(func=cmd_clang)
 
-    sp = sub.add_parser("formal", help="Exporta artefactos formales SMT-LIB y/o puente Viper desde contratos")
+    sp = sub.add_parser("formal", help="Exporta artefactos formales SMT-LIB, Viper o Dafny experimental desde contratos")
     common(sp)
-    sp.add_argument("--backend", choices=["smt", "viper", "both"], default="both")
-    sp.add_argument("--out-dir", default="formal_out", help="Directorio donde se escriben artefactos .smt2/.vpr")
-    sp.add_argument("--run-solver", action="store_true", help="Ejecuta z3 sobre archivos SMT-LIB generados cuando z3 esté instalado")
+    sp.add_argument("--backend", choices=["smt", "viper", "dafny", "both"], default="both")
+    sp.add_argument("--out-dir", default="formal_out", help="Directorio donde se escriben artefactos .smt2/.vpr/.dfy")
+    sp.add_argument("--run-solver", action="store_true", help="Ejecuta z3 o Dafny cuando el backend seleccionado y la herramienta estén instalados")
     sp.set_defaults(func=cmd_formal)
 
     sp = sub.add_parser("pipeline", help="Ejecuta el pipeline Clang AST → CFG/SSA y resume la IR de métodos")

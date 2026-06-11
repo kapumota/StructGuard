@@ -901,6 +901,62 @@ fuzz      -> testgen
 Esta fase no elimina comandos. Solo agrega avisos, documentación y una tabla canónica para que la migración posterior sea medible y segura.
 
 
+
+#### Fase 16: backend formal único experimental
+
+La Fase 16 agrega un backend formal único experimental basado en Dafny.
+
+El objetivo es evitar intentar implementar Dafny, Prusti, Why3 y Viper al mismo tiempo. StructGuard empieza con un único backend formal inicial y limita explícitamente su alcance.
+
+El backend Dafny trabaja sobre modelos abstractos simples derivados de contratos SGDSL. No traduce C++ real con punteros directamente a Dafny.
+
+Estructuras iniciales soportadas:
+
+```text
+ArrayStack
+ArrayQueue
+ArrayVector
+DisjointSet básico
+```
+
+Uso recomendado:
+
+```bash
+structguard formal examples/formal/dafny \
+  --backend dafny \
+  --dsl examples/formal/dafny/array_stack.sgdsl \
+  --out-dir artifacts/formal-dafny
+```
+
+Estados honestos del backend:
+
+```text
+GENERATED
+PARSED
+VERIFIED
+FAILED
+UNKNOWN
+UNSUPPORTED
+```
+
+`GENERATED` solo significa que el archivo Dafny fue creado. `VERIFIED` solo puede comunicarse si Dafny se ejecutó y verificó el modelo.
+
+Documentación nueva de esta fase:
+
+```text
+docs/DAFNY_BACKEND.md
+examples/formal/dafny/
+```
+
+Módulo nuevo:
+
+```text
+src/structguard/exporters/dafny.py
+```
+
+Esta fase no implementa verificación formal completa de C++ real. Es un backend experimental para modelos abstractos pequeños.
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
