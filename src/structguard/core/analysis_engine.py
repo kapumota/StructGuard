@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 from structguard.binding import build_binding_ir, match_contracts_to_source
+from structguard.analyzers.memory_safety import analyze_memory_safety_project
 from structguard.frontend.cpp import build_cpp_source_ir
 from structguard.ir.contract_ir import build_contract_ir
 from structguard.ir.contract_validator import validate_contract_ir
@@ -207,6 +208,16 @@ class SecurityPass:
         return _report_to_pass_result(self.name, report)
 
 
+class MemorySafetyPass:
+    name = "RunMemorySafety"
+
+    def run(self, context: AnalysisContext) -> AnalysisPassResult:
+        if not context.capabilities.memory_safety:
+            return AnalysisPassResult(self.name, "skipped", [], {"reason": "El preset no solicita modelo de memoria."})
+        report = analyze_memory_safety_project(context.root, headers_only=context.headers_only)
+        return _report_to_pass_result(self.name, report)
+
+
 class FormalPass:
     name = "RunFormal"
 
@@ -258,11 +269,11 @@ class AnalysisEngine:
         if preset == "source":
             return common
         if preset == "security":
-            return [*common, SecurityPass()]
+            return [*common, SecurityPass(), MemorySafetyPass()]
         if preset == "ci":
-            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass()]
+            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass()]
         if preset == "full":
-            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), FormalPass()]
+            return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass(), SecurityPass(), MemorySafetyPass(), FormalPass()]
         return [*common, BuildContractIRPass(), BindContractsPass(), BoundedContractsPass(), LintContractsPass()]
 
 
