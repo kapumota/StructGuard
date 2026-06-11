@@ -8,7 +8,7 @@ from structguard.frontend.cpp import build_cpp_source_ir, load_compile_commands
 
 
 def test_compile_commands_loader_resolves_relative_paths() -> None:
-    db = load_compile_commands(Path("examples/cpp_projects/build/compile_commands.json"))
+    db = load_compile_commands(Path("examples/cpp_projects/compile_commands.json"))
 
     assert db.commands
     assert db.files()[0].name == "Stack.cpp"
@@ -54,7 +54,7 @@ def test_scan_accepts_cpp_frontend_options() -> None:
             "--language",
             "cpp",
             "--compile-commands",
-            "examples/cpp_projects/build/compile_commands.json",
+            "examples/cpp_projects/compile_commands.json",
             "--profile",
             "generic-cpp",
             "--fallback-allowed",
@@ -84,7 +84,7 @@ def test_contract_bind_can_use_cpp_source_ir_with_fallback() -> None:
             "--language",
             "cpp",
             "--compile-commands",
-            "examples/cpp_projects/build/compile_commands.json",
+            "examples/cpp_projects/compile_commands.json",
             "--fallback-allowed",
         ],
         text=True,

@@ -92,7 +92,7 @@ La Fase 4 introduce `SourceIR` y un frontend C++ canónico basado en Clang. Clan
 ```bash
 structguard scan examples/cpp_projects \
   --language cpp \
-  --compile-commands examples/cpp_projects/build/compile_commands.json \
+  --compile-commands examples/cpp_projects/compile_commands.json \
   --profile generic-cpp
 ```
 
@@ -101,7 +101,7 @@ También se puede guardar la representación interna del código fuente:
 ```bash
 structguard scan examples/cpp_projects \
   --language cpp \
-  --compile-commands examples/cpp_projects/build/compile_commands.json \
+  --compile-commands examples/cpp_projects/compile_commands.json \
   --profile generic-cpp \
   --source-ir-json artifacts/source-ir.json
 ```

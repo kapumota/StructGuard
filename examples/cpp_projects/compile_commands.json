@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "..",
+    "command": "clang++ -std=c++17 -Iinclude -c src/Stack.cpp -o build/Stack.o",
+    "file": "src/Stack.cpp"
+  }
+]

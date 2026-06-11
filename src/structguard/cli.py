@@ -343,6 +343,38 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     return print_report(merged, verbose=args.verbose)
 
 
+def cmd_scan(args: argparse.Namespace) -> int:
+    profile = apply_profile_defaults(args)
+    root = Path(args.path)
+    source_ir = _build_cpp_source_ir_if_requested(root, args)
+    if source_ir is None:
+        return cmd_analyze(args)
+    diagnostics = [
+        Diagnostic(
+            level="INFO",
+            code="CPP_SOURCE_IR_SUMMARY",
+            message=f"Frontend C++ activo: {source_ir.frontend}",
+            file=str(root),
+            details=source_ir.summary(),
+        ),
+        *[_source_diagnostic_to_project(diagnostic) for diagnostic in source_ir.diagnostics],
+    ]
+    if profile:
+        diagnostics.insert(
+            0,
+            Diagnostic(
+                level="INFO",
+                code="ANALYSIS_PROFILE",
+                message=f"Perfil de análisis activo: {profile.name}",
+                file=str(root),
+                details={"profile": profile.__dict__},
+            ),
+        )
+    report = ProjectReport(root=str(root), diagnostics=diagnostics)
+    _write_outputs(report, args, "Reporte de scan StructGuard")
+    return print_report(report, verbose=args.verbose)
+
+
 def cmd_suggest(args: argparse.Namespace) -> int:
     root = Path(args.path)
     suggestions = collect_suggestions(root, headers_only=args.headers_only, infer=not args.no_infer)
@@ -732,7 +764,7 @@ def build_parser() -> argparse.ArgumentParser:
     common(sp); strict_ast_options(sp); sp.set_defaults(func=cmd_analyze)
 
     sp = sub.add_parser("scan", help="Ejecuta el análisis principal usando perfiles de dominio explícitos")
-    common(sp); strict_ast_options(sp); sp.set_defaults(func=cmd_analyze)
+    common(sp); strict_ast_options(sp); sp.set_defaults(func=cmd_scan)
 
     sp = sub.add_parser("suggest", help="Sugiere anotaciones // invariant, // requires y // ensures para cabeceras .h")
     common(sp)

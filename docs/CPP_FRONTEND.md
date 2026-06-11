@@ -48,7 +48,7 @@ Ejemplo:
 ```bash
 structguard scan examples/cpp_projects \
   --language cpp \
-  --compile-commands examples/cpp_projects/build/compile_commands.json \
+  --compile-commands examples/cpp_projects/compile_commands.json \
   --profile generic-cpp
 ```
 
@@ -57,7 +57,7 @@ Para guardar SourceIR:
 ```bash
 structguard scan examples/cpp_projects \
   --language cpp \
-  --compile-commands examples/cpp_projects/build/compile_commands.json \
+  --compile-commands examples/cpp_projects/compile_commands.json \
   --profile generic-cpp \
   --source-ir-json artifacts/source-ir.json
 ```
@@ -68,7 +68,7 @@ structguard scan examples/cpp_projects \
 structguard contract bind examples/cpp_projects \
   --contract profiles/generic-cpp/contracts/stack.sgdsl \
   --language cpp \
-  --compile-commands examples/cpp_projects/build/compile_commands.json
+  --compile-commands examples/cpp_projects/compile_commands.json
 ```
 
 #### Fallback explícito
