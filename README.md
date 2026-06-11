@@ -272,6 +272,24 @@ Módulos nuevos o ampliados:
 - `src/structguard/analyzers/memory_safety.py`
 - `src/structguard/analyzers/complexity_hints.py`
 
+#### Fase 9.5: inventario de scripts y módulos heredados
+
+La Fase 9.5 agrega una limpieza no destructiva antes de continuar con Evidence Pack y cache incremental. No elimina scripts ni módulos heredados, pero documenta cuáles siguen activos, cuáles son candidatos a migración y cuáles deben revisarse antes de retirarse.
+
+Documentación nueva de esta fase:
+
+- `docs/SCRIPTS_INVENTORY.md`
+- `docs/LEGACY_MODULES.md`
+
+Decisión principal:
+
+```text
+No se eliminan scripts ni módulos de src/structguard en esta fase.
+Se documenta su estado para evitar romper CLI, pruebas o demos antes de migrarlos.
+```
+
+Esta fase prepara el camino para la Fase 10, donde la evidencia reproducible debe registrar comandos y artefactos sin arrastrar ambigüedad sobre scripts antiguos.
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
