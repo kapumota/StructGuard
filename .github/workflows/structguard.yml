@@ -54,6 +54,7 @@ jobs:
             --profile generic-cpp \
             --preset ci \
             --headers-only \
+            --contract profiles/generic-cpp/contracts/stack.sgdsl \
             --report-json artifacts/report.json \
             --lockfile artifacts/structguard.lock
           structguard report derive artifacts/report.json \
