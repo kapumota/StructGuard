@@ -2,10 +2,16 @@
 
 [![StructGuard CI](https://github.com/kapumota/StructGuard/actions/workflows/structguard.yml/badge.svg)](https://github.com/kapumota/StructGuard/actions/workflows/structguard.yml)
 [![Benchmark](https://github.com/kapumota/StructGuard/actions/workflows/benchmark.yml/badge.svg)](https://github.com/kapumota/StructGuard/actions/workflows/benchmark.yml)
-[![Release](https://img.shields.io/github/v/release/kapumota/StructGuard?display_name=tag)](https://github.com/kapumota/StructGuard/releases)
-[![License](https://img.shields.io/github/license/kapumota/StructGuard)](LICENSE)
+[![Release](https://img.shields.io/badge/release-v1.0.0-blue)](https://github.com/kapumota/StructGuard/releases/tag/v1.0.0)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
-[![Status](https://img.shields.io/badge/status-professional--stable-brightgreen)](README.md)
+[![Estado](https://img.shields.io/badge/estado-en%20desarrollo%20activo-yellow)](README.md)
+[![CLI](https://img.shields.io/badge/CLI-scan--preset-informational)](README.md)
+[![Contratos](https://img.shields.io/badge/contratos-profiles%2F*%2Fcontracts-success)](docs/CONTRACTS_LAYOUT.md)
+[![TestGen](https://img.shields.io/badge/testgen-contract--guided-purple)](docs/TESTGEN.md)
+[![Benchmark Metrics](https://img.shields.io/badge/benchmark-precision%200.8095%20%7C%20recall%200.9444-blue)](docs/BENCHMARKING.md)
+[![Garantías](https://img.shields.io/badge/garantias-G1--G5-orange)](README.md)
+[![Dafny](https://img.shields.io/badge/dafny-experimental-lightgrey)](README.md)
 
 
 **StructGuard** es una plataforma de línea de comandos para revisar implementaciones de estructuras de datos mediante contratos, análisis acotado, evidencia reproducible y exportación formal experimental. Está pensada para apoyar cursos, proyectos académicos y librerías C++ propias donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
