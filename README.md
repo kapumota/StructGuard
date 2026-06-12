@@ -957,6 +957,23 @@ src/structguard/exporters/dafny.py
 Esta fase no implementa verificación formal completa de C++ real. Es un backend experimental para modelos abstractos pequeños.
 
 
+
+#### TestGen
+
+Use `testgen` para generación abstracta de pruebas:
+
+```bash
+structguard testgen examples/generic_cpp \
+  --headers-only \
+  --seeds 20 \
+  --steps 50 \
+  --output-json report/examples_testgen.json \
+  --output-html report/examples_testgen.html \
+  --replay-script report/examples_replay.py \
+  --test-dir report/generated_tests
+```
+
+
 #### Clang opcional para análisis AST estricto
 
 Si quieres usar el análisis basado en Clang, por ejemplo con `--strict-ast`, instala Clang antes de ejecutar StructGuard:
@@ -1161,20 +1178,18 @@ jobs:
 
       - name: Ejecutar verificación básica de tipos con mypy
         run: mypy
-
-      - name: Ejecutar política de StructGuard y emitir artefactos
+      - name: Ejecutar scan canónico y emitir artefactos
         run: |
-          mkdir -p report
-          structguard ci examples/stack_ok.h \
+          mkdir -p artifacts
+          structguard scan examples/generic_cpp \
+            --profile generic-cpp \
+            --preset ci \
             --headers-only \
-            --strict-ast \
-            --deep-security \
-            --html report/structguard-ci.html \
-            --json report/structguard-ci.json \
-            --junit report/structguard-junit.xml \
-            --sarif report/structguard.sarif \
-            --summary-md report/structguard-summary.md \
-            --github-annotations
+            --report-json artifacts/report.json \
+            --lockfile artifacts/structguard.lock
+          structguard report derive artifacts/report.json \
+            --sarif artifacts/structguard.sarif
+
 
       - name: Validar salidas de reportes
         run: |
@@ -1354,41 +1369,20 @@ structguard scan ../Libreria_cc232/Semana2/include \
 
 #### 5. Flujo recomendado para CC-232
 
-Este flujo genera documentación, seguridad y rendimiento para `Libreria_cc232`:
+El flujo principal recomendado para `Libreria_cc232` usa `scan --preset` y un perfil explícito:
 
 ```bash
 mkdir -p report
 
-structguard docs ../Libreria_cc232/Semana2/include \
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
+  --preset ci \
   --headers-only \
-  --dsl contracts/cc232_core.sgdsl \
-  --docs-html report/cc232_docs.html \
-  --markdown-dir report/cc232_md \
-  --docs-json report/cc232_docs.json
-
-structguard security ../Libreria_cc232/Semana2/include \
-  --headers-only \
-  --deep \
-  --html report/cc232_security.html \
-  --security-json report/cc232_security.json
-
-structguard perf ../Libreria_cc232/Semana2/include \
-  --headers-only \
-  --perf-html report/cc232_perf.html \
-  --perf-json report/cc232_perf.json \
-  --perf-md report/cc232_perf.md \
-  --growth-json report/cc232_growth.json \
-  --harness report/cc232_perf_harness.cpp
+  --report-json report/cc232_report.json \
+  --lockfile report/cc232_structguard.lock
 ```
 
-También puedes ejecutar el script incluido:
-
-```bash
-bash scripts/final_demo_cc232.sh ../Libreria_cc232/Semana2/include
-```
-
-Ese script genera artefactos en `report/demo_cc232/`, incluyendo análisis, documentación, seguridad, testgen abstracto, rendimiento y CI.
-
+Los comandos `docs` y `perf` se conservan como comandos especializados para documentación derivada y rendimiento. No reemplazan al flujo canónico de análisis.
 
 #### 6. Demostración completa del proyecto
 
@@ -1401,27 +1395,38 @@ structguard doctor .
 ##### 6.2 Analizar una pila correcta
 
 ```bash
-structguard analyze examples/stack_ok.h --headers-only --strict-ast --std c++17
+structguard scan examples/stack_ok.h \
+  --headers-only \
+  --preset contracts \
+  --language cpp \
+  --frontend clang \
+  --strict-ast \
+  --std c++17
 ```
 
 ##### 6.3 Detectar un bug intencional
 
 ```bash
-structguard analyze examples/stack_bug.h --headers-only --strict-ast --std c++17
+structguard scan examples/stack_bug.h \
+  --headers-only \
+  --preset contracts \
+  --language cpp \
+  --frontend clang \
+  --strict-ast \
+  --std c++17
 ```
 
 `examples/stack_bug.h` está incluido deliberadamente para demostrar detección de fallos. Por eso no debe presentarse todo `examples/` como una suite que tenga que pasar limpia.
 
-##### 6.4 Generar reportes HTML y JSON
+##### 6.4 Generar reporte canónico JSON
 
 ```bash
 mkdir -p report
-structguard analyze examples/stack_ok.h \
+
+structguard scan examples/stack_ok.h \
   --headers-only \
-  --strict-ast \
-  --std c++17 \
-  --html report/examples_analysis.html \
-  --json report/examples_analysis.json
+  --preset contracts \
+  --report-json report/examples_analysis.json
 ```
 
 ##### 6.5 Generar documentación automática
@@ -1437,11 +1442,10 @@ structguard docs examples \
 ##### 6.6 Ejecutar revisión de seguridad
 
 ```bash
-structguard security examples \
+structguard scan examples \
   --headers-only \
-  --deep \
-  --html report/examples_security.html \
-  --security-json report/examples_security.json
+  --preset security \
+  --report-json report/examples_security.json
 ```
 
 ##### 6.7 Generar testgen abstracto y pruebas candidatas
@@ -1451,9 +1455,9 @@ structguard testgen examples \
   --headers-only \
   --seeds 20 \
   --steps 50 \
-  --fuzz-html report/examples_fuzz.html \
-  --fuzz-json report/examples_fuzz.json \
-  --replay report/examples_replay.py \
+  --output-html report/examples_testgen.html \
+  --output-json report/examples_testgen.json \
+  --replay-script report/examples_replay.py \
   --emit-tests \
   --test-dir report/generated_tests
 ```
@@ -1473,17 +1477,17 @@ structguard perf examples \
 ##### 6.9 Ejecutar compuerta CI local
 
 ```bash
-structguard ci examples/stack_ok.h \
+mkdir -p artifacts
+
+structguard scan examples/generic_cpp \
+  --profile generic-cpp \
+  --preset ci \
   --headers-only \
-  --strict-ast \
-  --policy structguard.yml \
-  --deep-security \
-  --html report/structguard-ci.html \
-  --json report/structguard-ci.json \
-  --junit report/structguard-junit.xml \
-  --sarif report/structguard.sarif \
-  --summary-md report/structguard-summary.md \
-  --github-annotations
+  --report-json artifacts/report.json \
+  --lockfile artifacts/structguard.lock
+
+structguard report derive artifacts/report.json \
+  --sarif artifacts/structguard.sarif
 ```
 
 ##### 6.10 Scripts de demostración incluidos
@@ -1517,10 +1521,10 @@ Valida un archivo DSL con:
 structguard dsl contracts/cc232_core.sgdsl --html report/cc232_dsl.html --dsl-json report/cc232_dsl.json
 ```
 
-Usa `--dsl` en `analyze`, `docs`, `security`, `perf`, `ci`, `testgen` y otros comandos que aceptan rutas C++:
+Use perfiles o contratos explícitos desde `scan` para análisis canónico. Los comandos especializados pueden seguir aceptando `--dsl` por compatibilidad:
 
 ```bash
-structguard analyze <ruta> --headers-only --dsl contracts/cc232_core.sgdsl
+structguard scan <ruta> --headers-only --profile generic-cpp --preset contracts --contract contracts/cc232_core.sgdsl
 ```
 
 #### 8. Limitaciones importantes
@@ -1572,36 +1576,23 @@ Por eso un resultado visible `BOUNDED_CHECK_PASSED` debe leerse como: "no se enc
 
 #### 10. CI/CD
 
-Crea una política inicial y un workflow de GitHub Actions:
+El flujo CI/CD recomendado usa `scan --preset ci` y deriva reportes desde el reporte canónico:
 
 ```bash
-structguard ci-init . --project-path Libreria_cc232 --force
-```
+mkdir -p artifacts
 
-Ejecuta un gate local sobre CC-232:
-
-```bash
-structguard ci ../Libreria_cc232/Semana2/include \
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
+  --preset ci \
   --headers-only \
-  --policy structguard.yml \
-  --deep-security \
-  --html report/structguard-ci.html \
-  --json report/structguard-ci.json \
-  --junit report/structguard-junit.xml \
-  --sarif report/structguard.sarif \
-  --summary-md report/structguard-summary.md \
-  --github-annotations
+  --report-json artifacts/report.json \
+  --lockfile artifacts/structguard.lock
+
+structguard report derive artifacts/report.json \
+  --sarif artifacts/structguard.sarif
 ```
 
-Si quieres hacer fallar el pipeline ante advertencias:
-
-```bash
-structguard ci ../Libreria_cc232/Semana2/include \
-  --headers-only \
-  --policy structguard.yml \
-  --deep-security \
-  --fail-on-warnings
-```
+`structguard ci` queda como comando heredado de compatibilidad. Para nuevas integraciones use `scan --preset ci`.
 
 #### 11. Contenido del paquete
 
@@ -1643,13 +1634,28 @@ Para un uso típico con `Libreria_cc232`, el flujo mínimo recomendado es:
 conda activate struct_guard
 mkdir -p report
 
-structguard analyze ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl
-structguard docs ../Libreria_cc232/Semana2/include --headers-only --dsl profiles/cc232/contracts/cc232_core.sgdsl --docs-html report/cc232_docs.html --markdown-dir report/cc232_md --docs-json report/cc232_docs.json
-structguard security ../Libreria_cc232/Semana2/include --headers-only --deep --html report/cc232_security.html --security-json report/cc232_security.json
-structguard perf ../Libreria_cc232/Semana2/include --headers-only --perf-html report/cc232_perf.html --perf-json report/cc232_perf.json --perf-md report/cc232_perf.md --growth-json report/cc232_growth.json --harness report/cc232_perf_harness.cpp
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
+  --preset ci \
+  --headers-only \
+  --report-json report/cc232_report.json \
+  --lockfile report/cc232_structguard.lock
 ```
 
-Si el proyecto ya compila correctamente con Clang, añade `--strict-ast --std c++17` a los comandos críticos de análisis y CI.
+Si el proyecto ya compila correctamente con Clang, use el frontend explícito:
+
+```bash
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
+  --preset ci \
+  --language cpp \
+  --frontend clang \
+  --strict-ast \
+  --std c++17 \
+  --report-json report/cc232_report.json
+```
+
+Los comandos `docs` y `perf` quedan como comandos especializados conservados para documentación derivada y rendimiento.
 
 #### 14. Alcance explícito de contratos en scan
 

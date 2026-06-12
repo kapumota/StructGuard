@@ -76,7 +76,7 @@ Esta métrica no prueba que el caso sea correcto. Sirve para priorizar revisión
 El comando heredado:
 
 ```bash
-structguard fuzz ...
+structguard testgen ...
 ```
 
 queda como alias de compatibilidad y debe mostrar advertencia de deprecación.

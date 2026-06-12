@@ -5,7 +5,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from structguard.fuzz import FuzzCase, collect_fuzz_cases, fuzz_project, write_cpp_tests, write_replay_script
+from structguard.fuzz import FuzzCase, collect_fuzz_cases, fuzz_project, write_cpp_tests, write_fuzz_html, write_replay_script
 from structguard.ir.contract_ir import build_contract_ir
 from structguard.model import Diagnostic, ProjectReport
 from structguard.sgdsl.diagnostics import SGDSLParseError
@@ -180,6 +180,26 @@ def write_testgen_json(manifest: TestgenManifest, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(manifest.as_dict(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path
+
+def _testgen_cases_as_fuzz_cases(cases: list[TestgenCaseIR]) -> list[FuzzCase]:
+    # Adaptador interno: reutiliza el reporte HTML existente sin exponer vocabulario fuzz al usuario.
+    return [
+        FuzzCase(
+            structure=case.structure,
+            seed=case.seed,
+            operations=case.operations,
+            failure=case.failure,
+            final_state=case.final_state,
+            target_method=case.target_method,
+            minimized_operations=case.minimized_operations,
+        )
+        for case in cases
+    ]
+
+
+def write_testgen_html(root: Path, manifest: TestgenManifest, path: Path) -> Path:
+    return write_fuzz_html(root, _testgen_cases_as_fuzz_cases(manifest.cases), path)
+
 
 
 def write_testgen_cpp_tests(

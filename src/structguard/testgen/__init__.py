@@ -4,6 +4,7 @@ from .contract_guided import (
     manifest_cases_as_legacy_dicts,
     testgen_project,
     write_testgen_cpp_tests,
+    write_testgen_html,
     write_testgen_json,
     write_testgen_replay,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "manifest_cases_as_legacy_dicts",
     "testgen_project",
     "write_testgen_cpp_tests",
+    "write_testgen_html",
     "write_testgen_json",
     "write_testgen_replay",
 ]

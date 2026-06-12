@@ -56,11 +56,11 @@ StructGuard no valida una libreria porque si. La valida contra un contrato expli
 #### Ejemplos de uso esperado
 
 ```bash
-structguard analyze include/Stack.hpp   --headers-only   --dsl profiles/generic-cpp/contracts/stack.sgdsl
+structguard scan include/Stack.hpp   --headers-only   --profile generic-cpp   --preset contracts
 ```
 
 ```bash
-structguard analyze ../Libreria_cc232/Semana2/include   --headers-only   --dsl profiles/cc232/contracts/cc232_core.sgdsl
+structguard scan ../Libreria_cc232/Semana2/include   --headers-only   --profile cc232   --preset contracts
 ```
 
 #### Evolucion en fases posteriores
