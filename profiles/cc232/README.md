@@ -1,15 +1,32 @@
-### CC-232 Profile
+### Perfil CC-232
 
-#### Proposito
+#### Propósito
 
-Perfil educativo inicial de StructGuard para estructuras de datos usadas en cursos como CC-232.
+Este perfil agrupa contratos y configuración para estructuras de datos usadas en CC-232.
+
+La ruta canónica del contrato principal es:
+
+```text
+profiles/cc232/contracts/cc232_core.sgdsl
+```
+
+Dentro de `profiles/cc232/profile.yml`, la ruta aparece como `contracts/cc232_core.sgdsl` porque se resuelve de forma relativa al directorio del perfil.
+
+#### Uso recomendado
+
+```bash
+structguard profiles validate profiles/cc232/profile.yml
+
+structguard scan ../Libreria_cc232/Semana2/include \
+  --profile cc232 \
+  --preset ci \
+  --headers-only \
+  --report-json report/cc232_report.json
+```
 
 #### Estado
 
-Este perfil conserva compatibilidad con los contratos actuales de `contracts/cc232_core.sgdsl` y prepara la separacion entre el nucleo general y las reglas academicas.
-
-#### Uso esperado
-
-```bash
-structguard analyze ../Libreria_cc232/Semana2/include   --headers-only   --dsl profiles/cc232/contracts/cc232_core.sgdsl
+```text
+Estado: académico
+Ruta canónica: profiles/cc232/contracts/cc232_core.sgdsl
 ```

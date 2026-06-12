@@ -794,7 +794,7 @@ ci:
   deep_security: true
 dsl:
   files:
-    - contracts/cc232_core.sgdsl
+    - profiles/cc232/contracts/cc232_core.sgdsl
 report:
   html: report/structguard.html
   json: report/structguard.json
@@ -814,7 +814,7 @@ frontends:
 assist:
   mode: heuristic
 advanced:
-  dsl: contracts/advanced_structures.sgdsl
+  dsl: profiles/advanced-structures/contracts/advanced_structures.sgdsl
 docs:
   html: report/docs.html
   markdown_dir: report/docs_md

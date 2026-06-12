@@ -1,15 +1,19 @@
 ### Generic C++ Profile
 
-#### Proposito
+#### Propósito
 
-Perfil general para librerias C++ propias que implementan estructuras de datos fuera de CC-232.
+Perfil general para librerías C++ propias que implementan estructuras de datos fuera de CC-232.
 
 #### Estado
 
-Este perfil es una base de Fase 0. En Fase 1 debe conectarse al cargador real de perfiles.
+Este perfil es la ruta canónica para ejemplos C++ genéricos.
 
 #### Uso esperado
 
 ```bash
-structguard analyze include   --headers-only   --dsl profiles/generic-cpp/contracts/stack.sgdsl   --dsl profiles/generic-cpp/contracts/queue.sgdsl
+structguard scan include \
+  --profile generic-cpp \
+  --preset contracts \
+  --headers-only \
+  --contract profiles/generic-cpp/contracts/stack.sgdsl
 ```

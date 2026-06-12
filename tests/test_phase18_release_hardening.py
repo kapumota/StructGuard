@@ -35,14 +35,14 @@ def test_phase18_benchmark_workflow_is_documented_as_gate() -> None:
     assert "scripts/check_benchmark_thresholds.py" in text
 
 
-def test_phase18_contracts_layout_documents_root_contracts_as_compatibility() -> None:
+def test_phase18_contracts_layout_documents_profile_contracts() -> None:
     text = (ROOT / "docs" / "CONTRACTS_LAYOUT.md").read_text(encoding="utf-8")
 
-    assert "contracts/cc232_core.sgdsl" in text
-    assert "contracts/advanced_structures.sgdsl" in text
+    assert "profiles/cc232/contracts/cc232_core.sgdsl" in text
+    assert "profiles/advanced-structures/contracts/advanced_structures.sgdsl" in text
     assert "profiles/generic-cpp/contracts/stack.sgdsl" in text
-    assert "git rm -r contracts" in text
-    assert "Mantener temporalmente" in text
+    assert "carpeta raíz `contracts/` fue retirada" in text
+    assert "profiles/<perfil>/contracts/" in text
 
 
 def test_phase18_changelog_mentions_release_hardening_without_fixed_metrics() -> None:
@@ -53,4 +53,5 @@ def test_phase18_changelog_mentions_release_hardening_without_fixed_metrics() ->
     assert ".github/workflows/benchmark.yml" in text
     assert "docs/LEGACY_MODULES.md" in text
     assert "docs/CONTRACTS_LAYOUT.md" in text
+    assert "Fase 19" in text
     assert "No se registran valores fijos" in text
