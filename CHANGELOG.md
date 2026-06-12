@@ -1,6 +1,6 @@
 ### Changelog
 
-#### 4.6.1 - Fases 0 a 18
+#### 4.6.1 - Fases 0 a 19
 
 ##### Arquitectura
 
@@ -17,6 +17,7 @@ Fase 15: deprecación controlada del CLI heredado
 Fase 16: backend Dafny experimental
 Fase 17: alineación pública de CLI, CI, README y CHANGELOG
 Fase 18: hardening de release, smoke test, benchmark e inventario legacy
+Fase 19: migración de contratos raíz hacia profiles/*/contracts/
 ```
 
 ##### CLI
@@ -39,6 +40,14 @@ Layout de contratos: docs/CONTRACTS_LAYOUT.md
 Inventario de scripts: docs/SCRIPTS_INVENTORY.md
 ```
 
+##### Layout de contratos
+
+```text
+Ruta canónica CC-232: profiles/cc232/contracts/cc232_core.sgdsl
+Ruta canónica avanzada: profiles/advanced-structures/contracts/advanced_structures.sgdsl
+Carpeta contracts/ raíz: retirada después de migrar referencias activas
+```
+
 ##### Métricas de referencia
 
 Las métricas de benchmark deben tomarse del reporte generado por:
@@ -50,3 +59,7 @@ python benchmarks/run_benchmark.py \
 ```
 
 No se registran valores fijos en este changelog si no provienen del reporte generado en CI.
+
+##### Próximo release
+
+La Fase 20 debe crear el tag anotado `v1.0.0`, publicar GitHub Release, validar badges públicos y cerrar el primer ciclo estable del proyecto.

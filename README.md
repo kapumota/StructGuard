@@ -1,5 +1,13 @@
 ### StructGuard
 
+[![StructGuard CI](https://github.com/kapumota/StructGuard/actions/workflows/structguard.yml/badge.svg)](https://github.com/kapumota/StructGuard/actions/workflows/structguard.yml)
+[![Benchmark](https://github.com/kapumota/StructGuard/actions/workflows/benchmark.yml/badge.svg)](https://github.com/kapumota/StructGuard/actions/workflows/benchmark.yml)
+[![Release](https://img.shields.io/github/v/release/kapumota/StructGuard?display_name=tag)](https://github.com/kapumota/StructGuard/releases)
+[![License](https://img.shields.io/github/license/kapumota/StructGuard)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
+[![Status](https://img.shields.io/badge/status-professional--stable-brightgreen)](README.md)
+
+
 **StructGuard** es una plataforma de línea de comandos para revisar implementaciones de estructuras de datos mediante contratos, análisis acotado, evidencia reproducible y exportación formal experimental. Está pensada para apoyar cursos, proyectos académicos y librerías C++ propias donde se implementan pilas, colas, vectores, deques, árboles, heaps, hashing, grafos y estructuras similares.
 
 StructGuard no está limitado a CC-232. CC-232 es el primer perfil académico. El motor puede analizar otras librerías C++, otros cursos y, progresivamente, otros lenguajes mediante perfiles, contratos, frontends y exportadores.
@@ -1500,7 +1508,7 @@ bash scripts/final_demo.sh          # ejecuta ambas rutas
 
 #### 7. Uso de contratos DSL
 
-Los contratos externos se escriben en archivos `.sgdsl`. El paquete incluye `contracts/cc232_core.sgdsl`, orientado a estructuras base de CC-232.
+Los contratos externos se escriben en archivos `.sgdsl`. El paquete incluye `profiles/cc232/contracts/cc232_core.sgdsl`, orientado a estructuras base de CC-232.
 
 Ejemplo simplificado:
 
@@ -1518,13 +1526,13 @@ structure ArrayStack {
 Valida un archivo DSL con:
 
 ```bash
-structguard dsl contracts/cc232_core.sgdsl --html report/cc232_dsl.html --dsl-json report/cc232_dsl.json
+structguard dsl profiles/cc232/contracts/cc232_core.sgdsl --html report/cc232_dsl.html --dsl-json report/cc232_dsl.json
 ```
 
 Use perfiles o contratos explícitos desde `scan` para análisis canónico. Los comandos especializados pueden seguir aceptando `--dsl` por compatibilidad:
 
 ```bash
-structguard scan <ruta> --headers-only --profile generic-cpp --preset contracts --contract contracts/cc232_core.sgdsl
+structguard scan <ruta> --headers-only --profile generic-cpp --preset contracts --contract profiles/cc232/contracts/cc232_core.sgdsl
 ```
 
 #### 8. Limitaciones importantes
@@ -1670,3 +1678,55 @@ structguard scan examples/generic_cpp \
 ```
 
 El perfil sigue definiendo la configuración de dominio, pero el alcance contractual queda limitado al archivo indicado.
+
+### Lo que viene
+
+#### Fase 20: tag, release y distribución
+
+La Fase 20 debe convertir el estado actual de StructGuard en un lanzamiento reproducible. El objetivo no es agregar capacidades nuevas, sino publicar una versión clara y verificable.
+
+Actividades recomendadas:
+
+```text
+crear tag anotado v1.0.0
+crear GitHub Release sobre v1.0.0
+adjuntar resumen de fases 0 a 19
+validar badges de CI, benchmark, release y licencia
+confirmar que README, CHANGELOG y workflows apuntan al flujo canónico
+publicar artefactos de evidencia si el release los requiere
+```
+
+Comandos sugeridos después de fusionar Fase 19:
+
+```bash
+git checkout main
+git pull origin main
+git status --short
+
+git tag -a v1.0.0 -m "release v1.0.0: StructGuard estable con perfiles, CI y contratos canónicos"
+git push origin main --tags
+```
+
+Luego, en GitHub, crear un release sobre `v1.0.0` y marcarlo como lanzamiento estable si CI y benchmark están en verde.
+
+#### Badges esperados
+
+El README debe mostrar badges para:
+
+```text
+StructGuard CI
+Benchmark
+Release
+License
+Python
+Status
+```
+
+#### Fases posteriores
+
+```text
+Fase 21: empaquetado Python más estricto y publicación opcional
+Fase 22: documentación de contribución avanzada y matriz de compatibilidad
+Fase 23: expansión de perfiles para más librerías C++ y estructuras avanzadas
+Fase 24: endurecimiento del backend formal y trazabilidad de evidencia
+```

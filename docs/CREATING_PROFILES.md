@@ -100,13 +100,13 @@ structguard scan examples/external_libraries/stl --profile stl-adapters
 
 #### Contratos adicionales
 
-Un perfil puede declarar contratos base, pero el usuario puede agregar contratos externos con `--dsl`:
+Un perfil puede declarar contratos base. Si el usuario necesita acotar el análisis a un contrato específico, puede usar una ruta canónica bajo `profiles/<perfil>/contracts/`:
 
 ```bash
-structguard scan include --profile generic-cpp --dsl contracts/ring_buffer.sgdsl
+structguard scan include --profile generic-cpp --contract profiles/my-profile/contracts/ring_buffer.sgdsl
 ```
 
-StructGuard combina los contratos del perfil con los contratos pasados manualmente.
+StructGuard usa los contratos del perfil y permite acotar el alcance con `--contract` cuando el análisis debe enfocarse en una estructura concreta.
 
 #### Recomendaciones
 

@@ -1,0 +1,21 @@
+# Perfil experimental para estructuras avanzadas de StructGuard.
+name: advanced-structures
+display_name: Advanced Structures Profile
+description: Perfil experimental para contratos de estructuras avanzadas.
+language: cpp
+status: experimental
+contracts:
+  - contracts/advanced_structures.sgdsl
+frontend:
+  cpp:
+    primary: clang
+    fallback: lightweight
+    fallback_allowed: true
+analysis:
+  headers_only: true
+  strict_ast: false
+  bounded: true
+outputs:
+  html: true
+  json: true
+  sarif: true

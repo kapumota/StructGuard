@@ -31,7 +31,7 @@ Retirado          = script histórico eliminado después de validar que no estab
 | Script | Estado | Motivo |
 |---|---|---|
 | `scripts/final_demo.sh` | Revisar | Usado por Makefile; no retirar sin reemplazar el target. |
-| `scripts/final_demo_cc232.sh` | Revisar | Puede seguir siendo útil para CC-232, pero no debe ser la ruta principal del producto. |
+| `scripts/final_demo_cc232.sh` | Mantener | Demo CC-232 migrada a `scan --preset`, `report derive` y `testgen`. |
 
 #### Scripts retirados en Fase 18
 
@@ -59,4 +59,4 @@ mypy
 
 #### Decisión de Fase 18
 
-La Fase 18 retira solo demos de versión anterior que no forman parte del flujo activo. No se elimina `final_demo.sh`, porque está referenciado por Makefile. No se elimina `final_demo_cc232.sh`, porque todavía puede servir como demo histórica de CC-232.
+La Fase 18 retira solo demos de versión anterior que no forman parte del flujo activo. No se elimina `final_demo.sh`, porque está referenciado por Makefile. No se elimina `final_demo_cc232.sh`, porque fue migrado al flujo canónico de Fase 19.

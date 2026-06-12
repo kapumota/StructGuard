@@ -1,6 +1,6 @@
 ### Custom Template Profile
 
-#### Proposito
+#### Propósito
 
 Plantilla para crear perfiles propios de StructGuard.
 
@@ -8,12 +8,17 @@ Plantilla para crear perfiles propios de StructGuard.
 
 1. Copia esta carpeta con un nombre nuevo.
 2. Edita `profile.yml`.
-3. Agrega contratos `.sgdsl` en `contracts/`.
-4. Ejecuta StructGuard con `--dsl` apuntando a los contratos del perfil.
+3. Agrega contratos `.sgdsl` en `contracts/` dentro del perfil.
+4. Ejecuta StructGuard con `scan --preset` y el perfil creado.
 
 #### Uso esperado
 
 ```bash
 cp -r profiles/custom-template profiles/my-course
-structguard analyze include   --headers-only   --dsl profiles/my-course/contracts/custom_structure.sgdsl
+
+structguard scan include \
+  --profile my-course \
+  --preset contracts \
+  --headers-only \
+  --contract profiles/my-course/contracts/custom_structure.sgdsl
 ```
