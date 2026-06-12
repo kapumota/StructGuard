@@ -1,8 +1,8 @@
 ### Changelog
 
-#### 4.6.1 - Fases 0 a 16
+#### 4.6.1 - Fases 0 a 18
 
-Cambios principales:
+##### Arquitectura
 
 ```text
 Fases 0 a 3: identidad del proyecto, perfiles, SGDSL y binding contrato-código
@@ -15,13 +15,38 @@ Fase 13: testgen guiado por contratos
 Fase 14: CI con gates medibles
 Fase 15: deprecación controlada del CLI heredado
 Fase 16: backend Dafny experimental
+Fase 17: alineación pública de CLI, CI, README y CHANGELOG
+Fase 18: hardening de release, smoke test, benchmark e inventario legacy
 ```
 
-#### Estado actual
+##### CLI
 
 ```text
 CLI canónico: scan --preset
+Reportes derivados: report derive
 Pruebas abstractas: testgen
 Backend formal: Dafny experimental
 Comandos heredados: documentados con structguard legacy list
 ```
+
+##### Release hardening
+
+```text
+Smoke test de usuario nuevo: scripts/smoke_new_user.sh
+Benchmark de regresión: .github/workflows/benchmark.yml
+Inventario de módulos legacy: docs/LEGACY_MODULES.md
+Layout de contratos: docs/CONTRACTS_LAYOUT.md
+Inventario de scripts: docs/SCRIPTS_INVENTORY.md
+```
+
+##### Métricas de referencia
+
+Las métricas de benchmark deben tomarse del reporte generado por:
+
+```bash
+python benchmarks/run_benchmark.py \
+  --thresholds benchmarks/thresholds.yml \
+  --fail-on-threshold
+```
+
+No se registran valores fijos en este changelog si no provienen del reporte generado en CI.

@@ -35,6 +35,9 @@ jobs:
           mkdir -p report
           structguard doctor . --json report/doctor.json
 
+      - name: Ejecutar smoke test de usuario nuevo
+        run: bash scripts/smoke_new_user.sh
+
       - name: Compilar fuentes de Python
         run: python -m compileall -q src tests
 
