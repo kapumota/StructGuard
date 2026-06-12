@@ -45,7 +45,7 @@ from .findings.guarantee import diagnostic_display_level, guarantee_counts_from_
 from .reporters.guarantee_badge import guarantee_badge_text
 from .reporting import derive_reports_from_canonical, load_canonical_report, write_canonical_report, write_lockfile
 from .cache import run_cached_scan
-from .testgen import build_testgen_manifest, testgen_project, write_testgen_cpp_tests, write_testgen_json, write_testgen_replay
+from .testgen import build_testgen_manifest, testgen_project, write_testgen_cpp_tests, write_testgen_html, write_testgen_json, write_testgen_replay
 from .legacy import emit_legacy_notice, legacy_policy_rows
 
 
@@ -535,6 +535,10 @@ def cmd_testgen(args: argparse.Namespace) -> int:
     if output_path:
         write_testgen_json(manifest, Path(output_path))
         print(f"JSON de TestGen escrito en: {output_path}")
+    html_path = getattr(args, "output_html", None) or getattr(args, "fuzz_html", None)
+    if html_path:
+        write_testgen_html(root, manifest, Path(html_path))
+        print(f"HTML de TestGen escrito en: {html_path}")
     if args.replay:
         write_testgen_replay(root, manifest.cases, Path(args.replay))
         print(f"Script de reproducción escrito en: {args.replay}")
@@ -964,9 +968,13 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--structure", help="Limita la generación de pruebas a estructuras cuyo nombre contiene este texto")
     sp.add_argument("--test-dir", default="generated_tests", help="Directorio para pruebas C++ generadas")
     sp.add_argument("--include-smoke-tests", action="store_true", help="También emite pruebas smoke cuando no se encuentra ninguna falla")
-    sp.add_argument("--output", help="Escribe el manifiesto JSON canónico de TestGen")
-    sp.add_argument("--fuzz-json", help="Alias heredado de --output para compatibilidad")
-    sp.add_argument("--replay", help="Escribe un script Python de reproducción para secuencias abstractas fallidas")
+    sp.add_argument("--output-json", dest="output", help="Escribe el manifiesto JSON canónico de TestGen")
+    sp.add_argument("--output", dest="output", help=argparse.SUPPRESS)
+    sp.add_argument("--fuzz-json", dest="output", help=argparse.SUPPRESS)
+    sp.add_argument("--output-html", dest="output_html", help="Escribe el reporte HTML de TestGen")
+    sp.add_argument("--fuzz-html", dest="output_html", help=argparse.SUPPRESS)
+    sp.add_argument("--replay-script", dest="replay", help="Escribe un script Python de reproducción para secuencias abstractas fallidas")
+    sp.add_argument("--replay", dest="replay", help=argparse.SUPPRESS)
     sp.set_defaults(func=cmd_testgen)
 
     sp = sub.add_parser("security", help="Ejecuta comprobaciones estáticas orientadas a seguridad para estructuras de datos C++")

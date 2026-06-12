@@ -47,23 +47,24 @@ jobs:
       - name: Ejecutar verificación básica de tipos con mypy
         run: mypy
 
-      - name: Ejecutar política de StructGuard y emitir artefactos
+      - name: Ejecutar scan canónico y emitir artefactos
         run: |
-          mkdir -p report
-          structguard ci examples/stack_ok.h \
+          mkdir -p artifacts
+          structguard scan examples/generic_cpp \
+            --profile generic-cpp \
+            --preset ci \
             --headers-only \
-            --strict-ast \
-            --deep-security \
-            --html report/structguard-ci.html \
-            --json report/structguard-ci.json \
-            --junit report/structguard-junit.xml \
-            --sarif report/structguard.sarif \
-            --summary-md report/structguard-summary.md \
-            --github-annotations
+            --contract profiles/generic-cpp/contracts/stack.sgdsl \
+            --report-json artifacts/report.json \
+            --lockfile artifacts/structguard.lock
+          structguard report derive artifacts/report.json \
+            --sarif artifacts/structguard.sarif
 
       - name: Validar salidas de reportes
         run: |
-          python scripts/validate_outputs.py
+          python -m json.tool artifacts/report.json > /dev/null
+          python -m json.tool artifacts/structguard.sarif > /dev/null
+          test -s artifacts/structguard.lock
           python scripts/validate_outputs.py --profile doctor
 
       - name: Subir reportes de StructGuard
@@ -71,4 +72,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: structguard-reports
-          path: report/
+          path: |
+            artifacts/
+            report/doctor.json

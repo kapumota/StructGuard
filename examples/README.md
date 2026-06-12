@@ -5,7 +5,7 @@ Este directorio mezcla ejemplos limpios y un ejemplo con bug intencional.
 ## Ejemplo limpio
 
 ```bash
-structguard analyze examples/stack_ok.h --headers-only --strict-ast --std c++17
+structguard scan examples/stack_ok.h --headers-only --profile generic-cpp --preset contracts
 ```
 
 Debe terminar sin `FAILED`. Los resultados `BOUNDED_VERIFIED` significan evidencia acotada, no prueba formal universal.
@@ -13,7 +13,7 @@ Debe terminar sin `FAILED`. Los resultados `BOUNDED_VERIFIED` significan evidenc
 ## Bug intencional
 
 ```bash
-structguard analyze examples/stack_bug.h --headers-only --strict-ast --std c++17
+structguard scan examples/stack_bug.h --headers-only --profile generic-cpp --preset contracts
 ```
 
 `stack_bug.h` contiene deliberadamente `BuggyStack::pop`, que puede violar el invariante `size_ >= 0`. Esta demo debe fallar y sirve para mostrar detección de bugs.
@@ -21,7 +21,7 @@ structguard analyze examples/stack_bug.h --headers-only --strict-ast --std c++17
 ## No usar `examples/` como demo limpia
 
 ```bash
-structguard analyze examples --headers-only --strict-ast
+structguard scan examples --headers-only --profile generic-cpp --preset ci
 ```
 
 Ese comando analiza también `stack_bug.h`, por lo que es normal observar algo como:
