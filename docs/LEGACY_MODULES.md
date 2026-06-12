@@ -2,81 +2,56 @@
 
 #### Propósito
 
-Este documento clasifica módulos históricos de `src/structguard/` que todavía existen junto al nuevo flujo modular introducido entre las fases 5 y 9.
+Este documento clasifica módulos históricos de `src/structguard/` que todavía existen junto al flujo canónico basado en `scan --preset`, `report derive` y `testgen`.
 
-El objetivo no es borrar código de inmediato, sino evitar eliminaciones prematuras. Algunos módulos parecen antiguos por nombre o por historial de Git, pero todavía están conectados a CLI, pruebas o módulos internos.
+El objetivo no es borrar código de inmediato. El objetivo es indicar qué módulos son activos, cuáles son wrappers de compatibilidad y cuál es el reemplazo canónico para nuevas contribuciones.
 
-#### Módulos revisados
+#### Criterios de estado
 
 ```text
-src/structguard/advanced.py
-src/structguard/assist.py
-src/structguard/bench.py
-src/structguard/ci.py
-src/structguard/clang_bridge.py
-src/structguard/clang_frontend.py
+Activo              = forma parte de la ruta actual del producto
+Compatibilidad      = se conserva para comandos o pruebas heredadas
+Legacy wrapper      = adapta una ruta antigua hacia componentes nuevos
+Especializado       = comando todavía útil, pero no es el flujo principal
+Deprecado           = se mantiene solo como transición documentada
+Experimental        = puede usarse, pero no debe presentarse como garantía completa
 ```
 
-#### Clasificación
+#### Tabla de módulos
 
-| Módulo | Estado | Referencias actuales | Decisión |
+| Módulo | Rol histórico | Estado | Reemplazo canónico |
 |---|---|---|---|
-| `advanced.py` | Activo por compatibilidad | `cli.py`, pruebas históricas | Mantener hasta migrar `advanced` a presets o plantillas nuevas. |
-| `assist.py` | Activo por compatibilidad | `cli.py`, pruebas históricas | Mantener hasta migrar recomendaciones a un analizador o comando nuevo. |
-| `bench.py` | Activo | `cli.py`, `performance.py`, `scripts/demo_full.sh`, pruebas | Mantener. Es usado por benchmark y rendimiento. |
-| `ci.py` | Activo por compatibilidad | CLI y flujos antiguos | Mantener mientras `scan --preset ci` termina de reemplazarlo. |
-| `clang_bridge.py` | Activo | `verifier.py`, pruebas | Mantener hasta que `SourceIR` cubra completamente el puente anterior. |
-| `clang_frontend.py` | Activo | `cli.py`, `pipeline.py`, `ci.py`, pruebas | Mantener hasta completar la migración al frontend C++ canónico nuevo. |
+| `src/structguard/frontend.py` | Extracción C++ inicial | Legacy wrapper | `src/structguard/frontend/cpp/` y `scan --language cpp` |
+| `src/structguard/cppscan.py` | Parser ligero educativo | Compatibilidad | `scan --frontend lightweight` |
+| `src/structguard/clang_frontend.py` | Frontend Clang histórico | Legacy wrapper | `scan --language cpp --frontend clang --compile-commands ...` |
+| `src/structguard/dsl.py` | Carga SGDSL inicial | Compatibilidad | `src/structguard/sgdsl/` y perfiles en `profiles/*/contracts/` |
+| `src/structguard/verifier.py` | Verificación acotada inicial | Compatibilidad | `AnalysisEngine` y `scan --preset contracts` |
+| `src/structguard/formal.py` | Backend formal experimental | Experimental | Backend Dafny experimental y `structguard formal` |
+| `src/structguard/pipeline.py` | Orquestación histórica | Compatibilidad | `AnalysisEngine`, `FindingIR` y presets |
+| `src/structguard/lint.py` | Reglas iniciales de calidad | Compatibilidad | `scan --preset contracts` |
+| `src/structguard/security.py` | Revisión de seguridad histórica | Especializado | `scan --preset security` |
+| `src/structguard/performance.py` | Revisión de rendimiento | Especializado | comando `perf` conservado |
+| `src/structguard/docs.py` | Documentación derivada | Especializado | comando `docs` conservado |
+| `src/structguard/report.py` | Reportes históricos | Compatibilidad | `report derive` desde `report.json` |
+| `src/structguard/ci_outputs.py` | Emisión de artefactos CI | Compatibilidad | `report derive` y workflow canónico |
+| `src/structguard/fuzz.py` | Generación abstracta previa | Deprecado | `testgen` |
+| `src/structguard/counterexample.py` | Contraejemplos históricos | Compatibilidad | FindingIR, TestGen y reportes derivados |
+| `src/structguard/trace.py` | Trazas internas | Compatibilidad | Evidence Pack y reporte canónico |
 
-#### Motivo de no eliminación
+#### Reglas para nuevas contribuciones
 
-Estos módulos todavía aparecen en imports de CLI, tests o módulos del motor heredado. Eliminarlos antes de migrar sus responsabilidades puede romper:
-
-```text
-comandos antiguos mantenidos por compatibilidad
-pruebas existentes
-flujos de demo
-benchmark estático
-strict AST anterior
-verificación acotada con puente Clang heredado
-```
-
-#### Ruta de migración recomendada
-
-La limpieza debe hacerse en tres pasos:
+Para código nuevo use primero estas rutas:
 
 ```text
-1. Documentar el módulo y su uso actual.
-2. Migrar la funcionalidad hacia AnalysisEngine, SourceIR, FindingIR o presets.
-3. Retirar el módulo cuando no tenga imports, pruebas ni comandos activos.
+scan --preset contracts
+scan --preset security
+scan --preset ci
+scan --language cpp --frontend clang
+report derive
+testgen
 ```
 
-#### Comandos de auditoría
-
-Para revisar referencias antes de retirar un módulo:
-
-```bash
-grep -R "advanced\|assist\|bench\|clang_bridge\|clang_frontend" -n pyproject.toml .github scripts src tests docs \
-  --exclude-dir=__pycache__
-```
-
-Para revisar si hay referencias a archivos concretos:
-
-```bash
-grep -R "advanced.py\|assist.py\|bench.py\|ci.py\|clang_bridge.py\|clang_frontend.py" -n . \
-  --exclude-dir=.git \
-  --exclude-dir=.pytest_cache \
-  --exclude-dir=.ruff_cache \
-  --exclude-dir=.mypy_cache \
-  --exclude-dir=struct_guard \
-  --exclude-dir=__pycache__
-```
-
-#### Decisión para Fase 9.5
-
-No se elimina ningún módulo de `src/structguard/` en esta fase.
-
-La fase deja documentado qué módulos son activos por compatibilidad y cuáles deben migrarse después de la Fase 10. Esto reduce el riesgo de mezclar limpieza destructiva con evidencia reproducible, cache incremental o cambios del motor.
+Evite agregar funcionalidad nueva directamente sobre módulos marcados como `Deprecado` o `Legacy wrapper`, salvo que sea un arreglo de compatibilidad.
 
 #### Criterio para eliminación futura
 
@@ -90,3 +65,7 @@ no aparece en README ni docs activas
 su funcionalidad ya existe en el flujo nuevo
 pytest, ruff y mypy pasan después de retirarlo
 ```
+
+#### Decisión de Fase 18
+
+La Fase 18 no elimina módulos de `src/structguard/`. Solo documenta su estado y evita que un contribuidor nuevo edite un archivo equivocado.
